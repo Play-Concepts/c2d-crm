@@ -1,0 +1,17 @@
+{
+  "template": "https://github.com/rednafi/fastapi-nano.git",
+  "commit": "a534ceb154b55ad179bdb12ce4e3ed0e84c119c2",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "repo": "c2d-crm",
+      "api_a": "crm",
+      "api_b": "admin",
+      "year": "2021",
+      "fname": "Terry Lee",
+      "email": "terry.lee@playconcepts.co.uk",
+      "_template": "https://github.com/rednafi/fastapi-nano.git"
+    }
+  },
+  "directory": null
+}

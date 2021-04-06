@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  c2d-crm:
+    container_name: "c2d-crm"
+    image: "c2d-crm:latest"
+    env_file:
+      - .env
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      labels:
+        - fastapi-nano
+    volumes:
+        - .:/code
+    ports:
+      - 5000:5000
