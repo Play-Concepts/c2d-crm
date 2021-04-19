@@ -39,6 +39,29 @@ graph TD
 	end
 	
 	
+	
+	database -->|reads| user_portal
+	
+	
+	customer((Customer))
+	style customer fill:lightgreen;
+	customer -.-|uses| user_portal
+	user_portal -->|updates data| database
+	
+	subgraph dataswift [Personal Data Accounts]
+		pda[(Personal Data Account)]
+	end
+	
+	style dataswift fill:lightyellow;
+	style pda fill:lightgreen;
+	customer -.-|uses| viewer
+	
+	subgraph app [User Services]
+		application[Application]
+		viewer(...Universal Data Wallet)
+	end
+	
+	
 	style app fill:lightgrey;
 	style application stroke:red;
 	style application stroke-width:2;
