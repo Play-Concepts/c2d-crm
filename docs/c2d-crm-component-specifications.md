@@ -7,6 +7,7 @@
 | -------- | -------- | -------- | -------- | -------- |
 | 06-04-2021 | Initial Document   | 0.1   | Play Concepts Ltd | Terry Lee |
 | 10-04-2021 | Identity Passport Added | 0.2 | Play Concepts Ltd | Terry Lee |
+| 20-04-2021 | OZM Identity Passport removed and <br />replaced with User Web Portal | 0.3 | Play Concepts Ltd | Terry Lee |
 
 ### Document Scope 
 
@@ -39,7 +40,6 @@ The above is not unique to commercial entities along. Government bodies such as 
 | City of Elyria        | Ohio, US      | Product Owner, Data Supplier                    |
 | University of Warwick | Coventry, UK  | Service Designer, CRM Provider                  |
 | Dataswift Ltd         | Cambridge, UK | Personal Data Account / Infrastructure Provider |
-| OneZero-me Ltd        | London, UK    | Identity Passport Provider                      |
 
 ### Purpose
 
@@ -68,13 +68,9 @@ graph TD
 	business((Business))
 	style business fill:pink;
 	
-	passport(Identity Passport)
-	style passport fill:pink;
-	style passport stroke:red;
-	
 	subgraph crm [c2dCRM]
 		admin(c2d CRM Admin Dashboard)
-		user_portal(c2d CRM Claim-Your-Data Page)
+		user_portal(c2d CRM User Portal)
 		database[(Holding Database)]
 	end
 	style crm fill:lightblue;
@@ -87,8 +83,7 @@ graph TD
 	
 	customer((Customer))
 	style customer fill:lightgreen;
-	customer -.-|uses| passport
-	passport -.-|proxies| user_portal
+	customer -.-|uses| user_portal
 
 	subgraph dataswift [Personal Data Accounts]
 		pda[(Personal Data Account)]
@@ -105,25 +100,37 @@ graph TD
 	style pda fill:lightgreen;
 	
 	user_portal -.->|writes| pda
-	
 ```
 
-### User Journey
+### User Journey - Claim Your Data
 
 1. Using the **Admin Dashboard**, the Business **uploads a CSV** containing customer information that is to be transferred back to the Customer
 2. The uploaded data is saved in a holding **database**.
-3. The Customer **signs in** to the **Identity Passport** with his PDA. If he does not have one, a PDA will be created for him.
-4. The **Identity Passport** brings the Customer to the **Claim-Your-Data** page.
+3. The Customer **signs in** to the **User Portal** with his PDA. If he does not have one, a PDA will be created for him.
+4. The **User Portal** brings the Customer to the **Claim-Your-Data** page.
 5. The Customer **searches** for himself on the page. If found, a **confirmation prompt** is shown.
 6. On clicking **OK** on the confirmation prompt, the data will be written to the Customer's PDA. The corresponding record on the holding database will be **deleted**.
-7. The Customer is returned to the Identity Passport.
+7. The Customer is returned to the User Portal landing page.
+8. If the data is not found, **Not Registered with the City** is written to the PDA.
+
+### User Journey - View / Edit Your Claimed Data
+
+1. The Customer **signs in** to the **User Portal** with his PDA.
+2. The **User Portal** brings the Customer to the **Landing Page.** The Landing Page contains
+   1. Basic Information from the Claimed Data.
+   2. **QR Code** of the User
+   3. Link to **view** Full Claimed Data
+3. An option to **edit** the claimed data is available in the View page. Clicking on the button goes into **Edit** mode
+4. On clicking **OK** on the confirmation, the data will be **updated** on the Customer's PDA.
 
 ### Project Scope
 
 1. Web based Admin Dashboard for the Business
-2. Web based Claim Your Data page for the Customer
+2. Web based User Portal for the Customer
+   1. View Page
+   2. QR Code
+   3. Edit Page
 3. supporting Data Service REST APIs
-4. Integrate with Identity Passport
 
 
 
@@ -131,7 +138,7 @@ graph TD
 
 ### REST API
 
-There are 4 main API endpoints to handle the following functions
+There are 5 main API endpoints to handle the following functions
 
 - [ ] 1. to receive an uploaded CSV file containing Customer information and
 
@@ -147,13 +154,19 @@ There are 4 main API endpoints to handle the following functions
   - [ ] on claiming that data, the data would be written into his PDA
     - [ ] the format of the data that's written into his PDA is the exact format as defined in the transformation rule-set   above
   - [ ] 4. as a dependency, there would also be an API to allow the customer to search for his user data, so as to claim it
+  
+- [ ] 5. to allow the Customer to view and update his Claimed Data
 
-### Customer's Claim-Your-Data Page
 
-This is a Web interface that allows the Customer to call the relevant REST API
+
+### Customer's User Portal
+
+This is a Web interface that allows the Customer to call the relevant REST API.
 
 - [ ] to search for his own entry in the database
 - [ ] to claim that entry as his own
+- [ ] to present his claime data as a QR Code
+- [ ] to update his claimed data
 
 ### Admin Dashboard
 
@@ -195,6 +208,14 @@ FastAPI https://fastapi.tiangolo.com/
 
 React https://reactjs.org/
 
+or
+
+Svelte https://svelte.dev/
+
+**Recommendations**
+
+IBM Carbon Design System https://www.carbondesignsystem.com/
+
 
 
 ## Scope of Work
@@ -205,17 +226,21 @@ React https://reactjs.org/
   * Page to upload CSV
   * Page to view uploaded data
     * Claimed and Unclaimed must be differentiated.
-* User Page to claim their data. This page should contain
-  * some search fields
-  * prompts
+* User Portal
+  *  Page to claim their data. This page should contain
+    * some search fields
+    * prompts
+  * Page to present QR code and basic information
+  * Page to view/edit claimed data
 
 ### Code
 
 * Development of the Admin Dashboard
-* Development of the User Claim-Your-Data page.
+* Development of the User Portal page.
 * Development of supporting Backend Data Service APIs
 * Development of integrated Security Module
-* Integration with OZM Identity Passport
+  * native ACL
+  * PDA Auth
 
 ### Technical Project Delivery
 

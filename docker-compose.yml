@@ -9,7 +9,7 @@ services:
       context: ./
       dockerfile: Dockerfile
       labels:
-        - fastapi-nano
+        - c2d-crm
     volumes:
         - .:/code
     ports:
