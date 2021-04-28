@@ -1,15 +1,17 @@
 # Validates a token and return the pda url.
 import base64
 import json
+import jwt
 from typing import List, Dict, Any
 
 import requests
 
 
-def validate(token: str) -> str:
+def validate(token: str) -> Dict[str, Any]:
     pda_url = _get_pda_url(token)
-    # pda_public_key = _get_pda_public_key(pda_url)
-    return pda_url
+    pda_public_key = _get_pda_public_key(pda_url)
+    decoded = jwt.decode(token, pda_public_key, options={"verify_signature": False}, algorithms=["RS256"])
+    return decoded
 
 
 def write_data(pda_url: str, token: str, namespace: str, data_path: str, payload: List[Dict[str, Any]]) -> Any:

@@ -12,7 +12,7 @@ def do_file_upload(customers_file: UploadFile,
                    namespace: str,
                    data_path: str) -> Any:
     payload = _construct_payload(customers_file)
-    pda_url = validate(token)
+    pda_url = validate(token)['iss']
     response = write_data(pda_url, token, namespace, data_path, payload)
 
     return response
