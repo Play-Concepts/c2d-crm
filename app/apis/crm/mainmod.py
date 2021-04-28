@@ -1,11 +1,11 @@
-from typing import Dict, List, Any
+from typing import List, Any
 
-from .submod import rand_gen
+
 from .uploadmod import do_file_upload
 import uuid
 
 from app.models.customer import Customer
-from fastapi import UploadFile, File
+from fastapi import UploadFile
 
 
 def fn_list_customers() -> List[Customer]:
@@ -20,4 +20,9 @@ def fn_get_customer(user_id: str) -> Customer:
     return Customer(id=user_id, name='terry')
 
 
-def fn_upload(file: UploadFile) -> List[Dict[str, Any]]: return do_file_upload(file)
+def fn_upload(file: UploadFile,
+              token: str,
+              namespace: str,
+              data_path: str
+              ) -> Any:
+    return do_file_upload(file, token, namespace, data_path)

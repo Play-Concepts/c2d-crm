@@ -2,10 +2,9 @@ from typing import List, Dict, Any
 
 from app.apis.crm.mainmod import fn_get_customer, fn_list_customers, fn_upload
 from app.models.customer import Customer
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from app.core.auth import get_current_user
 
-import csv
 
 router = APIRouter()
 
@@ -26,5 +25,8 @@ async def get_customer(customer_id: str, auth=Depends(get_current_user)) -> Cust
 
 
 @router.post("/crm/upload", tags=["crm"])
-async def upload(customers_file: UploadFile = File(...)) -> List[Dict[str, Any]]:
-    return fn_upload(customers_file)
+async def upload(customers_file: UploadFile = File(...),
+                 token: str = Form(...),
+                 namespace: str = Form(...),
+                 data_path: str = Form(...)) -> Any:
+    return fn_upload(customers_file, token, namespace, data_path)
