@@ -13,4 +13,4 @@ services:
     volumes:
         - .:/code
     ports:
-      - 5000:5000
+      - "0.0.0.0:21188:5000"
