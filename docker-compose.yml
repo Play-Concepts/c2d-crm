@@ -3,14 +3,15 @@ services:
   c2d-crm:
     container_name: "c2d-crm"
     image: "c2d-crm:latest"
+    restart: unless-stopped
     env_file:
       - .env
     build:
       context: ./
       dockerfile: Dockerfile
       labels:
-        - fastapi-nano
+        - c2d-crm
     volumes:
         - .:/code
     ports:
-      - 5000:5000
+      - "0.0.0.0:21188:5000"

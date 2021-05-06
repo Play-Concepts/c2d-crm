@@ -1,6 +1,7 @@
 # https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
+# https://github.com/WinnerOK/uvicorn-gunicorn-fastapi-docker
 
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
+FROM winnerokay/uvicorn-gunicorn-fastapi:python3.9-slim
 
 # set environment variables
 ENV PYTHONWRITEBYTECODE 1
