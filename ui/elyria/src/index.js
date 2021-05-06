@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter } from 'react-router-dom';
 import './index.css';
-import './assets/fomantic/dist/semantic.css';
 import * as serviceWorker from './serviceWorker';
 import MainPage from "./pages/main";
 
