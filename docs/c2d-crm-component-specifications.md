@@ -165,7 +165,7 @@ This is a Web interface that allows the Customer to call the relevant REST API.
 
 - [ ] to search for his own entry in the database
 - [ ] to claim that entry as his own
-- [ ] to present his claime data as a QR Code
+- [ ] to present his claimed data as a QR Code
 - [ ] to update his claimed data
 
 ### Admin Dashboard

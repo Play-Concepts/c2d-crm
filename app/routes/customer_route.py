@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get("/auth/callback", tags=["authentication"])
 async def callback(token: str) -> RedirectResponse:
-    return RedirectResponse('/#/pages/ingest?token={}'.format(token))
+    return RedirectResponse('/#/pages/customer/basic?token={}'.format(token))
 
 
 @router.get("/customer/{num}", tags=["customer"])
