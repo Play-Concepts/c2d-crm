@@ -31,8 +31,15 @@ def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
 def _dot_to_dict(a):
     output = {}
     for key, value in a.items():
-        path = key.split('.')
+        pre_path, *data_type = key.split('/')
+        path = pre_path.split('.')
+        val = value
+        if len(data_type) == 1:
+            if data_type[0] == 'int':
+                val = int(value)
+            if data_type[0] == 'float':
+                val = float(value)
         target = reduce(lambda d, k: d.setdefault(k, {}), path[:-1], output)
-        target[path[-1]] = value
+        target[path[-1]] = val
 
     return output
