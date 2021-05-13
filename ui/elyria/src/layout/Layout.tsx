@@ -1,13 +1,15 @@
 import React from 'react';
-import { Page, PageContent, PageWrapper } from '../styles/templates/PageTemplates';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 
 const Layout: React.FC = ({ children }) => {
   return (
-    <PageWrapper>
-      <Page>
-        <PageContent>{children}</PageContent>
-      </Page>
-    </PageWrapper>
+    <div>
+      <Header />
+      <div>This is where you code your Layout</div>
+      {children}
+      <Footer />
+    </div>
   );
 };
 export default Layout;
