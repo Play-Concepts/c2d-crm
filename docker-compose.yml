@@ -14,4 +14,5 @@ services:
     volumes:
         - .:/code
     ports:
-      - "0.0.0.0:21188:5000"
+      - "0.0.0.0:21188:21188"
+    command: uvicorn --log-level info --reload --host 0.0.0.0 --port 21188 main:app
