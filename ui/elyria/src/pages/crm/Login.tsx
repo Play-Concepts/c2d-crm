@@ -1,11 +1,14 @@
-import React, { FormEvent } from 'react';
-import Layout from '../../layout/Layout';
+import React, { FormEvent, useState } from 'react';
 import { TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Alert from '@material-ui/lab/Alert';
+import { useHistory } from 'react-router';
+
+import Layout from '../../layout/Layout';
 import useForm from '../../hooks/useForm';
 import { crmLogin } from '../../services/c2dcrm';
-import { useHistory } from 'react-router';
+import { useAuth } from '../../hooks/useAuth';
 
 export interface CrmLoginForm {
   username: string;
@@ -14,6 +17,8 @@ export interface CrmLoginForm {
 
 const CrmLoginPage = () => {
   const history = useHistory();
+  const { loginCRM } = useAuth();
+  const [error, setError] = useState('');
   const { handleChange, inputs } = useForm<CrmLoginForm>({
     username: '',
     password: '',
@@ -22,14 +27,15 @@ const CrmLoginPage = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setError('');
       const res = await crmLogin(inputs);
-      if (res) {
-        // TODO: Implement authentication
+
+      if (res?.data?.access_token) {
+        loginCRM(res.data.access_token);
         history.push('/pages/crm/dashboard');
       }
     } catch (e) {
-      // TODO: Add error handling
-      console.log(e);
+      setError('Incorrect username or password.');
     }
   };
 
@@ -37,6 +43,8 @@ const CrmLoginPage = () => {
     <Layout>
       <form className="ds-signup-form" onSubmit={handleSubmit}>
         <Grid container direction="column" justify="space-around" alignItems="center" spacing={2}>
+          {error && <Alert severity="error">{error}</Alert>}
+
           <Grid item>
             <TextField
               id="username"
