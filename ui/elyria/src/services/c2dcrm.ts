@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import { CrmLoginForm } from '../pages/crm/Login';
+import { CrmTokenResponse } from './c2dcrm.interface';
 
 export const upload = (file: any, token: string, namespace: string, data_path: string) => {
   let formData = new FormData();
@@ -14,5 +15,7 @@ export const crmLogin = ({ username, password }: CrmLoginForm) => {
   let formData = new FormData();
   formData.append('username', username);
   formData.append('password', password);
-  return Axios.post('/token', formData, { headers: { 'content-type': 'multipart/form-data' } });
+  return Axios.post<CrmTokenResponse>('/token', formData, {
+    headers: { 'content-type': 'multipart/form-data' },
+  });
 };
