@@ -20,7 +20,8 @@ def create_citizens_table() -> None:
         "citizens",
         sa.Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
         sa.Column("data", JSON, nullable=False),
-        sa.Column("status", sa.VARCHAR(10), nullable=False)
+        sa.Column("status", sa.VARCHAR(10), nullable=False),
+        sa.Column("pda_url", sa.VARCHAR(255), nullable=True)
     )
 
 
