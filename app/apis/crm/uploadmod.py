@@ -7,13 +7,8 @@ from fastapi import UploadFile
 from .pda_client import validate, write_data
 
 
-def do_file_upload(customers_file: UploadFile,
-                   token: str,
-                   namespace: str,
-                   data_path: str) -> Any:
+def do_file_upload(customers_file: UploadFile) -> Any:
     payload = _construct_payload(customers_file)
-    pda_url = validate(token)['iss']
-    response = write_data(pda_url, token, namespace, data_path, payload)
 
     return response
 
