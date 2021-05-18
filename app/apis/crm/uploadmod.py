@@ -10,7 +10,7 @@ from .pda_client import validate, write_data
 def do_file_upload(customers_file: UploadFile) -> Any:
     payload = _construct_payload(customers_file)
 
-    return response
+    return payload
 
 
 def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
