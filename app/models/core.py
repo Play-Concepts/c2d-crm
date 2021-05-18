@@ -16,3 +16,7 @@ class IDModelMixin(BaseModel):
 
 class CreatedCount(BaseModel):
     count: int
+
+
+class NotFound(BaseModel):
+    message: str

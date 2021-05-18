@@ -1,14 +1,14 @@
-from typing import List, Any
+from typing import List, Any, Optional, Union
 
 import json
 from .uploadmod import do_file_upload
 import uuid
 
 from app.models.customer import CustomerView
-from fastapi import UploadFile
+from fastapi import UploadFile, Response, status
 
 from app.db.repositories.customers import CustomersRepository
-from app.models.core import CreatedCount
+from app.models.core import CreatedCount, NotFound
 
 fake_terry_data = json.dumps({
     "person": {
@@ -59,16 +59,18 @@ fake_jenny_data = json.dumps({
 })
 
 
-def fn_list_customers() -> List[CustomerView]:
-    return [
-        CustomerView(id=uuid.UUID("66d3eade-edf5-477a-866e-9f818f7e4a9b"), data=fake_terry_data, pda_url="terryds.hubofallthings.net", status="claimed"),
-        CustomerView(id=uuid.UUID("b7039ad3-4dc9-4da2-8583-50d8a7866469"), data=fake_thanny_data, pda_url="", status="new"),
-        CustomerView(id=uuid.UUID("fe337452-8749-4b21-92e0-4108bfcd5ca4"), data=fake_jenny_data, pda_url="", status="new"),
-    ]
+async def fn_list_customers(page: int, page_count: int, customers_repo: CustomersRepository) -> List[CustomerView]:
+    limit = page_count
+    offset = (page-1) * page_count
+    return await customers_repo.get_customers(offset=offset, limit=limit)
 
 
-def fn_get_customer(user_id: str) -> CustomerView:
-    return CustomerView(id=uuid.UUID(user_id), data=fake_terry_data, pda_url="terryds.hubofallthings.net", status="claimed")
+async def fn_get_customer(user_id: uuid.UUID, customers_repo: CustomersRepository, response: Response) -> Union[CustomerView, NotFound]:
+    customer = await customers_repo.get_customer(customer_id=user_id)
+    if customer is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return NotFound(message="Customer Not Found")
+    return customer
 
 
 async def fn_upload(file: UploadFile, customers_repo: CustomersRepository) -> CreatedCount:
