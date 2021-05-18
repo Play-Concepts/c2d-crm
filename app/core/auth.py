@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt import PyJWTError
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from app.core.config import config
+from .config import config
 
 # to get a string like this run:
 # openssl rand -hex 32

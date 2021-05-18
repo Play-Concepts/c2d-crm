@@ -1,9 +1,9 @@
 from typing import Dict
 
-from app.apis.customer.mainmod import main_func
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 
+from app.apis.customer.mainmod import main_func
 
 router = APIRouter()
 

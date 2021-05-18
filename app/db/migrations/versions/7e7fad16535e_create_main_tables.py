@@ -15,9 +15,9 @@ branch_labels = None
 depends_on = None
 
 
-def create_citizens_table() -> None:
+def create_customers_table() -> None:
     op.create_table(
-        "citizens",
+        "customers",
         sa.Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
         sa.Column("data", JSON, nullable=False),
         sa.Column("status", sa.VARCHAR(10), nullable=False),
@@ -26,8 +26,8 @@ def create_citizens_table() -> None:
 
 
 def upgrade() -> None:
-    create_citizens_table()
+    create_customers_table()
 
 
 def downgrade() -> None:
-    op.drop_table("citizens")
+    op.drop_table("customers")

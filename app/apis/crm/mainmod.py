@@ -7,6 +7,8 @@ import uuid
 from app.models.customer import CustomerView
 from fastapi import UploadFile
 
+from app.db.repositories.customers import CustomersRepository
+from app.models.core import CreatedCount
 
 fake_terry_data = json.dumps({
     "person": {
@@ -69,5 +71,5 @@ def fn_get_customer(user_id: str) -> CustomerView:
     return CustomerView(id=uuid.UUID(user_id), data=fake_terry_data, pda_url="terryds.hubofallthings.net", status="claimed")
 
 
-def fn_upload(file: UploadFile) -> Any:
-    return do_file_upload(file)
+async def fn_upload(file: UploadFile, customers_repo: CustomersRepository) -> CreatedCount:
+    return await do_file_upload(file, customers_repo)

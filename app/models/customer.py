@@ -1,7 +1,11 @@
-from typing import Optional
-from pydantic import Json
+from typing import Optional, Dict, Any
 from enum import Enum
+
+from pydantic.class_validators import validator
+
 from app.models.core import IDModelMixin, CoreModel
+from pydantic.types import Json
+import json
 
 
 class StatusType(str, Enum):
@@ -13,6 +17,16 @@ class CustomerBase(CoreModel):
     data: Optional[Json]
     status: Optional[StatusType] = 'new'
     pda_url: Optional[str]
+
+    @validator('data', pre=True)
+    def decode_json(cls, v):
+        if not isinstance(v, str):
+            try:
+                return json.dumps(v)
+            except Exception as err:
+                raise ValueError(f'Could not parse value into valid JSON: {err}')
+
+        return v
 
 
 class CustomerNew(CustomerBase):
@@ -30,4 +44,4 @@ class CustomerDBModel(IDModelMixin, CustomerBase):
 
 
 class CustomerView(IDModelMixin, CustomerBase):
-    pass
+    data: Json

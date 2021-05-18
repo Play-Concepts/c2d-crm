@@ -4,13 +4,22 @@ from functools import reduce
 from typing import List, Dict, Any
 
 from fastapi import UploadFile
-from .pda_client import validate, write_data
+
+from app.db.repositories.customers import CustomersRepository
+from app.models.core import CreatedCount
+from app.models.customer import CustomerNew
 
 
-def do_file_upload(customers_file: UploadFile) -> Any:
+async def do_file_upload(customers_file: UploadFile,
+                         customers_repo: CustomersRepository) -> CreatedCount:
+    created_customers: int = 0
     payload = _construct_payload(customers_file)
+    for customer in payload:
+        new_customer: CustomerNew = CustomerNew(data=customer)
+        await customers_repo.create_customer(new_customer=new_customer)
+        created_customers += 1
 
-    return payload
+    return CreatedCount(count=created_customers)
 
 
 def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:

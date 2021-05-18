@@ -12,3 +12,7 @@ class CoreModel(BaseModel):
 
 class IDModelMixin(BaseModel):
     id: uuid.UUID
+
+
+class CreatedCount(BaseModel):
+    count: int
