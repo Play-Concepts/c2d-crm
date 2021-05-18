@@ -8,7 +8,8 @@ export const PageHeader = styled('div')(({ theme }) => ({
 
 export const PageWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
-  minWidth: theme.breakpoints.values.md,
+  flexDirection: 'column',
+  // minWidth: theme.breakpoints.values.md,
   minHeight: '100vh',
 
   background: theme.palette.background.default,

@@ -2,13 +2,12 @@ import { useContext } from 'react';
 import { AuthContext } from '../components/AuthProvider';
 
 export const useAuth = () => {
-  const { user, loginPDA, logoutPDA, loginCRM, logoutCRM } = useContext(AuthContext);
+  const { user, loginPDA, logout, loginCRM } = useContext(AuthContext);
 
   return {
     ...user,
     loginPDA,
-    logoutPDA,
+    logout,
     loginCRM,
-    logoutCRM,
   };
 };

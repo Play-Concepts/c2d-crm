@@ -8,9 +8,8 @@ export const AuthContext = React.createContext({
     isAuthenticated: false,
     token: '',
   },
-  logoutPDA: () => {},
   loginPDA: (token: string) => {},
-  logoutCRM: () => {},
+  logout: () => {},
   loginCRM: (token: string) => {},
 });
 
@@ -25,15 +24,6 @@ export const AuthProvider: React.FC = ({ children }) => {
     <AuthContext.Provider
       value={{
         user: user,
-        logoutPDA: () => {
-          localStorage.removeItem(config.jwtTokenKey);
-
-          setUser({
-            isAuthenticated: false,
-            token: '',
-            role: '',
-          });
-        },
         loginPDA: (token: string) => {
           if (token && !HatTokenValidation.isEncodedTokenExpired(token)) {
             setUser({
@@ -43,7 +33,7 @@ export const AuthProvider: React.FC = ({ children }) => {
             });
           }
         },
-        logoutCRM: () => {
+        logout: () => {
           localStorage.removeItem(config.jwtTokenKey);
 
           setUser({
