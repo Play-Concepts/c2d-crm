@@ -10,7 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { TableHead } from '@material-ui/core';
 import TablePaginationActions from './TablePaginationActions';
-import { CrmCustomerInterface } from '../services/c2dcrm.interface';
+import { CrmListCustomersResponse } from '../services/c2dcrm.interface';
 
 const useStyles = makeStyles({
   table: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 });
 
 type CitizensTableProps = {
-  customers: CrmCustomerInterface[];
+  customers: CrmListCustomersResponse[];
 };
 
 const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
@@ -48,7 +48,9 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
             <TableCell align="left">Last Name</TableCell>
             <TableCell align="left">Address</TableCell>
             <TableCell align="left">City</TableCell>
+            <TableCell align="left">Status</TableCell>
             <TableCell align="left">ID</TableCell>
+            <TableCell align="left">PDA URL</TableCell>
           </TableRow>
         </TableHead>
 
@@ -57,22 +59,28 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
             (row) => (
               <TableRow key={row.id}>
                 <TableCell style={{ width: 160 }} align="left">
-                  {row.contact.email}
+                  {row.data.person.contact.email}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
-                  {row.profile.first_name}
+                  {row.data.person.profile.first_name}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
-                  {row.profile.last_name}
+                  {row.data.person.profile.last_name}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
-                  {row.address.address_line_1}
+                  {row.data.person.address.address_line_1}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
-                  {row.address.city}
+                  {row.data.person.address.city}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="left">
+                  {row.status === 'claimed' ? 'Claimed' : 'Unclaimed'}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
                   {row.id}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="left">
+                  {row.pda_url}
                 </TableCell>
               </TableRow>
             ),
@@ -87,7 +95,7 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
+              colSpan={8}
               count={customers.length}
               rowsPerPage={rowsPerPage}
               page={page}

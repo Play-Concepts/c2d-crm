@@ -17,7 +17,7 @@ export interface CrmLoginForm {
 
 const CrmLoginPage = () => {
   const history = useHistory();
-  const { loginCRM } = useAuth();
+  const { loginCRM, isAuthenticated } = useAuth();
   const [error, setError] = useState('');
   const { handleChange, inputs } = useForm<CrmLoginForm>({
     username: '',
@@ -38,6 +38,8 @@ const CrmLoginPage = () => {
       setError('Incorrect username or password.');
     }
   };
+
+  if (isAuthenticated) history.push('/pages/crm/dashboard');
 
   return (
     <Layout>

@@ -3,8 +3,16 @@ export interface CrmTokenResponse {
   token_type: string;
 }
 
-export interface CrmCustomerInterface {
+export interface CrmListCustomersResponse {
+  data: {
+    person: PersonInterface;
+  };
   id: string;
+  pda_url: string;
+  status: 'new' | 'claimed';
+}
+
+export interface PersonInterface {
   profile: {
     first_name: string;
     last_name: string;

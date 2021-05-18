@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const NavBar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
+
   return (
     <header>
       <div className="nav-logo-wrapper">

@@ -1,16 +1,22 @@
 import Axios from 'axios';
 import { CrmLoginForm } from '../pages/crm/Login';
-import { CrmTokenResponse } from './c2dcrm.interface';
+import { CrmListCustomersResponse, CrmTokenResponse } from './c2dcrm.interface';
 
-export const uploadCsvFile = (
-  file: File,
-  token: string,
-  onUploadProgress: (progressEvent: any) => void,
-) => {
+export const uploadCsvFile = (file: File, token: string, onUploadProgress: (progressEvent: any) => void) => {
   let formData = new FormData();
+
   formData.append('customers_file', file);
-  formData.append('token', token);
-  return Axios.post('/crm/upload', formData, { headers: { 'content-type': 'multipart/form-data' }, onUploadProgress });
+
+  return Axios.post('/crm/upload', formData, {
+    headers: { 'content-type': 'multipart/form-data', accept: 'application/json', Authorization: `Bearer ${token}` },
+    onUploadProgress,
+  });
+};
+
+export const listCrmCustomers = (token: string) => {
+  return Axios.get<CrmListCustomersResponse[]>('/crm/customers', {
+    headers: { 'content-type': 'application/json', accept: 'application/json', Authorization: `Bearer ${token}` },
+  });
 };
 
 export const crmLogin = ({ username, password }: CrmLoginForm) => {

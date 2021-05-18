@@ -1,6 +1,17 @@
 import React, { ChangeEvent, useState } from 'react';
+import Alert from '@material-ui/lab/Alert';
+import {
+  Box,
+  Typography,
+  Button,
+  withStyles,
+  LinearProgress,
+  Popover,
+  createStyles,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 
-import { Box, Typography, Button, ListItem, withStyles, LinearProgress } from '@material-ui/core';
 import { uploadCsvFile } from '../services/c2dcrm';
 import { useAuth } from '../hooks/useAuth';
 
@@ -19,6 +30,7 @@ const BorderLinearProgress = withStyles((theme) => ({
 }))(LinearProgress);
 
 type FileUploadState = {
+  uploadCompleted: boolean;
   selectedFiles: FileList | null;
   currentFile?: File;
   progress: number;
@@ -27,9 +39,37 @@ type FileUploadState = {
   fileInfos: File[];
 };
 
-const UploadFile: React.FC = () => {
+type UploadFileProps = {
+  onFileUploadCompleted: () => void;
+};
+
+const useStylesContent = makeStyles((theme: Theme) =>
+  createStyles({
+    uploadFilePopoverContent: {
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    progressWrapper: {
+      marginBottom: '16px',
+    },
+    btnChoose: {
+      marginBottom: '16px',
+    },
+    alertBanner: {
+      marginBottom: '16px',
+    },
+    typography: {
+      padding: theme.spacing(2),
+    },
+  }),
+);
+
+const UploadFile: React.FC<UploadFileProps> = ({ onFileUploadCompleted }) => {
+  const classes = useStylesContent();
   const { token } = useAuth();
   const [state, setState] = useState<FileUploadState>({
+    uploadCompleted: false,
     selectedFiles: null,
     currentFile: undefined,
     progress: 0,
@@ -38,53 +78,59 @@ const UploadFile: React.FC = () => {
     fileInfos: [],
   });
 
-  const upload = () => {
+  const upload = async () => {
     if (!state.selectedFiles || state.selectedFiles?.length === 0) return;
 
     let currentFile = state.selectedFiles[0];
 
     setState({ ...state, progress: 0, currentFile: currentFile });
 
-    uploadCsvFile(currentFile, token, (event) => {
-      setState({
-        ...state,
-        progress: Math.round((100 * event.loaded) / event.total),
+    try {
+      const response = await uploadCsvFile(currentFile, token, (event) => {
+        setState({
+          ...state,
+          progress: Math.round((100 * event.loaded) / event.total),
+        });
       });
-    })
-      .then((response) => {
+
+      if (response) {
         setState({
           ...state,
           message: response.data.message,
           isError: false,
         });
-        // return UploadService.getFiles();
-      })
-      .catch(() => {
+
+        onFileUploadCompleted();
+
         setState({
           ...state,
-          progress: 0,
-          message: 'Could not upload the file!',
-          currentFile: undefined,
-          isError: true,
+          uploadCompleted: true,
+          selectedFiles: null,
         });
+      }
+    } catch (e) {
+      setState({
+        ...state,
+        progress: 0,
+        message: 'Could not upload the file!',
+        currentFile: undefined,
+        uploadCompleted: false,
+        isError: true,
       });
-
-    setState({
-      ...state,
-      selectedFiles: null,
-    });
+    }
   };
 
   const selectFile = (event: ChangeEvent<HTMLInputElement>) => {
     setState({ ...state, selectedFiles: event.target.files });
   };
 
-  const { selectedFiles, currentFile, progress, message, fileInfos, isError } = state;
+  const { selectedFiles, currentFile, progress, message, isError, uploadCompleted } = state;
 
   return (
-    <div className="mg20">
+    <div className={classes.uploadFilePopoverContent}>
+      {uploadCompleted && <Alert className={classes.alertBanner}>Upload Completed</Alert>}
       {currentFile && (
-        <Box className="mb25" display="flex" alignItems="center">
+        <Box className="progressWrapper" display="flex" alignItems="center">
           <Box width="100%" mr={1}>
             <BorderLinearProgress variant="determinate" value={progress} />
           </Box>
@@ -96,11 +142,10 @@ const UploadFile: React.FC = () => {
 
       <label htmlFor="btn-upload">
         <input id="btn-upload" name="btn-upload" style={{ display: 'none' }} type="file" onChange={selectFile} />
-        <Button className="btn-choose" variant="outlined" component="span">
-          Choose Files
+        <Button className={classes.btnChoose} variant="outlined" component="span">
+          Choose .CSV File
         </Button>
       </label>
-      <div className="file-name">{selectedFiles && selectedFiles.length > 0 ? selectedFiles[0].name : null}</div>
       <Button
         className="btn-upload"
         color="primary"
@@ -115,20 +160,59 @@ const UploadFile: React.FC = () => {
       <Typography variant="subtitle2" className={`upload-message ${isError ? 'error' : ''}`}>
         {message}
       </Typography>
-
-      <Typography variant="h6" className="list-header">
-        List of Files
-      </Typography>
-      <ul className="list-group">
-        {fileInfos &&
-          fileInfos.map((file, index) => (
-            <ListItem divider key={index}>
-              {/*<a href={file.url}>{file.name}</a>*/}
-            </ListItem>
-          ))}
-      </ul>
     </div>
   );
 };
 
-export default UploadFile;
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    openButton: {
+      marginBottom: theme.spacing(4),
+    },
+    typography: {
+      padding: theme.spacing(2),
+    },
+  }),
+);
+
+const UploadFilePopover: React.FC<UploadFileProps> = ({ onFileUploadCompleted }) => {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  return (
+    <div>
+      <Button className={classes.openButton} variant="contained" color="primary" onClick={handleClick}>
+        Upload Citizens File
+      </Button>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <UploadFile onFileUploadCompleted={onFileUploadCompleted} />
+      </Popover>
+    </div>
+  );
+};
+
+export default UploadFilePopover;
