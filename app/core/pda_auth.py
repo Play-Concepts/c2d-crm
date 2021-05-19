@@ -11,19 +11,20 @@ from app.core.config import config as app_config
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/pda_token")
 router = APIRouter()
 
-invalid_application = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Credentials are not for this application",
-    headers={"WWW-Authenticate": "Bearer"},
-)
+
+def http_exception(detail: str):
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=detail,
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+
+
+invalid_application = http_exception("Credentials are not for this application");
+credentials_exception = http_exception("Credentials could not be validated.");
 
 
 async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         return validate(token)
     except (IndexError, binascii.Error):
