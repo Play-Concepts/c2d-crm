@@ -56,3 +56,12 @@ class CustomerSearch(BaseModel):
     last_name: Optional[str] = ''
     house_number: Optional[str] = ''
     email: Optional[str] = ''
+
+
+class CustomerClaim(IDModelMixin):
+    pass
+
+
+class CustomerClaimResponse(IDModelMixin):
+    status: StatusType
+    pda_url: str

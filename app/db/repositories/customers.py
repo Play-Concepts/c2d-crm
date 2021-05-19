@@ -2,7 +2,7 @@ import uuid
 from typing import Optional, List
 
 from .base import BaseRepository
-from app.models.customer import CustomerNew, CustomerView, CustomerBasicView
+from app.models.customer import CustomerNew, CustomerView, CustomerBasicView, CustomerClaimResponse
 import json
 
 
@@ -28,6 +28,13 @@ SEARCH_CUSTOMER_SQL = """
     data->'person'->'address'->>'address_line_1' ilike :house_number AND 
     data->'person'->'contact'->>'email' ilike :email AND 
     status='new'
+"""
+
+CLAIM_DATA_SQL = """
+    UPDATE customers SET status='claimed', 
+    pda_url=:pda_url 
+    WHERE id=:id 
+    RETURNING id, status, pda_url;
 """
 
 
@@ -63,3 +70,7 @@ class CustomersRepository(BaseRepository):
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
         return [CustomerView(**customer) for customer in customers]
+
+    async def claim_data(self, *, identifier: uuid.UUID, pda_url: str) -> Optional[CustomerClaimResponse]:
+        customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={"id": identifier, "pda_url": pda_url})
+        return None if customer is None else CustomerClaimResponse(**customer)
