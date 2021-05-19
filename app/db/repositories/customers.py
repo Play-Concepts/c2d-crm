@@ -22,6 +22,14 @@ VIEW_CUSTOMER_BASIC_SQL = """
     SELECT id FROM customers WHERE pda_url = :pda_url
 """
 
+SEARCH_CUSTOMER_SQL = """
+    SELECT id, data, pda_url, status FROM customers WHERE 
+    data->'person'->'profile'->>'last_name' ilike :last_name AND
+    data->'person'->'address'->>'address_line_1' ilike :house_number AND 
+    data->'person'->'contact'->>'email' ilike :email AND 
+    status='new'
+"""
+
 
 class CustomersRepository(BaseRepository):
     async def create_customer(self, *, new_customer: CustomerNew) -> CustomerView:
@@ -43,3 +51,15 @@ class CustomersRepository(BaseRepository):
     async def get_customer_basic(self, *, pda_url: str) -> Optional[CustomerBasicView]:
         customer = await self.db.fetch_one(query=VIEW_CUSTOMER_BASIC_SQL, values={"pda_url": pda_url})
         return None if customer is None else CustomerBasicView(**customer)
+
+    async def search_customers(self, *, last_name: str, house_number:str, email: str) -> List[CustomerView]:
+        def param_format(element: str) -> str:
+            return '' if element == '' or element is None else "{}%".format(element)
+
+        values = {
+            "last_name": param_format(last_name),
+            "house_number": param_format(house_number),
+            "email": param_format(email)
+        }
+        customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
+        return [CustomerView(**customer) for customer in customers]

@@ -2,6 +2,7 @@ from typing import Optional
 from enum import Enum
 
 from pydantic.class_validators import validator
+from pydantic.main import BaseModel
 
 from app.models.core import IDModelMixin, CoreModel
 from pydantic.types import Json
@@ -49,3 +50,9 @@ class CustomerView(IDModelMixin, CustomerBase):
 
 class CustomerBasicView(IDModelMixin):
     pass
+
+
+class CustomerSearch(BaseModel):
+    last_name: Optional[str] = ''
+    house_number: Optional[str] = ''
+    email: Optional[str] = ''
