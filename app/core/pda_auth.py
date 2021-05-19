@@ -1,0 +1,55 @@
+from fastapi import Depends, HTTPException, APIRouter, status
+from typing import Dict, Any
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from .auth import Token
+import requests
+import jwt
+import json
+import base64, binascii
+from app.core.config import config as app_config
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/pda_token")
+router = APIRouter()
+
+invalid_application = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Credentials are not for this application",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+
+async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        return validate(token)
+    except (IndexError, binascii.Error):
+        raise credentials_exception
+
+
+def validate(token: str) -> Dict[str, Any]:
+    pda_url = _get_pda_url(token)
+    pda_public_key = _get_pda_public_key(pda_url)
+    decoded = jwt.decode(token, pda_public_key, options={"verify_signature": False}, algorithms=["RS256"])
+    if decoded['application'] != app_config.APPLICATION_ID:
+        raise invalid_application
+    return decoded
+
+
+def _get_pda_url(token: str) -> str:
+    encoded_payload = token.split(".")[1]
+    payload_str = base64.b64decode(encoded_payload + '===').decode("utf-8")
+    payload = json.loads(payload_str)
+    return payload['iss']
+
+
+def _get_pda_public_key(pda_url: str) -> str:
+    return requests.get(f"https://{pda_url}/publickey").text
+
+
+@router.post("/pda_token", response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    return Token(access_token=form_data.username, token_type="bearer")

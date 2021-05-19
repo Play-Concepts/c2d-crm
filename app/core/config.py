@@ -23,6 +23,7 @@ class GlobalConfig(BaseSettings):
     POSTGRES_SERVER: Optional[str] = Field(..., env="POSTGRES_SERVER")
     POSTGRES_PORT: Optional[str] = Field(..., env="POSTGRES_PORT")
     POSTGRES_DB: Optional[str] = Field(..., env="POSTGRES_DB")
+    APPLICATION_ID: Optional[str] = Field(..., env="APPLICATION_ID")
 
     class Config:
         """Loads the dotenv file."""
