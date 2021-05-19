@@ -5,7 +5,8 @@ from .auth import Token
 import requests
 import jwt
 import json
-import base64, binascii
+import base64
+import binascii
 from app.core.config import config as app_config
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/pda_token")
@@ -34,7 +35,7 @@ async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
 def validate(token: str) -> Dict[str, Any]:
     pda_url = _get_pda_url(token)
     pda_public_key = _get_pda_public_key(pda_url)
-    decoded = jwt.decode(token, pda_public_key, options={"verify_signature": False}, algorithms=["RS256"])
+    decoded = jwt.decode(token, pda_public_key, options={"verify_signature": False, "verify_exp": True}, algorithms=["RS256"])
     if decoded['application'] != app_config.APPLICATION_ID:
         raise invalid_application
     return decoded

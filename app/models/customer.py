@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional
 from enum import Enum
 
 from pydantic.class_validators import validator
@@ -45,3 +45,7 @@ class CustomerDBModel(IDModelMixin, CustomerBase):
 
 class CustomerView(IDModelMixin, CustomerBase):
     data: Json
+
+
+class CustomerBasicView(IDModelMixin):
+    pass
