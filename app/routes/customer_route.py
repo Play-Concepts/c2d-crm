@@ -1,4 +1,4 @@
-from typing import Union, Optional, List
+from typing import Union, List
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse, Response

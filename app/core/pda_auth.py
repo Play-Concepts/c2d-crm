@@ -21,8 +21,8 @@ def http_exception(detail: str):
     )
 
 
-invalid_application = http_exception("Credentials are not for this application");
-credentials_exception = http_exception("Credentials could not be validated.");
+invalid_application = http_exception("Credentials are not for this application")
+credentials_exception = http_exception("Credentials could not be validated.")
 
 
 async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
@@ -35,7 +35,9 @@ async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
 def validate(token: str) -> Dict[str, Any]:
     pda_url = _get_pda_url(token)
     pda_public_key = _get_pda_public_key(pda_url)
-    decoded = jwt.decode(token, pda_public_key, options={"verify_signature": False, "verify_exp": True}, algorithms=["RS256"])
+    decoded = jwt.decode(token, pda_public_key,
+                         options={"verify_signature": False, "verify_exp": True},
+                         algorithms=["RS256"])
     if decoded['application'] != app_config.APPLICATION_ID:
         raise invalid_application
     return decoded

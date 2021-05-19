@@ -14,8 +14,8 @@ router = APIRouter()
 
 
 @router.get("/crm/customers", tags=["crm"])
-async def list_customers(page: Optional[int]=1,
-                         page_count: Optional[int]=20,
+async def list_customers(page: Optional[int] = 1,
+                         page_count: Optional[int] = 20,
                          customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
                          auth=Depends(get_current_user)) -> List[CustomerView]:
     return await fn_list_customers(page, page_count, customers_repository)
