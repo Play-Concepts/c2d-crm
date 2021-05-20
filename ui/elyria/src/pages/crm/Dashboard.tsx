@@ -42,7 +42,7 @@ const CrmDashboardPage: React.FC = () => {
           {error}
         </Alert>
       )}
-      <UploadFilePopover onFileUploadCompleted={() => listAvailableCrmCustomers()} />
+      <UploadFilePopover onFileUploadCompleted={listAvailableCrmCustomers} />
       {customers.length > 0 ? (
         <CustomersTable customers={customers} />
       ) : (

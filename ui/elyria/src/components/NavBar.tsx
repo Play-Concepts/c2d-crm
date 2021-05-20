@@ -9,11 +9,10 @@ const NavBar: React.FC = () => {
   return (
     <header>
       <div className="nav-logo-wrapper">
-        {/*<img src={logo} height="40" alt={'City of Elyria Citizens Portal Logo'} />*/}
         <div>City of Elyria Citizens Portal</div>
       </div>
       {isAuthenticated ? (
-        <button className="nav-button-sign-out" onClick={() => logout()}>
+        <button className="nav-button-sign-out" onClick={logout}>
           Sign out
         </button>
       ) : (
