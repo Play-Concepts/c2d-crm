@@ -63,5 +63,6 @@ class CustomerClaim(IDModelMixin):
 
 
 class CustomerClaimResponse(IDModelMixin):
+    data: Json
     status: StatusType
     pda_url: str

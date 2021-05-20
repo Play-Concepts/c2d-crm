@@ -34,7 +34,7 @@ CLAIM_DATA_SQL = """
     UPDATE customers SET status='claimed', 
     pda_url=:pda_url 
     WHERE id=:id 
-    RETURNING id, status, pda_url;
+    RETURNING id, data, status, pda_url;
 """
 
 

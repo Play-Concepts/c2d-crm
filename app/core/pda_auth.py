@@ -32,7 +32,7 @@ async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
 
-def validate(token: str) -> Dict[str, Any]:
+def validate(token: str) -> [Dict[str, Any], str]:
     pda_url = _get_pda_url(token)
     pda_public_key = _get_pda_public_key(pda_url)
     decoded = jwt.decode(token, pda_public_key,
@@ -40,7 +40,7 @@ def validate(token: str) -> Dict[str, Any]:
                          algorithms=["RS256"])
     if decoded['application'] != app_config.APPLICATION_ID:
         raise invalid_application
-    return decoded
+    return decoded, token
 
 
 def _get_pda_url(token: str) -> str:
