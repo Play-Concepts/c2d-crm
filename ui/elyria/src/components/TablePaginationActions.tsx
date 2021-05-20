@@ -28,7 +28,6 @@ const TablePaginationActions = (props: TablePaginationActionsProps) => {
   const { count, page, rowsPerPage, onChangePage } = props;
   const isRTL = theme.direction === 'rtl';
 
-
   const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onChangePage(event, 0);
   };
