@@ -1,7 +1,7 @@
 from typing import Union, List
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import Response
 
 from app.apis.customer.mainmod import fn_get_customer_basic, fn_search_customers, fn_claim_data
 from app.core.pda_auth import get_current_pda_user
@@ -11,12 +11,6 @@ from app.models.core import NotFound
 from app.models.customer import CustomerBasicView, CustomerView, CustomerSearch, CustomerClaim, CustomerClaimResponse
 
 router = APIRouter()
-
-
-# Authentication
-@router.get("/auth/callback", tags=["authentication"])
-async def callback(token: str) -> RedirectResponse:
-    return RedirectResponse('/#/pages/customer/basic?token={}'.format(token))
 
 
 @router.get("/customer/basic", tags=["customer"])
