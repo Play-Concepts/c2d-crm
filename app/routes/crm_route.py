@@ -13,7 +13,7 @@ from starlette.status import HTTP_201_CREATED
 router = APIRouter()
 
 
-@router.get("/crm/customers", tags=["crm"])
+@router.get("/crm/customers", tags=["crm"], response_model=List[CustomerView])
 async def list_customers(page: Optional[int] = 1,
                          page_count: Optional[int] = 20,
                          customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
@@ -21,7 +21,9 @@ async def list_customers(page: Optional[int] = 1,
     return await fn_list_customers(page, page_count, customers_repository)
 
 
-@router.get("/crm/customers/{customer_id}", tags=["crm"], response_model=Union[CustomerView, NotFound])
+@router.get("/crm/customers/{customer_id}", tags=["crm"],
+            response_model=CustomerView,
+            responses={404: {"model": NotFound}})
 async def get_customer(customer_id: uuid.UUID,
                        response: Response,
                        customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
