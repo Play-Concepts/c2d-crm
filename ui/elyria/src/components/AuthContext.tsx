@@ -8,13 +8,12 @@ export const AuthContext = React.createContext({
     isAuthenticated: false,
     token: '',
   },
-  logoutPDA: () => {},
   loginPDA: (token: string) => {},
-  logoutCRM: () => {},
+  logout: () => {},
   loginCRM: (token: string) => {},
 });
 
-export const AuthProvider: React.FC = ({ children }) => {
+const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState({
     isAuthenticated: false,
     token: '',
@@ -25,17 +24,11 @@ export const AuthProvider: React.FC = ({ children }) => {
     <AuthContext.Provider
       value={{
         user: user,
-        logoutPDA: () => {
-          localStorage.removeItem(config.jwtTokenKey);
-
-          setUser({
-            isAuthenticated: false,
-            token: '',
-            role: '',
-          });
-        },
         loginPDA: (token: string) => {
           if (token && !HatTokenValidation.isEncodedTokenExpired(token)) {
+            localStorage.setItem(config.jwtTokenKey, token);
+            localStorage.setItem(config.userRoleKey, 'PDA');
+
             setUser({
               isAuthenticated: true,
               token,
@@ -43,8 +36,9 @@ export const AuthProvider: React.FC = ({ children }) => {
             });
           }
         },
-        logoutCRM: () => {
+        logout: () => {
           localStorage.removeItem(config.jwtTokenKey);
+          localStorage.removeItem(config.userRoleKey);
 
           setUser({
             isAuthenticated: false,
@@ -54,6 +48,9 @@ export const AuthProvider: React.FC = ({ children }) => {
         },
         loginCRM: (token: string) => {
           if (token) {
+            localStorage.setItem(config.jwtTokenKey, token);
+            localStorage.setItem(config.userRoleKey, 'CRM');
+
             setUser({
               isAuthenticated: true,
               token,
@@ -67,3 +64,5 @@ export const AuthProvider: React.FC = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

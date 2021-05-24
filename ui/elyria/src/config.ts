@@ -1,8 +1,9 @@
-const APPLICATION_ID = '';
+const APPLICATION_ID = 'ld-s-cityofelyriaidentitypassport';
 const NAMESPACE = '';
-const REDIRECT_URI = `${window.location.origin + '/#/auth/callback'}`;
-const PDA_AUTH_BASE_URL = '';
+const REDIRECT_URI = `${window.location.origin + '/auth/callback'}`;
+const PDA_AUTH_BASE_URL = 'https://hatters.dataswift.io';
 const JWT_TOKEN_KEY = 'jwt-token';
+const USER_ROLE_KEY = 'user-role';
 
 export const config = {
   pdaAuth: {
@@ -11,4 +12,5 @@ export const config = {
   },
   namespace: NAMESPACE,
   jwtTokenKey: JWT_TOKEN_KEY,
+  userRoleKey: USER_ROLE_KEY,
 };
