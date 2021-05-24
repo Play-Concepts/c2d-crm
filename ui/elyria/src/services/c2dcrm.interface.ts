@@ -12,6 +12,10 @@ export interface CrmListCustomersResponse {
   status: 'new' | 'claimed';
 }
 
+export interface CustomerIdentityResponse {
+  person: PersonInterface;
+}
+
 export interface PersonInterface {
   profile: {
     first_name: string;

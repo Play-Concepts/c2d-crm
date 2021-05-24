@@ -1,6 +1,15 @@
 import Axios from 'axios';
 import { CrmLoginForm } from '../pages/crm/Login';
-import { CrmListCustomersResponse, CrmTokenResponse } from './c2dcrm.interface';
+import {
+  CrmListCustomersResponse,
+  CrmTokenResponse,
+  CustomerIdentityResponse,
+  PersonInterface,
+} from './c2dcrm.interface';
+import { CustomerSearchForm } from '../pages/customer/Claim';
+import { HatClient } from '@dataswift/hat-js';
+import { config } from '../config';
+import { HatRecord } from '@dataswift/hat-js/lib/interfaces/hat-record.interface';
 
 export const uploadCsvFile = (file: File, token: string, onUploadProgress: (progressEvent: any) => void) => {
   let formData = new FormData();
@@ -32,4 +41,36 @@ export const getCustomerBasic = (token: string) => {
   return Axios.get<{ id: string }>('/customer/basic', {
     headers: { 'content-type': 'application/json', accept: 'application/json', Authorization: `Bearer ${token}` },
   });
+};
+
+export const searchCustomer = (token: string, data: CustomerSearchForm) => {
+  return Axios.post<CrmListCustomersResponse[]>('/customer/search', data, {
+    headers: { 'content-type': 'application/json', accept: 'application/json', Authorization: `Bearer ${token}` },
+  });
+};
+
+export const claimCustomerData = (token: string, data: { id: string }) => {
+  return Axios.post<CrmListCustomersResponse>('/customer/claim', data, {
+    headers: { 'content-type': 'application/json', accept: 'application/json', Authorization: `Bearer ${token}` },
+  });
+};
+
+export const getCustomerDetails = (token: string) => {
+  const hat = new HatClient({
+    token: token,
+    secure: true,
+    apiVersion: 'v2.6',
+  });
+
+  return hat.hatData().getAllDefault<CustomerIdentityResponse>(config.namespace, config.endpoint);
+};
+
+export const updateCustomerDetails = (token: string, data: HatRecord<CustomerIdentityResponse>) => {
+  const hat = new HatClient({
+    token: token,
+    secure: true,
+    apiVersion: 'v2.6',
+  });
+
+  return hat.hatData().update<CustomerIdentityResponse>([data]);
 };
