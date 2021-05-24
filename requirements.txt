@@ -13,11 +13,15 @@ bcrypt==3.2.0
 certifi==2020.12.5
     # via requests
 cffi==1.14.5
-    # via bcrypt
+    # via
+    #   bcrypt
+    #   cryptography
 chardet==4.0.0
     # via requests
 click==7.1.2
     # via uvicorn
+cryptography==3.4.7
+    # via -r requirements.in
 databases[postgresql]==0.4.3
     # via -r requirements.in
 fastapi==0.63.0
