@@ -16,7 +16,9 @@ const AuthCallbackPage: React.FC = () => {
   useEffect(() => {
     if (!token) return;
 
-    if (!HatTokenValidation.isEncodedTokenExpired(token)) {
+    const decodedToken = HatTokenValidation.decodeToken(token);
+
+    if (!HatTokenValidation.isEncodedTokenExpired(token) && decodedToken.application === config.applicationId) {
       window.localStorage.setItem(config.jwtTokenKey, token);
       loginPDA(token);
       history.replace('/pages/customer/claim');

@@ -10,6 +10,7 @@ export const config = {
     login: `${PDA_AUTH_BASE_URL}/services/login?application_id=${APPLICATION_ID}&redirect_uri=${REDIRECT_URI}`,
     signup: `${PDA_AUTH_BASE_URL}/services/signup?application_id=${APPLICATION_ID}&redirect_uri=${REDIRECT_URI}`,
   },
+  applicationId: APPLICATION_ID,
   namespace: NAMESPACE,
   jwtTokenKey: JWT_TOKEN_KEY,
   userRoleKey: USER_ROLE_KEY,
