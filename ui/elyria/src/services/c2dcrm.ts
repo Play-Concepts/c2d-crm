@@ -27,3 +27,9 @@ export const crmLogin = ({ username, password }: CrmLoginForm) => {
     headers: { 'content-type': 'multipart/form-data' },
   });
 };
+
+export const getCustomerBasic = (token: string) => {
+  return Axios.get<{ id: string }>('/customer/basic', {
+    headers: { 'content-type': 'application/json', accept: 'application/json', Authorization: `Bearer ${token}` },
+  });
+};

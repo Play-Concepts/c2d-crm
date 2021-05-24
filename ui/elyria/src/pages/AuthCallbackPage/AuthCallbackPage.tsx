@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { parse } from 'query-string';
 import { HatTokenValidation } from '@dataswift/hat-js/lib/utils/HatTokenValidation';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { config } from '../../config';
 import { useAuth } from '../../hooks/useAuth';
 
 type Query = {
   token?: string | null;
 };
+
 const AuthCallbackPage: React.FC = () => {
   const history = useHistory();
+  const location = useLocation();
   const { loginPDA } = useAuth();
-  const { token } = parse(window.location.search) as Query;
+  const { token } = parse(location.search) as Query;
 
   useEffect(() => {
     if (!token) return;
@@ -21,7 +23,7 @@ const AuthCallbackPage: React.FC = () => {
     if (!HatTokenValidation.isEncodedTokenExpired(token) && decodedToken.application === config.applicationId) {
       window.localStorage.setItem(config.jwtTokenKey, token);
       loginPDA(token);
-      history.replace('/pages/customer/claim');
+      history.replace('/pages/customer/basic');
       return;
     }
 

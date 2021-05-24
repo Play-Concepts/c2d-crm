@@ -7,7 +7,6 @@ const CustomerDetailsPage = () => {
       <>
         <p>Details Page for Customers.</p>
         <p>Show Details information on this page</p>
-        <p></p>
       </>
     </Layout>
   );
