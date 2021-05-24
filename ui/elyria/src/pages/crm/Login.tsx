@@ -17,7 +17,7 @@ export interface CrmLoginForm {
 
 const CrmLoginPage = () => {
   const history = useHistory();
-  const { loginCRM } = useAuth();
+  const { loginCRM, isAuthenticated } = useAuth();
   const [error, setError] = useState('');
   const { handleChange, inputs } = useForm<CrmLoginForm>({
     username: '',
@@ -39,11 +39,17 @@ const CrmLoginPage = () => {
     }
   };
 
+  if (isAuthenticated) history.push('/pages/crm/dashboard');
+
   return (
     <Layout>
       <form className="ds-signup-form" onSubmit={handleSubmit}>
-        <Grid container direction="column" justify="space-around" alignItems="center" spacing={2}>
-          {error && <Alert severity="error">{error}</Alert>}
+        <Grid container direction="column" justify="space-around" alignItems="center" spacing={3}>
+          {error && (
+            <Grid item>
+              <Alert severity="error">{error}</Alert>
+            </Grid>
+          )}
 
           <Grid item>
             <TextField
@@ -71,15 +77,12 @@ const CrmLoginPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Button type="submit">Login</Button>
+            <Button type="submit" color="primary">
+              Login
+            </Button>
           </Grid>
         </Grid>
       </form>
-      {/*<Fragment>*/}
-      {/*  <p>Login Page for CRM.</p>*/}
-      {/*  <p>call the /token endpoint</p>*/}
-      {/*  <p>Uses database auth. Not PDA Auth</p>*/}
-      {/*</Fragment>*/}
     </Layout>
   );
 };

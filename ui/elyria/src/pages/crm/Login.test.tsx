@@ -6,7 +6,7 @@ import { Router } from 'react-router-dom';
 import CrmLoginPage from './Login';
 import { crmLogin } from '../../services/c2dcrm';
 import { TEST_DATA_CRM_USER } from '../../testData/crmUser';
-import { AuthProvider } from '../../components/AuthProvider';
+import AuthProvider from '../../components/AuthContext';
 
 jest.mock('../../services/c2dcrm');
 const mockCrmLogin: jest.Mocked<any> = crmLogin;
