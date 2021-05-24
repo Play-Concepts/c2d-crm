@@ -46,6 +46,7 @@ class CustomerDBModel(IDModelMixin, CustomerBase):
 
 class CustomerView(IDModelMixin, CustomerBase):
     data: Json
+    total_count: Optional[int]
 
 
 class CustomerBasicView(IDModelMixin):

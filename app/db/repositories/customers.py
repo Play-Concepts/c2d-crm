@@ -15,7 +15,13 @@ VIEW_CUSTOMER_SQL = """
 """
 
 GET_CUSTOMERS_SQL = """
-    SELECT id, data, pda_url, status FROM customers OFFSET :offset LIMIT :limit
+    WITH cte AS (SELECT id, data, pda_url, status FROM customers)
+    SELECT * FROM (
+        TABLE cte
+        LIMIT :limit
+        OFFSET :offset
+    ) sub
+    RIGHT  JOIN (SELECT count(*) FROM cte) c(total_count) ON true;
 """
 
 VIEW_CUSTOMER_BASIC_SQL = """
