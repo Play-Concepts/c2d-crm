@@ -11,8 +11,8 @@ import Paper from '@material-ui/core/Paper';
 import { Button, TableHead } from '@material-ui/core';
 import TablePaginationActions from './TablePaginationActions';
 import { CrmListCustomersResponse } from '../services/c2dcrm.interface';
-import { useModalContext } from "./ModalContext";
-import CrmClaimedCustomerDetails from "./modals/CrmClaimedCustomerDetails";
+import { useModalContext } from './ModalContext';
+import CrmClaimedCustomerDetails from './modals/CrmClaimedCustomerDetails';
 
 const useStyles = makeStyles({
   table: {
@@ -21,8 +21,8 @@ const useStyles = makeStyles({
   detailsButton: {
     fontSize: '12px',
     marginLeft: '16px',
-    padding: 0
-  }
+    padding: 0,
+  },
 });
 
 type CitizensTableProps = {
@@ -51,8 +51,8 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
       open: true,
       component: CrmClaimedCustomerDetails,
       componentProps: {
-        customerData: rowData
-      }
+        customerData: rowData,
+      },
     });
   };
 
@@ -77,10 +77,13 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
                 {row.status === 'claimed' ? (
                   <>
                     <TableCell colSpan={5} style={{ width: 160 }} align="left">
-                      {row.pda_url} <Button className={classes.detailsButton} onClick={() => showModal(row)} color="primary">Details</Button>
+                      {row.pda_url}{' '}
+                      <Button className={classes.detailsButton} onClick={() => showModal(row)} color="primary">
+                        Details
+                      </Button>
                     </TableCell>
                     <TableCell style={{ width: 160 }} align="left">
-                      claimed
+                      Claimed
                     </TableCell>
                   </>
                 ) : (

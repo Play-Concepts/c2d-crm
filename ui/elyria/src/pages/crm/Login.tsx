@@ -44,8 +44,12 @@ const CrmLoginPage = () => {
   return (
     <Layout>
       <form className="ds-signup-form" onSubmit={handleSubmit}>
-        <Grid container direction="column" justify="space-around" alignItems="center" spacing={2}>
-          {error && <Alert severity="error">{error}</Alert>}
+        <Grid container direction="column" justify="space-around" alignItems="center" spacing={3}>
+          {error && (
+            <Grid item>
+              <Alert severity="error">{error}</Alert>
+            </Grid>
+          )}
 
           <Grid item>
             <TextField
@@ -73,7 +77,9 @@ const CrmLoginPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Button type="submit">Login</Button>
+            <Button type="submit" color="primary">
+              Login
+            </Button>
           </Grid>
         </Grid>
       </form>

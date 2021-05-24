@@ -13,7 +13,7 @@ import CustomerEditDetailsPage from './pages/customer/EditDetails';
 import theme from './styles/theme';
 import AuthProvider from './components/AuthContext';
 import AuthCallbackPage from './pages/AuthCallbackPage/AuthCallbackPage';
-import ModalProvider from "./components/ModalContext";
+import ModalProvider from './components/ModalContext';
 
 const App = () => {
   return (

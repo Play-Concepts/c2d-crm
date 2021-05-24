@@ -11,19 +11,10 @@ const NavBar: React.FC = () => {
       <div className="nav-logo-wrapper">
         <div>City of Elyria Citizens Portal</div>
       </div>
-      {isAuthenticated ? (
+      {isAuthenticated && (
         <button className="nav-button-sign-out" onClick={logout}>
           Sign out
         </button>
-      ) : (
-        <div>
-          <a href={config.pdaAuth.login} className="nav-link-login">
-            Login
-          </a>
-          <a href={config.pdaAuth.signup} className="nav-link-signup">
-            Sign Up
-          </a>
-        </div>
       )}
     </header>
   );

@@ -9,7 +9,6 @@ export const PageHeader = styled('div')(({ theme }) => ({
 export const PageWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  // minWidth: theme.breakpoints.values.md,
   minHeight: '100vh',
 
   background: theme.palette.background.default,
@@ -19,7 +18,6 @@ export const PageWrapper = styled('div')(({ theme }) => ({
 export const Page = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'row',
-  maxWidth: '1440px',
   width: '100%',
   justifyContent: 'center',
   alignItems: 'center',
