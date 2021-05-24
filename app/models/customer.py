@@ -63,7 +63,7 @@ class CustomerClaim(IDModelMixin):
     pass
 
 
-class CustomerClaimResponse(IDModelMixin):
+class CustomerClaimResponse(IDModelMixin, CustomerBase):
     data: Json
     status: StatusType
     pda_url: str
