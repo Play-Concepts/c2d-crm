@@ -13,7 +13,7 @@ export const AuthContext = React.createContext({
   loginCRM: (token: string) => {},
 });
 
-export const AuthProvider: React.FC = ({ children }) => {
+const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState({
     isAuthenticated: false,
     token: '',
@@ -64,3 +64,5 @@ export const AuthProvider: React.FC = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

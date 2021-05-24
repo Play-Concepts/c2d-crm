@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,14 +8,21 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { TableHead } from '@material-ui/core';
+import { Button, TableHead } from '@material-ui/core';
 import TablePaginationActions from './TablePaginationActions';
 import { CrmListCustomersResponse } from '../services/c2dcrm.interface';
+import { useModalContext } from "./ModalContext";
+import CrmClaimedCustomerDetails from "./modals/CrmClaimedCustomerDetails";
 
 const useStyles = makeStyles({
   table: {
     minWidth: 500,
   },
+  detailsButton: {
+    fontSize: '12px',
+    marginLeft: '16px',
+    padding: 0
+  }
 });
 
 type CitizensTableProps = {
@@ -24,8 +31,9 @@ type CitizensTableProps = {
 
 const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { openModal } = useModalContext();
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, customers.length - page * rowsPerPage);
 
@@ -36,6 +44,16 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const showModal = (rowData: CrmListCustomersResponse) => {
+    openModal({
+      open: true,
+      component: CrmClaimedCustomerDetails,
+      componentProps: {
+        customerData: rowData
+      }
+    });
   };
 
   return (
@@ -49,8 +67,6 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
             <TableCell align="left">Address</TableCell>
             <TableCell align="left">City</TableCell>
             <TableCell align="left">Status</TableCell>
-            <TableCell align="left">ID</TableCell>
-            <TableCell align="left">PDA URL</TableCell>
           </TableRow>
         </TableHead>
 
@@ -58,30 +74,37 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
           {(rowsPerPage > 0 ? customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : customers).map(
             (row) => (
               <TableRow key={row.id}>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.data.person.contact.email}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.data.person.profile.first_name}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.data.person.profile.last_name}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.data.person.address.address_line_1}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.data.person.address.city}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.status === 'claimed' ? 'Claimed' : 'Unclaimed'}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.id}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.pda_url}
-                </TableCell>
+                {row.status === 'claimed' ? (
+                  <>
+                    <TableCell colSpan={5} style={{ width: 160 }} align="left">
+                      {row.pda_url} <Button className={classes.detailsButton} onClick={() => showModal(row)} color="primary">Details</Button>
+                    </TableCell>
+                    <TableCell style={{ width: 160 }} align="left">
+                      claimed
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell style={{ width: 160 }} align="left">
+                      {row.data.person.contact.email}
+                    </TableCell>
+                    <TableCell style={{ width: 160 }} align="left">
+                      {row.data.person.profile.first_name}
+                    </TableCell>
+                    <TableCell style={{ width: 160 }} align="left">
+                      {row.data.person.profile.last_name}
+                    </TableCell>
+                    <TableCell style={{ width: 160 }} align="left">
+                      {row.data.person.address.address_line_1}
+                    </TableCell>
+                    <TableCell style={{ width: 160 }} align="left">
+                      {row.data.person.address.city}
+                    </TableCell>
+                    <TableCell style={{ width: 160 }} align="left">
+                      Unclaimed
+                    </TableCell>
+                  </>
+                )}
               </TableRow>
             ),
           )}
