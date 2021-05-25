@@ -4,7 +4,6 @@ import {
   CrmListCustomersResponse,
   CrmTokenResponse,
   CustomerIdentityResponse,
-  PersonInterface,
 } from './c2dcrm.interface';
 import { CustomerSearchForm } from '../pages/customer/Claim';
 import { HatClient } from '@dataswift/hat-js';
@@ -22,8 +21,8 @@ export const uploadCsvFile = (file: File, token: string, onUploadProgress: (prog
   });
 };
 
-export const listCrmCustomers = (token: string) => {
-  return Axios.get<CrmListCustomersResponse[]>('/crm/customers', {
+export const listCrmCustomers = (token: string, page = 1, pageCount = 10) => {
+  return Axios.get<CrmListCustomersResponse[]>(`/crm/customers?page=${page}&page_count=${pageCount}`, {
     headers: { 'content-type': 'application/json', accept: 'application/json', Authorization: `Bearer ${token}` },
   });
 };

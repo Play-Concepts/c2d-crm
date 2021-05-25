@@ -10,6 +10,7 @@ export interface CrmListCustomersResponse {
   id: string;
   pda_url: string;
   status: 'new' | 'claimed';
+  total_count: number;
 }
 
 export interface CustomerIdentityResponse {

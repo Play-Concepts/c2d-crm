@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -27,23 +27,26 @@ const useStyles = makeStyles({
 
 type CitizensTableProps = {
   customers: CrmListCustomersResponse[];
+  onPageChange: (page: number, pageCount: number) => void;
 };
 
-const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
+const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange }) => {
   const classes = useStyles();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const { openModal } = useModalContext();
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, customers.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - customers.length;
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
+    onPageChange(newPage + 1, rowsPerPage);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+    onPageChange(1, parseInt(event.target.value, 10));
   };
 
   const showModal = (rowData: CrmListCustomersResponse) => {
@@ -71,7 +74,7 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
         </TableHead>
 
         <TableBody>
-          {(rowsPerPage > 0 ? customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : customers).map(
+          {customers.map(
             (row) => (
               <TableRow key={row.id}>
                 {row.status === 'claimed' ? (
@@ -120,9 +123,9 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers }) => {
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              rowsPerPageOptions={[5, 10, 25]}
               colSpan={8}
-              count={customers.length}
+              count={customers.length > 0 ? customers[0].total_count : 0}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{

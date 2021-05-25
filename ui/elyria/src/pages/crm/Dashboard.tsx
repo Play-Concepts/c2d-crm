@@ -10,21 +10,33 @@ import { useAuth } from '../../hooks/useAuth';
 import { CrmListCustomersResponse } from '../../services/c2dcrm.interface';
 import UploadFilePopover from '../../components/UploadFile';
 
+const customers: Map<string, CrmListCustomersResponse[]> = new Map();
+
 const CrmDashboardPage: React.FC = () => {
   const history = useHistory();
   const { token, isAuthenticated } = useAuth();
   const [error, setError] = useState('');
-  const [customers, setCustomers] = useState<CrmListCustomersResponse[]>([]);
+  const [displayCustomers, setDisplayCustomers] = useState<CrmListCustomersResponse[]>([]);
 
   if (!isAuthenticated) history.push('/pages/crm/login');
 
-  const listAvailableCrmCustomers = async () => {
+  const listAvailableCrmCustomers = async (page = 1, pageCount = 10) => {
     try {
       if (!isAuthenticated) return;
 
-      const res = await listCrmCustomers(token);
+      const maybeCached = customers.get(`page=${page}&page_count=${pageCount}`);
+
+      if (maybeCached) {
+        setDisplayCustomers(maybeCached || []);
+
+        return;
+      }
+
+      const res = await listCrmCustomers(token, page, pageCount);
+
       if (res.data) {
-        setCustomers(res.data);
+        customers.set(`page=${page}&page_count=${pageCount}`, res.data)
+        setDisplayCustomers(res.data);
       }
     } catch (e) {
       setError('Something went wrong. Please refresh to try again.');
@@ -43,8 +55,8 @@ const CrmDashboardPage: React.FC = () => {
         </Alert>
       )}
       <UploadFilePopover onFileUploadCompleted={listAvailableCrmCustomers} />
-      {customers.length > 0 ? (
-        <CustomersTable customers={customers} />
+      {displayCustomers.length > 0 ? (
+        <CustomersTable customers={displayCustomers} onPageChange={listAvailableCrmCustomers}/>
       ) : (
         <Typography variant="body2" color="textSecondary">
           There is no data records, please upload a file to get started
