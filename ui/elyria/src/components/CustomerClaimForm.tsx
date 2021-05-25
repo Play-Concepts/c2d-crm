@@ -59,10 +59,9 @@ const CustomerClaimForm: React.FC<CustomerClaimFormProps> = ({ onCustomerClaim }
       if (res.data) {
         onCustomerClaim(res.data);
       } else {
-        setCustomers([]);
+        setError('Something went wrong. Please try again.');
       }
     } catch (e) {
-      setCustomers([]);
       setError('Something went wrong. Please try again.');
     }
   };
