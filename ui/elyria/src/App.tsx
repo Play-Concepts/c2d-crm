@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/core/styles';
 
 import StartPage from './pages/Start';
@@ -20,13 +20,13 @@ const App = () => {
         <AuthProvider>
           <Router>
             <Switch>
-              <Route path="/pages/start" component={StartPage} />
-              <Route path="/pages/crm/login" component={CrmLoginPage} />
-              <Route path="/pages/crm/dashboard" component={CrmDashboardPage} />
-              <Route path="/pages/customer/claim" component={CustomerClaimPage} />
-              <Route path="/pages/customer/basic" component={CustomerBasicPage} />
-              <Route path="/pages/customer/details" component={CustomerDetailsPage} />
-              <Route path="/auth/callback" component={AuthCallbackPage} />
+              <Route exact path="/pages/start" component={StartPage} />
+              <Route exact path="/pages/crm/login" component={CrmLoginPage} />
+              <Route exact path="/pages/crm/dashboard" component={CrmDashboardPage} />
+              <Route exact path="/pages/customer/claim" component={CustomerClaimPage} />
+              <Route exact path="/pages/customer/basic" component={CustomerBasicPage} />
+              <Route exact path="/pages/customer/details" component={CustomerDetailsPage} />
+              <Route exact path="/auth/callback" component={AuthCallbackPage} />
               <Route exact path="/" render={() => <Redirect to="/pages/start" />} />
             </Switch>
           </Router>

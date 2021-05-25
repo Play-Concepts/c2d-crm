@@ -20,12 +20,10 @@ const useStyles = makeStyles({
 const CustomerBasicPage: React.FC = () => {
   const [qrCode, setQrCode] = useState('');
   const history = useHistory();
-  const { token } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const classes = useStyles();
 
-  const onClaimDataClick = () => {
-    history.push('/pages/customer/claim');
-  };
+  if (!isAuthenticated) history.push('/');
 
   useEffect(() => {
     const fetchCustomerQrCode = async () => {
@@ -46,9 +44,14 @@ const CustomerBasicPage: React.FC = () => {
     <Layout>
       <div className={classes.root}>
         {qrCode ? (
-          <QRCode value={qrCode} />
+          <>
+            <QRCode value={qrCode} />
+            <Button color="primary" onClick={() => history.push('/pages/customer/details')}>
+              Update your details here!
+            </Button>
+          </>
         ) : (
-          <Button color="primary" onClick={onClaimDataClick}>
+          <Button color="primary" onClick={() => history.push('/pages/customer/claim')}>
             Claim your data now!
           </Button>
         )}

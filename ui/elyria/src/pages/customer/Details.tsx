@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import { CustomerIdentityResponse } from '../../services/c2dcrm.interface';
 import useForm from '../../hooks/useForm';
 import { HatRecord } from '@dataswift/hat-js/lib/interfaces/hat-record.interface';
+import { useHistory } from "react-router";
 
 export interface CustomerDetailsForm {
   email: string;
@@ -20,8 +21,11 @@ export interface CustomerDetailsForm {
 
 const CustomerDetailsPage = () => {
   const { token, isAuthenticated } = useAuth();
+  const history = useHistory();
   const [customer, setCustomer] = useState<HatRecord<CustomerIdentityResponse>[]>([]);
   const [error, setError] = useState('');
+
+  if (!isAuthenticated) history.push('/');
 
   const { handleChange, inputs, setValues } = useForm<CustomerDetailsForm>({
     email: '',

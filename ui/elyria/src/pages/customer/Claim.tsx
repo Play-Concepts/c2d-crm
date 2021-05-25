@@ -20,13 +20,15 @@ export interface CustomerSearchForm {
 const CustomerClaimPage: React.FC = () => {
   const history = useHistory();
   const [customers, setCustomers] = useState<CrmListCustomersResponse[]>([]);
-  const { token } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const [error, setError] = useState('');
   const { handleChange, inputs } = useForm<CustomerSearchForm>({
     email: '',
     last_name: '',
     house_number: '',
   });
+
+  if (!isAuthenticated) history.push('/');
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
