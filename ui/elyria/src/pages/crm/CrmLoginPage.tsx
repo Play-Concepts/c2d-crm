@@ -77,7 +77,7 @@ const CrmLoginPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Button type="submit" color="primary">
+            <Button type="submit" color="primary" variant="contained">
               Login
             </Button>
           </Grid>

@@ -2,10 +2,14 @@ import React from 'react';
 import { Page, PageContent, PageWrapper } from '../styles/templates/PageTemplates';
 import NavBar from '../components/NavBar';
 
-const Layout: React.FC = ({ children }) => {
+type LayoutProps = {
+  claimed?: boolean;
+};
+
+const Layout: React.FC<LayoutProps> = ({ children, claimed = false }) => {
   return (
     <PageWrapper>
-      <NavBar />
+      <NavBar claimed={claimed} />
       <Page>
         <PageContent>{children}</PageContent>
       </Page>

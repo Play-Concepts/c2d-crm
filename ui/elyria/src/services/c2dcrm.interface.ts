@@ -9,7 +9,12 @@ export interface CrmListCustomersResponse {
   };
   id: string;
   pda_url: string;
-  status: 'new' | 'claimed';
+  status: 'new' | 'claimed' | 'unverified';
+  total_count: number;
+}
+
+export interface CustomerIdentityResponse {
+  person: PersonInterface;
 }
 
 export interface PersonInterface {

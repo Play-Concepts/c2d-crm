@@ -21,9 +21,14 @@ export default function useForm<T>(initial: T) {
     setInputs(initial);
   };
 
+  const setValues = (values: T) => {
+    setInputs(values);
+  };
+
   return {
     inputs,
     handleChange,
     resetForm,
+    setValues,
   };
 }

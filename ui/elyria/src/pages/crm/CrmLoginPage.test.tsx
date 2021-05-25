@@ -3,7 +3,7 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 
-import CrmLoginPage from './Login';
+import CrmLoginPage from './CrmLoginPage';
 import { crmLogin } from '../../services/c2dcrm';
 import { TEST_DATA_CRM_USER } from '../../testData/crmUser';
 import AuthProvider from '../../components/AuthContext';
