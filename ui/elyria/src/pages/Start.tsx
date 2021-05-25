@@ -18,14 +18,14 @@ const useStyles = makeStyles({
 
 const StartPage: React.FC = () => {
   const history = useHistory();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, role } = useAuth();
   const classes = useStyles();
 
   const onLogin = () => {
     window.location.assign(config.pdaAuth.login);
   };
 
-  if (isAuthenticated) history.push('/pages/customer/basic');
+  if (isAuthenticated) history.push(role === 'CRM' ? '/pages/crm/dashboard' : '/pages/customer/basic');
 
   return (
     <Layout>

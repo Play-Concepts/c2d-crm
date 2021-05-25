@@ -7,6 +7,7 @@ export const AuthContext = React.createContext({
   user: {
     isAuthenticated: false,
     token: '',
+    role: '',
   },
   loginPDA: (token: string) => {},
   logout: () => {},

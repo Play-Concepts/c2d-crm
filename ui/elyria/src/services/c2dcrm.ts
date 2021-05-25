@@ -1,10 +1,6 @@
 import Axios from 'axios';
 import { CrmLoginForm } from '../pages/crm/Login';
-import {
-  CrmListCustomersResponse,
-  CrmTokenResponse,
-  CustomerIdentityResponse,
-} from './c2dcrm.interface';
+import { CrmListCustomersResponse, CrmTokenResponse, CustomerIdentityResponse } from './c2dcrm.interface';
 import { CustomerSearchForm } from '../pages/customer/Claim';
 import { HatClient } from '@dataswift/hat-js';
 import { config } from '../config';

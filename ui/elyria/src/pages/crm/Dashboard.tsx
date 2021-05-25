@@ -35,7 +35,7 @@ const CrmDashboardPage: React.FC = () => {
       const res = await listCrmCustomers(token, page, pageCount);
 
       if (res.data) {
-        customers.set(`page=${page}&page_count=${pageCount}`, res.data)
+        customers.set(`page=${page}&page_count=${pageCount}`, res.data);
         setDisplayCustomers(res.data);
       }
     } catch (e) {
@@ -56,7 +56,7 @@ const CrmDashboardPage: React.FC = () => {
       )}
       <UploadFilePopover onFileUploadCompleted={listAvailableCrmCustomers} />
       {displayCustomers.length > 0 ? (
-        <CustomersTable customers={displayCustomers} onPageChange={listAvailableCrmCustomers}/>
+        <CustomersTable customers={displayCustomers} onPageChange={listAvailableCrmCustomers} />
       ) : (
         <Typography variant="body2" color="textSecondary">
           There is no data records, please upload a file to get started

@@ -74,46 +74,44 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange 
         </TableHead>
 
         <TableBody>
-          {customers.map(
-            (row) => (
-              <TableRow key={row.id}>
-                {row.status === 'claimed' ? (
-                  <>
-                    <TableCell colSpan={5} style={{ width: 160 }} align="left">
-                      {row.pda_url}{' '}
-                      <Button className={classes.detailsButton} onClick={() => showModal(row)} color="primary">
-                        Details
-                      </Button>
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="left">
-                      Claimed
-                    </TableCell>
-                  </>
-                ) : (
-                  <>
-                    <TableCell style={{ width: 160 }} align="left">
-                      {row.data.person.contact.email}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="left">
-                      {row.data.person.profile.first_name}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="left">
-                      {row.data.person.profile.last_name}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="left">
-                      {row.data.person.address.address_line_1}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="left">
-                      {row.data.person.address.city}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="left">
-                      Unclaimed
-                    </TableCell>
-                  </>
-                )}
-              </TableRow>
-            ),
-          )}
+          {customers.map((row) => (
+            <TableRow key={row.id}>
+              {row.status === 'claimed' ? (
+                <>
+                  <TableCell colSpan={5} style={{ width: 160 }} align="left">
+                    {row.pda_url}{' '}
+                    <Button className={classes.detailsButton} onClick={() => showModal(row)} color="primary">
+                      Details
+                    </Button>
+                  </TableCell>
+                  <TableCell style={{ width: 160 }} align="left">
+                    Claimed
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell style={{ width: 160 }} align="left">
+                    {row.data.person.contact.email}
+                  </TableCell>
+                  <TableCell style={{ width: 160 }} align="left">
+                    {row.data.person.profile.first_name}
+                  </TableCell>
+                  <TableCell style={{ width: 160 }} align="left">
+                    {row.data.person.profile.last_name}
+                  </TableCell>
+                  <TableCell style={{ width: 160 }} align="left">
+                    {row.data.person.address.address_line_1}
+                  </TableCell>
+                  <TableCell style={{ width: 160 }} align="left">
+                    {row.data.person.address.city}
+                  </TableCell>
+                  <TableCell style={{ width: 160 }} align="left">
+                    Unclaimed
+                  </TableCell>
+                </>
+              )}
+            </TableRow>
+          ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
               <TableCell colSpan={6} />
