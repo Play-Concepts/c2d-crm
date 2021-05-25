@@ -1,10 +1,10 @@
 import Axios from 'axios';
-import { CrmLoginForm } from '../pages/crm/Login';
+import { CrmLoginForm } from '../pages/crm/CrmLoginPage';
 import { CrmListCustomersResponse, CrmTokenResponse, CustomerIdentityResponse } from './c2dcrm.interface';
-import { CustomerSearchForm } from '../pages/customer/Claim';
 import { HatClient } from '@dataswift/hat-js';
 import { config } from '../config';
 import { HatRecord } from '@dataswift/hat-js/lib/interfaces/hat-record.interface';
+import { CustomerSearchForm } from '../components/CustomerClaimForm';
 
 export const uploadCsvFile = (file: File, token: string, onUploadProgress: (progressEvent: any) => void) => {
   let formData = new FormData();

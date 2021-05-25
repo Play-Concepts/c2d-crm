@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-d
 import { ThemeProvider } from '@material-ui/core/styles';
 
 import StartPage from './pages/Start';
-import CrmLoginPage from './pages/crm/Login';
+import CrmLoginPage from './pages/crm/CrmLoginPage';
 import CrmDashboardPage from './pages/crm/Dashboard';
-import CustomerClaimPage from './pages/customer/Claim';
-import CustomerBasicPage from './pages/customer/Basic';
-import CustomerDetailsPage from './pages/customer/Details';
+import CustomerBasicPage from './pages/customer/CustomerBasicPage';
+import CustomerDetailsPage from './pages/customer/CustomerDetailsPage';
 import theme from './styles/theme';
 import AuthProvider from './components/AuthContext';
 import AuthCallbackPage from './pages/AuthCallbackPage/AuthCallbackPage';
 import ModalProvider from './components/ModalContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
@@ -22,10 +22,9 @@ const App = () => {
             <Switch>
               <Route exact path="/pages/start" component={StartPage} />
               <Route exact path="/pages/crm/login" component={CrmLoginPage} />
-              <Route exact path="/pages/crm/dashboard" component={CrmDashboardPage} />
-              <Route exact path="/pages/customer/claim" component={CustomerClaimPage} />
-              <Route exact path="/pages/customer/basic" component={CustomerBasicPage} />
-              <Route exact path="/pages/customer/details" component={CustomerDetailsPage} />
+              <ProtectedRoute exact path="/pages/crm/dashboard" Component={CrmDashboardPage} accessRole="CRM" />
+              <ProtectedRoute exact path="/pages/customer/basic" Component={CustomerBasicPage} />
+              <ProtectedRoute exact path="/pages/customer/details" Component={CustomerDetailsPage} />
               <Route exact path="/auth/callback" component={AuthCallbackPage} />
               <Route exact path="/" render={() => <Redirect to="/pages/start" />} />
             </Switch>

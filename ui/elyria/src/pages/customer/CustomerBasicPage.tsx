@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../layout/Layout';
-import { Button, makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import QRCode from 'qrcode.react';
 import { getCustomerBasic } from '../../services/c2dcrm';
 import { useAuth } from '../../hooks/useAuth';
 import { useHistory } from 'react-router-dom';
+import CustomerClaimForm from '../../components/CustomerClaimForm';
+import Loading from '../../components/Loading';
+import qrcode from 'qrcode.react';
 
 const useStyles = makeStyles({
   root: {
@@ -19,6 +22,7 @@ const useStyles = makeStyles({
 
 const CustomerBasicPage: React.FC = () => {
   const [qrCode, setQrCode] = useState('');
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
   const { isAuthenticated, token } = useAuth();
   const classes = useStyles();
@@ -28,32 +32,35 @@ const CustomerBasicPage: React.FC = () => {
   useEffect(() => {
     const fetchCustomerQrCode = async () => {
       try {
+        setLoading(true);
+
         const res = await getCustomerBasic(token);
+
         if (res.data.id) {
           setQrCode(res.data.id);
         }
+
+        setLoading(false);
       } catch (e) {
         setQrCode('');
+        setLoading(false);
       }
     };
 
     fetchCustomerQrCode();
   }, []);
 
+  if (loading) return <Loading />;
+
   return (
-    <Layout>
+    <Layout claimed={!!qrcode}>
       <div className={classes.root}>
         {qrCode ? (
           <>
-            <QRCode value={qrCode} />
-            <Button color="primary" onClick={() => history.push('/pages/customer/details')}>
-              Update your details here!
-            </Button>
+            <QRCode value={qrCode} size={200} />
           </>
         ) : (
-          <Button color="primary" onClick={() => history.push('/pages/customer/claim')}>
-            Claim your data now!
-          </Button>
+          <CustomerClaimForm onCustomerClaim={(claimedCustomer) => setQrCode(claimedCustomer.id)} />
         )}
       </div>
     </Layout>

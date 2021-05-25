@@ -14,3 +14,11 @@ body {
   align-items: center;
   padding: 100px 0 50px 0;
 }
+
+.wideInput {
+  min-width: 260px !important;
+
+  @media (min-width: 600px) {
+    min-width: 360px !important;
+  }
+}

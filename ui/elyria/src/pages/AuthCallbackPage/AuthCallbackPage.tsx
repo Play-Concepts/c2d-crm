@@ -4,6 +4,7 @@ import { HatTokenValidation } from '@dataswift/hat-js/lib/utils/HatTokenValidati
 import { useHistory, useLocation } from 'react-router-dom';
 import { config } from '../../config';
 import { useAuth } from '../../hooks/useAuth';
+import Loading from '../../components/Loading';
 
 type Query = {
   token?: string | null;
@@ -30,7 +31,7 @@ const AuthCallbackPage: React.FC = () => {
     history.replace('/');
   }, [token, history, loginPDA]);
 
-  return <div>Redirecting...</div>;
+  return <Loading />;
 };
 
 export default AuthCallbackPage;

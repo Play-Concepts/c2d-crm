@@ -41,8 +41,6 @@ const SearchCustomersTable: React.FC<CitizensTableProps> = ({ customers, onDataC
             <TableCell align="left">First Name</TableCell>
             <TableCell align="left">Last Name</TableCell>
             <TableCell align="left">Address</TableCell>
-            <TableCell align="left">City</TableCell>
-            <TableCell align="left">Status</TableCell>
             <TableCell align="left" />
           </TableRow>
         </TableHead>
@@ -62,12 +60,6 @@ const SearchCustomersTable: React.FC<CitizensTableProps> = ({ customers, onDataC
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
                   {row.data.person.address.address_line_1}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  {row.data.person.address.city}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
-                  Unclaimed
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="left">
                   <Button color="primary" onClick={() => onDataClaim(row)}>

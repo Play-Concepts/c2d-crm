@@ -5,37 +5,18 @@ header {
   height: 81px;
   border-bottom: 1px solid #9a9a9a;
   align-items: center;
-  padding: 0 40px;
+  padding: 0 16px;
+
+  @media (min-width: 600px) {
+    padding: 0 40px;
+  }
 
   .nav-logo-wrapper {
     display: flex;
+    cursor: pointer;
     flex-direction: row;
     align-items: center;
     font-size: 14px;
     font-weight: 700;
-  }
-
-  .nav-link-login {
-    color: #145b5b;
-    padding: 10px 16px;
-    text-decoration: none;
-    margin-right: 16px;
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-
-  .nav-link-signup, .nav-button-sign-out {
-    color: white;
-    background-color: #145b5b;
-    padding: 10px 16px;
-    text-decoration: none;
-    border-radius: 6px;
-    border: none;
-
-    &:hover {
-      opacity: 0.8;
-    }
   }
 }

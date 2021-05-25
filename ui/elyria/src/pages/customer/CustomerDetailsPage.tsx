@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import { CustomerIdentityResponse } from '../../services/c2dcrm.interface';
 import useForm from '../../hooks/useForm';
 import { HatRecord } from '@dataswift/hat-js/lib/interfaces/hat-record.interface';
-import { useHistory } from "react-router";
+import { useHistory } from 'react-router';
 
 export interface CustomerDetailsForm {
   email: string;
@@ -106,6 +106,11 @@ const CustomerDetailsPage = () => {
         <Grid container direction="column" justify="space-around" alignItems="center" spacing={3}>
           {error && (
             <Grid item>
+              <Alert severity="success">{error}</Alert>
+            </Grid>
+          )}
+          {error && (
+            <Grid item>
               <Alert severity="error">{error}</Alert>
             </Grid>
           )}
@@ -176,7 +181,7 @@ const CustomerDetailsPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Button type="submit" color="primary">
+            <Button type="submit" color="primary" variant="contained">
               Save
             </Button>
           </Grid>

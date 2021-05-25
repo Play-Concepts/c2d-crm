@@ -30,8 +30,8 @@ const StartPage: React.FC = () => {
   return (
     <Layout>
       <div className={classes.root}>
-        <Button color="secondary" onClick={onLogin}>
-          Sign in with a PDA
+        <Button color="secondary" onClick={onLogin} variant="contained">
+          Sign in with a Personal Data Account
         </Button>
       </div>
     </Layout>
