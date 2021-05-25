@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Home } from '@material-ui/icons';
 
 type NavBarProps = {
-  claimed: boolean;
+  claimed?: boolean;
 };
 
 const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
