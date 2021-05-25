@@ -55,7 +55,10 @@ class CustomersRepository(BaseRepository):
 
     async def get_customers(self, *, offset: int, limit: int) -> List[CustomerView]:
         customers = await self.db.fetch_all(query=GET_CUSTOMERS_SQL, values={"offset": offset, "limit": limit})
-        return [CustomerView(**customer) for customer in customers]
+        customers_list = [CustomerView(**customer) for customer in customers]
+        if len(customers_list) == 1 and customers_list[0].total_count == 0:
+            return []
+        return customers_list
 
     async def get_customer(self, *, customer_id: uuid.UUID) -> Optional[CustomerView]:
         customer = await self.db.fetch_one(query=VIEW_CUSTOMER_SQL, values={"id": customer_id})
@@ -75,7 +78,10 @@ class CustomersRepository(BaseRepository):
             "email": param_format(email)
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
-        return [CustomerView(**customer) for customer in customers]
+        customers_list = [CustomerView(**customer) for customer in customers]
+        if len(customers_list) == 1 and customers_list[0].total_count == 0:
+            return []
+        return customers_list
 
     async def claim_data(self, *, identifier: uuid.UUID, pda_url: str) -> Optional[CustomerClaimResponse]:
         customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={"id": identifier, "pda_url": pda_url})
