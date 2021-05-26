@@ -1,24 +1,12 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Button, TableHead } from '@material-ui/core';
+import { Button, TableHead, useMediaQuery } from '@material-ui/core';
 import { CrmListCustomersResponse } from '../services/c2dcrm.interface';
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 500,
-  },
-  detailsButton: {
-    fontSize: '12px',
-    marginLeft: '16px',
-    padding: 0,
-  },
-});
 
 type CitizensTableProps = {
   customers: CrmListCustomersResponse[];
@@ -26,15 +14,51 @@ type CitizensTableProps = {
 };
 
 const SearchCustomersTable: React.FC<CitizensTableProps> = ({ customers, onDataClaim }) => {
-  const classes = useStyles();
+  const matches = useMediaQuery('(max-width:700px)');
 
   if (customers.length === 0) {
     return null;
   }
 
+  if (matches) {
+    return (
+      <TableContainer component={Paper}>
+        <Table aria-label="search results table">
+          <TableHead>
+            <TableRow>
+              <TableCell style={{width: 100}}  align="left">Search Result(s)</TableCell>
+              <TableCell align="left"/>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {customers.map((row) => (
+              <TableRow key={row.id}>
+                <>
+                  <TableCell align="left">
+                    <ul>
+                      <li>{row.data.person.contact.email}</li>
+                      <li>{row.data.person.profile.last_name + ' ' + row.data.person.profile.first_name}</li>
+                      <li>{row.data.person.address.address_line_1}</li>
+                    </ul>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button color="primary" onClick={() => onDataClaim(row)}>
+                      Claim
+                    </Button>
+                  </TableCell>
+                </>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
+
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table">
+      <Table aria-label="search results table">
         <TableHead>
           <TableRow>
             <TableCell align="left">Email</TableCell>
@@ -61,7 +85,7 @@ const SearchCustomersTable: React.FC<CitizensTableProps> = ({ customers, onDataC
                 <TableCell style={{ width: 160 }} align="left">
                   {row.data.person.address.address_line_1}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="left">
+                <TableCell style={{ width: 160 }} align="center">
                   <Button color="primary" onClick={() => onDataClaim(row)}>
                     Claim
                   </Button>

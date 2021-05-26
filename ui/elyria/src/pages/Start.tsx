@@ -30,7 +30,7 @@ const StartPage: React.FC = () => {
     window.location.assign(config.pdaAuth.login);
   };
 
-  if (isAuthenticated) history.push(role === 'CRM' ? '/pages/crm/dashboard' : '/pages/customer/basic');
+  if (isAuthenticated) history.push(role === 'CRM' ? '/admin' : '/app');
 
   return (
     <div>

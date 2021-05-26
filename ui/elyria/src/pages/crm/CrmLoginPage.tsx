@@ -32,7 +32,7 @@ const CrmLoginPage = () => {
 
       if (res?.data?.access_token) {
         loginCRM(res.data.access_token);
-        history.push('/pages/crm/dashboard');
+        history.push('/admin');
       }
     } catch (e) {
       setError('Incorrect username or password.');

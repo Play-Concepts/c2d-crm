@@ -23,7 +23,7 @@ const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
         <div>
           {role === 'PDA' && claimed && (
             <Button
-              onClick={() => history.push('/pages/customer/details')}
+              onClick={() => history.push('/profile')}
               color="primary"
               style={{ marginRight: '16px' }}
             >

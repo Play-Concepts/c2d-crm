@@ -55,7 +55,7 @@ const CustomerBasicPage: React.FC = () => {
   return (
     <Layout claimed={!!qrcode}>
       <div className={classes.root}>
-        {qrCode ? (
+        {!qrCode ? (
           <>
             <QRCode value={qrCode} size={200} />
           </>

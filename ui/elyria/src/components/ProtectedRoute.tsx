@@ -20,7 +20,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ Component, accessRole =
     return <Loading />;
   }
 
-  if (!isAuthenticated) history.push('/');
+  if (!isAuthenticated) history.push(accessRole === 'CRM' ? '/admin/login' : '/');
 
   if (role !== accessRole) return <div>Not found</div>;
 
