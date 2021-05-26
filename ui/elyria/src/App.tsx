@@ -26,6 +26,7 @@ const App = () => {
               <ProtectedRoute exact path="/pages/customer/basic" Component={CustomerBasicPage} />
               <ProtectedRoute exact path="/pages/customer/details" Component={CustomerDetailsPage} />
               <Route exact path="/auth/callback" component={AuthCallbackPage} />
+              <Route exact path="/admin" render={() => <Redirect to="/pages/crm/login" />} />
               <Route exact path="/" render={() => <Redirect to="/pages/start" />} />
             </Switch>
           </Router>
