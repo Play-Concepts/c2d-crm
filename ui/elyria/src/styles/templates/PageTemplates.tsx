@@ -25,19 +25,12 @@ export const Page = styled('div')(() => ({
 
 export const PageContent = styled('div')(({ theme }) => ({
   padding: '48px 40px',
-  // maxWidth: '588px',
 
   [theme.breakpoints.up('sm')]: {
     padding: '48px 48px 48px 80px',
-    // minWidth: '145px',
-    // width: '100%',
-    // maxWidth: '1118px',
   },
 
   [theme.breakpoints.up('md')]: {
     padding: '48px 48px 48px 80px',
-    // minWidth: '645px',
-    // width: '100%',
-    // maxWidth: '1118px',
   },
 }));
