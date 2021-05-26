@@ -24,7 +24,7 @@ const AuthCallbackPage: React.FC = () => {
     if (!HatTokenValidation.isEncodedTokenExpired(token) && decodedToken.application === config.applicationId) {
       window.localStorage.setItem(config.jwtTokenKey, token);
       loginPDA(token);
-      history.replace('/pages/customer/basic');
+      history.replace('/app');
       return;
     }
 

@@ -20,14 +20,12 @@ const App = () => {
         <AuthProvider>
           <Router>
             <Switch>
-              <Route exact path="/pages/start" component={StartPage} />
-              <Route exact path="/pages/crm/login" component={CrmLoginPage} />
-              <ProtectedRoute exact path="/pages/crm/dashboard" Component={CrmDashboardPage} accessRole="CRM" />
-              <ProtectedRoute exact path="/pages/customer/basic" Component={CustomerBasicPage} />
-              <ProtectedRoute exact path="/pages/customer/details" Component={CustomerDetailsPage} />
+              <Route exact path="/" component={StartPage} />
+              <Route exact path="/admin/login" component={CrmLoginPage} />
+              <ProtectedRoute exact path="/admin" Component={CrmDashboardPage} accessRole="CRM" />
+              <ProtectedRoute exact path="/app" Component={CustomerBasicPage} />
+              <ProtectedRoute exact path="/profile" Component={CustomerDetailsPage} />
               <Route exact path="/auth/callback" component={AuthCallbackPage} />
-              <Route exact path="/admin" render={() => <Redirect to="/pages/crm/login" />} />
-              <Route exact path="/" render={() => <Redirect to="/pages/start" />} />
             </Switch>
           </Router>
         </AuthProvider>

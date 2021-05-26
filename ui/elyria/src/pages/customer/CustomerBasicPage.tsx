@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../layout/Layout';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import QRCode from 'qrcode.react';
 import { getCustomerBasic } from '../../services/c2dcrm';
 import { useAuth } from '../../hooks/useAuth';

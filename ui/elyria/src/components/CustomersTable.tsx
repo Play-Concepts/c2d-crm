@@ -61,7 +61,7 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange 
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table">
+      <Table className={classes.table} aria-label="citizens table">
         <TableHead>
           <TableRow>
             <TableCell align="left">Email</TableCell>

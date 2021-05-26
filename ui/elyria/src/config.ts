@@ -13,6 +13,8 @@ export const config = {
     )}`,
     signup: `${PDA_AUTH_BASE_URL}/services/signup?application_id=${APPLICATION_ID}&redirect_uri=${REDIRECT_URI}`,
   },
+  termsOfService: 'https://<placeholder>',
+  privacyPolicy: 'https://<placeholder>',
   applicationId: APPLICATION_ID,
   namespace: NAMESPACE,
   endpoint: ENDPOINT,
