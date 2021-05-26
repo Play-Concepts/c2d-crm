@@ -18,7 +18,7 @@ export const PageWrapper = styled('div')(({ theme }) => ({
 export const Page = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'row',
-  minHeight: 'calc(100vh - 82px)',
+  minHeight: '75vh',
   minWidth: '100%',
   justifyContent: 'center',
   alignItems: 'center',

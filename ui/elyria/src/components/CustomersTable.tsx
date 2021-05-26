@@ -78,8 +78,10 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange 
             <TableRow key={row.id}>
               {row.status === 'claimed' ? (
                 <>
-                  <TableCell colSpan={5} style={{ width: 160 }} align="left">
-                    {row.pda_url}{' '}
+                  <TableCell style={{ width: 160 }} align="left">
+                    {row.pda_url}
+                  </TableCell>
+                  <TableCell colSpan={4} style={{ width: 160 }} align="left">
                     <Button className={classes.detailsButton} onClick={() => showModal(row)} color="primary">
                       Details
                     </Button>
@@ -121,7 +123,7 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange 
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[10, 25, 100]}
               colSpan={8}
               count={customers.length > 0 ? customers[0].total_count : 0}
               rowsPerPage={rowsPerPage}
