@@ -26,8 +26,10 @@ const SearchCustomersTable: React.FC<CitizensTableProps> = ({ customers, onDataC
         <Table aria-label="search results table">
           <TableHead>
             <TableRow>
-              <TableCell style={{width: 100}}  align="left">Search Result(s)</TableCell>
-              <TableCell align="left"/>
+              <TableCell style={{ width: 100 }} align="left">
+                Search Result(s)
+              </TableCell>
+              <TableCell align="left" />
             </TableRow>
           </TableHead>
 

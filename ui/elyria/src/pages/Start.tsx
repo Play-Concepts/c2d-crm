@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useHistory } from 'react-router-dom';
 import backgroundImage from '../assets/images/background-elyria-city-hall.jpg';
 import NavBar from '../components/NavBar';
+import { Footer } from '../components/Footer';
 
 const useStyles = makeStyles({
   root: {
@@ -40,6 +41,7 @@ const StartPage: React.FC = () => {
           Sign in with a Personal Data Account
         </Button>
       </div>
+      <Footer />
     </div>
   );
 };

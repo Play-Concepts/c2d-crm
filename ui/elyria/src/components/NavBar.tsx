@@ -17,17 +17,13 @@ const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
   return (
     <header>
       <div className="nav-logo-wrapper" onClick={() => history.push('/')}>
-        <img src={logo} height="50" width="50" alt={'Elyria logo'}/>
+        <img src={logo} height="50" width="50" alt={'Elyria logo'} />
         {matches && <div>City of Elyria Citizens Portal</div>}
       </div>
       {isAuthenticated && (
         <div>
           {role === 'PDA' && claimed && (
-            <Button
-              onClick={() => history.push('/profile')}
-              color="primary"
-              style={{ marginRight: '16px' }}
-            >
+            <Button onClick={() => history.push('/profile')} color="primary" style={{ marginRight: '16px' }}>
               Edit Profile
             </Button>
           )}
