@@ -23,6 +23,7 @@ const CustomerDetailsPage = () => {
   const { token, isAuthenticated } = useAuth();
   const history = useHistory();
   const [customer, setCustomer] = useState<HatRecord<CustomerIdentityResponse>[]>([]);
+  const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
 
   if (!isAuthenticated) history.push('/');
@@ -60,6 +61,8 @@ const CustomerDetailsPage = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isAuthenticated) return;
+    setSuccessMessage('');
+    setError('');
 
     try {
       const citizenToUpdate = Object.assign({}, customer[0]);
@@ -90,9 +93,11 @@ const CustomerDetailsPage = () => {
           address: person?.address.address_line_1 || '',
           city: person?.address.city || '',
         });
+        setSuccessMessage('Your profile information updated successfully.')
       }
     } catch (e) {
       setError('Something went wrong. Please try again.');
+      setSuccessMessage('');
     }
   };
 
@@ -104,9 +109,9 @@ const CustomerDetailsPage = () => {
     <Layout>
       <form className="ds-signup-form" onSubmit={handleSubmit}>
         <Grid container direction="column" justify="space-around" alignItems="center" spacing={3}>
-          {error && (
+          {successMessage && (
             <Grid item>
-              <Alert severity="success">{error}</Alert>
+              <Alert severity="success">{successMessage}</Alert>
             </Grid>
           )}
           {error && (
