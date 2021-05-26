@@ -1,9 +1,9 @@
 import React from 'react';
 import './NavBar.scss';
+import logo from '../assets/images/elyria-logo.png';
 import { useAuth } from '../hooks/useAuth';
 import { Button, useMediaQuery } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { Home } from '@material-ui/icons';
 
 type NavBarProps = {
   claimed?: boolean;
@@ -17,7 +17,8 @@ const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
   return (
     <header>
       <div className="nav-logo-wrapper" onClick={() => history.push('/')}>
-        {matches ? <div>City of Elyria Citizens Portal</div> : <Home color="secondary" />}
+        <img src={logo} height="50" width="50" alt={'Elyria logo'}/>
+        {matches && <div>City of Elyria Citizens Portal</div>}
       </div>
       {isAuthenticated && (
         <div>
