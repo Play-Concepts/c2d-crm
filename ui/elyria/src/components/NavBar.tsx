@@ -18,7 +18,7 @@ const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
     <header>
       <div className="nav-logo-wrapper" onClick={() => history.push('/')}>
         <img src={logo} height="50" width="50" alt={'Elyria logo'} />
-        {matches && <div>City of Elyria Citizens Portal</div>}
+        {matches && <div>City of Elyria Residents Portal</div>}
       </div>
       {isAuthenticated && (
         <div>

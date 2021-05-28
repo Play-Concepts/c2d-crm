@@ -34,7 +34,7 @@ const CrmDashboardPage: React.FC = () => {
 
       const res = await listCrmCustomers(token, page, pageCount);
 
-      if (res.data) {
+      if (res.data && res.data.length > 0) {
         customers.set(`page=${page}&page_count=${pageCount}`, res.data);
         setDisplayCustomers(res.data);
       }

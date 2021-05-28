@@ -25,12 +25,12 @@ const useStyles = makeStyles({
   },
 });
 
-type CitizensTableProps = {
+type CustomersTableProps = {
   customers: CrmListCustomersResponse[];
   onPageChange: (page: number, pageCount: number) => void;
 };
 
-const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange }) => {
+const CustomersTable: React.FC<CustomersTableProps> = ({ customers, onPageChange }) => {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -61,7 +61,7 @@ const CustomersTable: React.FC<CitizensTableProps> = ({ customers, onPageChange 
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="citizens table">
+      <Table className={classes.table} aria-label="residents table">
         <TableHead>
           <TableRow>
             <TableCell align="left">Email</TableCell>

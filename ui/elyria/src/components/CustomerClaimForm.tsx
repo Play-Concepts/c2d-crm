@@ -76,7 +76,7 @@ const CustomerClaimForm: React.FC<CustomerClaimFormProps> = ({ onCustomerClaim }
         )}
 
         <Grid item>
-          <Typography variant="h6">Search for your data record and claim your data</Typography>
+          <Typography variant="h6">Search for your data record</Typography>
         </Grid>
 
         <Grid item>

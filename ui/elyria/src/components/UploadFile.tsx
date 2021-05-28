@@ -193,7 +193,7 @@ const UploadFilePopover: React.FC<UploadFileProps> = ({ onFileUploadCompleted })
   return (
     <div>
       <Button className={classes.openButton} variant="contained" color="primary" onClick={handleClick}>
-        Upload Citizens File
+        Upload Residents File
       </Button>
       <Popover
         id={id}
