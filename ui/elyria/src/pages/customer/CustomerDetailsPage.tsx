@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import { CustomerIdentityResponse } from '../../services/c2dcrm.interface';
 import useForm from '../../hooks/useForm';
 import { HatRecord } from '@dataswift/hat-js/lib/interfaces/hat-record.interface';
-import { useHistory } from 'react-router';
 
 export interface CustomerDetailsForm {
   email: string;
@@ -21,12 +20,9 @@ export interface CustomerDetailsForm {
 
 const CustomerDetailsPage = () => {
   const { token, isAuthenticated } = useAuth();
-  const history = useHistory();
   const [customer, setCustomer] = useState<HatRecord<CustomerIdentityResponse>[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
-
-  if (!isAuthenticated) history.push('/');
 
   const { handleChange, inputs, setValues } = useForm<CustomerDetailsForm>({
     email: '',
@@ -37,10 +33,9 @@ const CustomerDetailsPage = () => {
   });
 
   const getDetails = async () => {
-    if (!isAuthenticated) return;
-
     try {
       const res = await getCustomerDetails(token);
+
       if (res.parsedBody && res.parsedBody.length > 0) {
         const person = res.parsedBody[0].data.person;
 
@@ -60,14 +55,13 @@ const CustomerDetailsPage = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isAuthenticated) return;
     setSuccessMessage('');
     setError('');
 
     try {
-      const citizenToUpdate = Object.assign({}, customer[0]);
+      const residentToUpdate = Object.assign({}, customer[0]);
 
-      citizenToUpdate.data.person = {
+      residentToUpdate.data.person = {
         profile: {
           first_name: inputs.firstName,
           last_name: inputs.lastName,
@@ -81,7 +75,7 @@ const CustomerDetailsPage = () => {
         },
       };
 
-      const res = await updateCustomerDetails(token, citizenToUpdate);
+      const res = await updateCustomerDetails(token, residentToUpdate);
 
       if (res.parsedBody && res.parsedBody.length > 0) {
         const person = res.parsedBody[0].data.person;
@@ -93,6 +87,7 @@ const CustomerDetailsPage = () => {
           address: person?.address.address_line_1 || '',
           city: person?.address.city || '',
         });
+
         setSuccessMessage('Your profile information updated successfully.');
       }
     } catch (e) {

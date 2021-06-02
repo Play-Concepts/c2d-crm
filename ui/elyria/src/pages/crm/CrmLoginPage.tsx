@@ -15,7 +15,7 @@ export interface CrmLoginForm {
   password: string;
 }
 
-const CrmLoginPage = () => {
+const CrmLoginPage: React.FC = () => {
   const history = useHistory();
   const { loginCRM, isAuthenticated } = useAuth();
   const [error, setError] = useState('');
