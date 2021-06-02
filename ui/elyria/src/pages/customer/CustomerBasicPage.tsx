@@ -48,6 +48,7 @@ const CustomerBasicPage: React.FC = () => {
     };
 
     fetchCustomerQrCode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <Loading />;

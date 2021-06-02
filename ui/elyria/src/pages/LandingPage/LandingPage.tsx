@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, makeStyles } from '@material-ui/core';
-import { config } from '../config';
-import { useAuth } from '../hooks/useAuth';
+import { config } from '../../config';
+import { useAuth } from '../../hooks/useAuth';
 import { useHistory } from 'react-router-dom';
-import backgroundImage from '../assets/images/background-elyria-city-hall.jpg';
-import NavBar from '../components/NavBar';
-import { Footer } from '../components/Footer';
+import backgroundImage from '../../assets/images/background-elyria-city-hall.jpg';
+import NavBar from '../../components/NavBar';
+import { Footer } from '../../components/Footer';
 
 const useStyles = makeStyles({
   root: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-const StartPage: React.FC = () => {
+const LandingPage: React.FC = () => {
   const history = useHistory();
   const { isAuthenticated, role } = useAuth();
   const classes = useStyles();
@@ -46,4 +46,4 @@ const StartPage: React.FC = () => {
   );
 };
 
-export default StartPage;
+export default LandingPage;

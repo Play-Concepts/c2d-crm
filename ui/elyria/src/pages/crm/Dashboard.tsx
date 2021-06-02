@@ -45,6 +45,7 @@ const CrmDashboardPage: React.FC = () => {
 
   useEffect(() => {
     listAvailableCrmCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

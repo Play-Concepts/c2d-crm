@@ -6,6 +6,7 @@ export default function useForm<T>(initial: T) {
 
   useEffect(() => {
     setInputs(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -93,7 +93,7 @@ const CustomerDetailsPage = () => {
           address: person?.address.address_line_1 || '',
           city: person?.address.city || '',
         });
-        setSuccessMessage('Your profile information updated successfully.')
+        setSuccessMessage('Your profile information updated successfully.');
       }
     } catch (e) {
       setError('Something went wrong. Please try again.');
@@ -103,6 +103,7 @@ const CustomerDetailsPage = () => {
 
   useEffect(() => {
     getDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   return (
