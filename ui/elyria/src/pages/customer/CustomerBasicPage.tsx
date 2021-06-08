@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core';
 import QRCode from 'qrcode.react';
 import { getCustomerBasic } from '../../services/c2dcrm';
 import { useAuth } from '../../hooks/useAuth';
-import { useHistory } from 'react-router-dom';
 import CustomerClaimForm from '../../components/CustomerClaimForm';
 import Loading from '../../components/Loading';
 import qrcode from 'qrcode.react';
@@ -23,11 +22,8 @@ const useStyles = makeStyles({
 const CustomerBasicPage: React.FC = () => {
   const [qrCode, setQrCode] = useState('');
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
-  const { isAuthenticated, token } = useAuth();
+  const { token } = useAuth();
   const classes = useStyles();
-
-  if (!isAuthenticated) history.push('/');
 
   useEffect(() => {
     const fetchCustomerQrCode = async () => {
@@ -48,6 +44,7 @@ const CustomerBasicPage: React.FC = () => {
     };
 
     fetchCustomerQrCode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <Loading />;
@@ -56,9 +53,7 @@ const CustomerBasicPage: React.FC = () => {
     <Layout claimed={!!qrcode}>
       <div className={classes.root}>
         {qrCode ? (
-          <>
-            <QRCode value={qrCode} size={200} />
-          </>
+          <QRCode value={qrCode} size={200} data-testid="qr-code" />
         ) : (
           <CustomerClaimForm onCustomerClaim={(claimedCustomer) => setQrCode(claimedCustomer.id)} />
         )}

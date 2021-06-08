@@ -18,6 +18,7 @@ export const useAuth = () => {
     } else {
       loginPDA(token);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return {
     ...user,

@@ -31,7 +31,7 @@ describe('Crm Login Page', () => {
   });
 
   test('renders without error', () => {
-    renderWithProviders(<CrmLoginPage />);
+    renderWithProviders(<CrmLoginPage />, { route: '/admin/login' });
 
     expect(screen.queryByLabelText('Username')).toBeInTheDocument();
     expect(screen.queryByLabelText('Password')).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('Crm Login Page', () => {
   });
 
   test('attempting to login with the correct details', async () => {
-    const { history } = renderWithProviders(<CrmLoginPage />);
+    const { history } = renderWithProviders(<CrmLoginPage />, { route: '/admin/login' });
 
     mockCrmLogin.mockResolvedValueOnce({
       data: TEST_DATA_CRM_USER,
@@ -55,11 +55,11 @@ describe('Crm Login Page', () => {
       password: 'testPassword',
     });
 
-    await waitFor(() => expect(history.location.pathname).toEqual('/pages/crm/dashboard'));
+    await waitFor(() => expect(history.location.pathname).toEqual('/admin'));
   });
 
   test('attempting to login with not valid details', async () => {
-    renderWithProviders(<CrmLoginPage />);
+    renderWithProviders(<CrmLoginPage />, { route: '/admin/login' });
 
     mockCrmLogin.mockRejectedValueOnce({});
 
