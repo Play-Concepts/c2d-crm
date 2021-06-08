@@ -42,7 +42,7 @@ const CrmLoginPage = () => {
   if (isAuthenticated) history.push('/pages/crm/dashboard');
 
   return (
-    <Layout>
+    <Layout isBusiness={true}>
       <form className="ds-signup-form" onSubmit={handleSubmit}>
         <Grid container direction="column" justify="space-around" alignItems="center" spacing={3}>
           {error && (
@@ -76,9 +76,9 @@ const CrmLoginPage = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={8}>
             <Button type="submit" color="primary" variant="contained">
-              Login
+              Access your Data Passport with an Organisation Data Account
             </Button>
           </Grid>
         </Grid>

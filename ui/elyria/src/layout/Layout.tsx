@@ -5,12 +5,13 @@ import { Footer } from '../components/Footer';
 
 type LayoutProps = {
   claimed?: boolean;
+  isBusiness?: boolean;
 };
 
-const Layout: React.FC<LayoutProps> = ({ children, claimed = false }) => {
+const Layout: React.FC<LayoutProps> = ({ children, claimed, isBusiness = false }) => {
   return (
     <PageWrapper>
-      <NavBar claimed={claimed} />
+      <NavBar claimed={claimed} isBusiness={isBusiness} />
       <Page>
         <PageContent>{children}</PageContent>
       </Page>

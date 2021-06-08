@@ -38,7 +38,7 @@ const StartPage: React.FC = () => {
       <NavBar />
       <div className={classes.root}>
         <Button color="secondary" onClick={onLogin} variant="contained" style={{ marginTop: '100px' }}>
-          Sign in with a Personal Data Account
+          Access your Data Passport with a Personal Data Account
         </Button>
       </div>
       <Footer />

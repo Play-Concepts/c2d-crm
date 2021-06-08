@@ -48,7 +48,7 @@ const CrmDashboardPage: React.FC = () => {
   }, []);
 
   return (
-    <Layout>
+    <Layout isBusiness={true}>
       {error && (
         <Alert severity="error" style={{ marginBottom: '20px' }}>
           {error}

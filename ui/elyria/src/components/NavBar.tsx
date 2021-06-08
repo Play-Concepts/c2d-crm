@@ -7,9 +7,10 @@ import { useHistory } from 'react-router-dom';
 
 type NavBarProps = {
   claimed?: boolean;
+  isBusiness?: boolean;
 };
 
-const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
+const NavBar: React.FC<NavBarProps> = ({ claimed, isBusiness }) => {
   const history = useHistory();
   const matches = useMediaQuery('(min-width:600px)');
   const { isAuthenticated, role, logout } = useAuth();
@@ -18,7 +19,8 @@ const NavBar: React.FC<NavBarProps> = ({ claimed }) => {
     <header>
       <div className="nav-logo-wrapper" onClick={() => history.push('/')}>
         <img src={logo} height="50" width="50" alt={'Elyria logo'} />
-        {matches && <div>City of Elyria Residents Portal</div>}
+          {matches && isBusiness && <div>Elyria Business Data Passport</div>}
+          {matches && !isBusiness && <div>Elyria Personal Data Passport</div>}
       </div>
       {isAuthenticated && (
         <div>
