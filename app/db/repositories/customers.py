@@ -15,7 +15,7 @@ VIEW_CUSTOMER_SQL = """
 """
 
 GET_CUSTOMERS_SQL = """
-    WITH cte AS (SELECT id, data, pda_url, status FROM customers)
+    WITH cte AS (SELECT id, data, pda_url, status FROM customers ORDER BY data->'person'->'profile'->>'last_name', data->'person'->'profile'->>'first_name')
     SELECT * FROM (
         TABLE cte
         LIMIT :limit
