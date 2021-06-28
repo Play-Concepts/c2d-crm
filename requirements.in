@@ -13,7 +13,14 @@ fastapi
 gunicorn
 passlib
 pyjwt
+cryptography
 python-dotenv
 python-multipart
 uvicorn
 requests
+
+# db
+psycopg2-binary
+databases[postgresql]
+SQLAlchemy
+alembic

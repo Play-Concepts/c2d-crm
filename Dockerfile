@@ -8,16 +8,14 @@ ENV PYTHONWRITEBYTECODE 1
 ENV PYTHONBUFFERED 1
 
 # set working directory
-WORKDIR /code
+#WORKDIR /code
 
 # copy dependencies
-COPY requirements.txt /code/
+COPY requirements.txt ./
 
 # install dependencies
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # copy project
-COPY . /code/
-
-# expose port
-EXPOSE 5000
+COPY ./app /app

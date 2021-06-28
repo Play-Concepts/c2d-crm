@@ -17,6 +17,14 @@ class GlobalConfig(BaseSettings):
     API_USERNAME: Optional[str] = None
     API_PASSWORD: Optional[str] = None
 
+    SECRET_KEY: Optional[str] = Field(..., env="SECRET_KEY")
+    POSTGRES_USER: Optional[str] = Field(..., env="POSTGRES_USER")
+    POSTGRES_PASSWORD: Optional[str] = Field(..., env="POSTGRES_PASSWORD")
+    POSTGRES_SERVER: Optional[str] = Field(..., env="POSTGRES_SERVER")
+    POSTGRES_PORT: Optional[str] = Field(..., env="POSTGRES_PORT")
+    POSTGRES_DB: Optional[str] = Field(..., env="POSTGRES_DB")
+    APPLICATION_ID: Optional[str] = Field(..., env="APPLICATION_ID")
+
     class Config:
         """Loads the dotenv file."""
 

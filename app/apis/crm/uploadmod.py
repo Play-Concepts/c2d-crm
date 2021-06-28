@@ -4,18 +4,22 @@ from functools import reduce
 from typing import List, Dict, Any
 
 from fastapi import UploadFile
-from .pda_client import validate, write_data
+
+from app.db.repositories.customers import CustomersRepository
+from app.models.core import CreatedCount
+from app.models.customer import CustomerNew
 
 
-def do_file_upload(customers_file: UploadFile,
-                   token: str,
-                   namespace: str,
-                   data_path: str) -> Any:
+async def do_file_upload(customers_file: UploadFile,
+                         customers_repo: CustomersRepository) -> CreatedCount:
+    created_customers: int = 0
     payload = _construct_payload(customers_file)
-    pda_url = validate(token)['iss']
-    response = write_data(pda_url, token, namespace, data_path, payload)
+    for customer in payload:
+        new_customer: CustomerNew = CustomerNew(data=customer)
+        await customers_repo.create_customer(new_customer=new_customer)
+        created_customers += 1
 
-    return response
+    return CreatedCount(count=created_customers)
 
 
 def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
@@ -31,8 +35,15 @@ def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
 def _dot_to_dict(a):
     output = {}
     for key, value in a.items():
-        path = key.split('.')
+        pre_path, *data_type = key.split('/')
+        path = pre_path.split('.')
+        val = value
+        if len(data_type) == 1:
+            if data_type[0] == 'int':
+                val = int(value)
+            if data_type[0] == 'float':
+                val = float(value)
         target = reduce(lambda d, k: d.setdefault(k, {}), path[:-1], output)
-        target[path[-1]] = value
+        target[path[-1]] = val
 
     return output
