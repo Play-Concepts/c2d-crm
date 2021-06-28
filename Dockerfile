@@ -7,8 +7,6 @@ FROM winnerokay/uvicorn-gunicorn-fastapi:python3.9-slim
 ENV PYTHONWRITEBYTECODE 1
 ENV PYTHONBUFFERED 1
 
-# install psycopg2 dependencies
-
 # set working directory
 #WORKDIR /code
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../assets/images/elyria-logo.png';
+import logo from '../assets/images/dataswift-logo.png';
 import { useAuth } from '../hooks/useAuth';
 import { Button, makeStyles, useMediaQuery } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -32,7 +32,7 @@ const useStyles = makeStyles({
     },
 
     '& img': {
-      marginRight: '8px',
+      marginRight: '18px',
     },
   },
   actionsWrapper: {
@@ -58,9 +58,9 @@ const NavBar: React.FC<NavBarProps> = ({ claimed, isBusiness }) => {
   return (
     <header className={classes.root}>
       <div className={classes.navLogoWrapper} onClick={() => history.push('/')}>
-        <img src={logo} height="50" width="50" alt={'Elyria logo'} />
-          {matches && isBusiness && <div>Elyria Business Data Passport</div>}
-          {matches && !isBusiness && <div>Elyria Personal Data Passport</div>}
+        <img src={logo} height="16" alt={'Dataswift logo'} />
+          {matches && isBusiness && <div>Business Data Passport</div>}
+          {matches && !isBusiness && <div>Personal Data Passport</div>}
       </div>
       {isAuthenticated && (
         <div className={classes.actionsWrapper}>
