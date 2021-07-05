@@ -4,7 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.routes import crm_route, customer_route
 from app.core import auth, pda_auth, tasks
 
-app = FastAPI(title="c2d CRM", version="0.5.0-20210517")
+app = FastAPI(title="c2d CRM", version="0.5.0-20210705")
 
 # Set all CORS enabled origins
 app.add_middleware(
