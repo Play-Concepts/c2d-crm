@@ -11,7 +11,7 @@ import uuid
 
 # revision identifiers, used by Alembic
 revision = 'f7a36107bdcd'
-down_revision = '7e7fad16535e'
+down_revision = '2dc82837151c'
 branch_labels = None
 depends_on = None
 
@@ -31,7 +31,7 @@ def create_users_table() -> None:
 
 
 def upgrade() -> None:
-    pass
+    create_users_table()
 
 
 def downgrade() -> None:

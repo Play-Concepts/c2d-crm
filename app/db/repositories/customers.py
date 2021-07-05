@@ -4,6 +4,7 @@ from typing import Optional, List
 from .base import BaseRepository
 from app.models.customer import CustomerNew, CustomerView, CustomerBasicView, CustomerClaimResponse
 import json
+from datetime import datetime
 
 
 NEW_CUSTOMER_SQL = """
@@ -38,9 +39,10 @@ SEARCH_CUSTOMER_SQL = """
 
 CLAIM_DATA_SQL = """
     UPDATE customers SET status='claimed', 
+    claimed_timestamp=:claimed_timestamp,  
     pda_url=:pda_url 
     WHERE id=:id 
-    RETURNING id, data, status, pda_url;
+    RETURNING id, data, status, pda_url, claimed_timestamp;
 """
 
 
@@ -84,5 +86,9 @@ class CustomersRepository(BaseRepository):
         return customers_list
 
     async def claim_data(self, *, identifier: uuid.UUID, pda_url: str) -> Optional[CustomerClaimResponse]:
-        customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={"id": identifier, "pda_url": pda_url})
+        customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={
+            "id": identifier,
+            "pda_url": pda_url,
+            "claimed_timestamp": datetime.utcnow()
+        })
         return None if customer is None else CustomerClaimResponse(**customer)
