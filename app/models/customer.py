@@ -7,7 +7,7 @@ from pydantic.main import BaseModel
 from app.models.core import IDModelMixin, CoreModel
 from pydantic.types import Json
 import json
-
+from datetime import datetime
 
 class StatusType(str, Enum):
     new = 'new'
@@ -67,3 +67,4 @@ class CustomerClaimResponse(IDModelMixin, CustomerBase):
     data: Json
     status: StatusType
     pda_url: str
+    claimed_timestamp: datetime

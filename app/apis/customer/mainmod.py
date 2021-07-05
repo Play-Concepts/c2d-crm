@@ -35,5 +35,7 @@ async def fn_claim_data(identifier: uuid.UUID,
     if claimed_data is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Could not find the data to claim")
+    data = claimed_data.data
+    data['person']['claimed_timestamp'] = claimed_data.claimed_timestamp.timestamp()
     write_pda_data(pda_url, token, 'elyria', 'identity', claimed_data.data)
     return claimed_data
