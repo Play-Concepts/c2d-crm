@@ -19,4 +19,4 @@ class UserUpdate(User, models.BaseUserUpdate):
 
 
 class UserDB(User, models.BaseUserDB):
-    password_change_token: str
+    password_change_token: Optional[str]

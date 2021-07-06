@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, APIRouter, status
 from typing import Dict, Any
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from .auth import Token
+from fastapi.security import OAuth2PasswordBearer
+
 import requests
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
@@ -61,8 +61,3 @@ def _get_pda_url(token: str) -> str:
 
 def _get_pda_public_key(pda_url: str) -> str:
     return requests.get(f"https://{pda_url}/publickey").text
-
-
-@router.post("/pda_token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    return Token(access_token=form_data.username, token_type="bearer")
