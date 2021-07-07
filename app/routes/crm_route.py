@@ -11,11 +11,12 @@ from fastapi import APIRouter, Depends, UploadFile, File, Response
 from starlette.status import HTTP_201_CREATED
 
 router = APIRouter()
+router.prefix = "/api/crm"
 
 crm_user = global_state.fastapi_users.current_user(active=True, verified=True, superuser=True)
 
 
-@router.get("/crm/customers", tags=["crm"], response_model=List[CustomerView])
+@router.get("/customers", tags=["crm"], response_model=List[CustomerView])
 async def list_customers(page: Optional[int] = 1,
                          page_count: Optional[int] = 20,
                          customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
@@ -23,7 +24,7 @@ async def list_customers(page: Optional[int] = 1,
     return await fn_list_customers(page, page_count, customers_repository)
 
 
-@router.get("/crm/customers/{customer_id}", tags=["crm"],
+@router.get("/customers/{customer_id}", tags=["crm"],
             response_model=CustomerView,
             responses={404: {"model": NotFound}})
 async def get_customer(customer_id: uuid.UUID,
@@ -33,7 +34,7 @@ async def get_customer(customer_id: uuid.UUID,
     return await fn_get_customer(customer_id, customers_repository, response)
 
 
-@router.post("/crm/upload", response_model=CreatedCount, tags=["crm"], status_code=HTTP_201_CREATED)
+@router.post("/customers/upload", response_model=CreatedCount, tags=["crm"], status_code=HTTP_201_CREATED)
 async def upload(customers_file: UploadFile = File(...),
                  customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
                  auth=Depends(crm_user)) -> CreatedCount:

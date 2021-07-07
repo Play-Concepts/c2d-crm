@@ -19,7 +19,7 @@ def mount_users_module(app: FastAPI) -> Callable:
             name='datapassword-auth',
             secret=secret,
             lifetime_seconds=3600,
-            tokenUrl="auth/jwt/login"
+            tokenUrl="api/auth/jwt/login"
         )
         auth_backends.append(jwt_authentication)
 
@@ -43,17 +43,17 @@ def mount_users_module(app: FastAPI) -> Callable:
 
         app.include_router(
             fastapi_users.get_auth_router(jwt_authentication),
-            prefix="/auth/jwt",
+            prefix="/api/auth/jwt",
             tags=["auth"],
         )
         app.include_router(
             fastapi_users.get_reset_password_router(secret),
-            prefix="/auth",
+            prefix="/api/auth",
             tags=["auth"],
         )
         app.include_router(
             fastapi_users.get_users_router(),
-            prefix="/users",
+            prefix="/api/users",
             tags=["users"],
         )
 
