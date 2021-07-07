@@ -11,9 +11,10 @@ from app.models.core import NotFound
 from app.models.customer import CustomerBasicView, CustomerView, CustomerSearch, CustomerClaim, CustomerClaimResponse
 
 router = APIRouter()
+router.prefix = "/api/customer"
 
 
-@router.get("/customer/basic", tags=["customer"], response_model=CustomerBasicView, responses={404: {"model": NotFound}})
+@router.get("/basic", tags=["customer"], response_model=CustomerBasicView, responses={404: {"model": NotFound}})
 async def get_customer_basic(response: Response,
                              customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
                              auth_tuple=Depends(get_current_pda_user)) -> Union[CustomerBasicView, NotFound]:
@@ -21,7 +22,7 @@ async def get_customer_basic(response: Response,
     return await fn_get_customer_basic(auth['iss'], customers_repository, response)
 
 
-@router.post("/customer/search", tags=["customer"], response_model=List[CustomerView])
+@router.post("/search", tags=["customer"], response_model=List[CustomerView])
 async def search_customers(search_params: CustomerSearch,
                            customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
                            auth=Depends(get_current_pda_user)) -> List[CustomerView]:
@@ -31,7 +32,7 @@ async def search_customers(search_params: CustomerSearch,
                                      customers_repository)
 
 
-@router.post("/customer/claim",
+@router.post("/claim",
              tags=["customer"],
              response_model=CustomerClaimResponse,
              responses={404: {"model": NotFound}})

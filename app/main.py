@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.routes import crm_route, customer_route
-from app.core import auth, pda_auth, tasks
+from app.core import tasks
+import users_module, custom_module
 
-app = FastAPI(title="c2d CRM", version="0.5.0-20210705")
+app = FastAPI(title="c2d CRM", version="0.5.0-20210517")
 
 # Set all CORS enabled origins
 app.add_middleware(
@@ -18,7 +18,6 @@ app.add_middleware(
 app.add_event_handler("startup", tasks.create_start_app_handler(app))
 app.add_event_handler("shutdown", tasks.create_stop_app_handler(app))
 
-app.include_router(auth.router)
-app.include_router(pda_auth.router)
-app.include_router(customer_route.router)
-app.include_router(crm_route.router)
+# Delay FastAPI-Users
+app.add_event_handler("startup", users_module.mount_users_module(app))
+app.add_event_handler("startup", custom_module.mount_custom_module(app))
