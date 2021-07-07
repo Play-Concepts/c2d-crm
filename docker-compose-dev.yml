@@ -11,9 +11,11 @@ services:
       dockerfile: Dockerfile
       labels:
         - c2d-crm
+    volumes:
+        - ./app:/app
     ports:
       - "${HOST}:${PORT}:${PORT}"
-    command: uvicorn --log-level ${LOG_LEVEL} --host ${HOST} --port ${PORT} main:app
+    command: uvicorn --log-level ${LOG_LEVEL} --reload --host ${HOST} --port ${PORT} main:app
     depends_on:
       - db
 
