@@ -8,7 +8,7 @@ on:
       - dev
 
 env:
-  REGISTRY: 126761267783.dkr.ecr.us-east-1.amazonaws.com/datapassport
+  REGISTRY: 006166587607.dkr.ecr.us-east-1.amazonaws.com/datapassport-backend-python
 
 jobs:
   build:
