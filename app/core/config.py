@@ -10,12 +10,7 @@ class GlobalConfig(BaseSettings):
     # shell environment variable having the same name, that will take precedence.
 
     # the class Field is necessary while defining the global variables
-    ENV_STATE: Optional[str] = Field("PRD", env="ENV_STATE")
-    HOST: Optional[str] = Field("0.0.0.0", env="HOST")
-
-    # environment specific configs
-    API_USERNAME: Optional[str] = None
-    API_PASSWORD: Optional[str] = None
+    ENV_STATE: Optional[str] = Field(..., env="ENV_STATE")
 
     SECRET_KEY: Optional[str] = Field(..., env="SECRET_KEY")
     POSTGRES_USER: Optional[str] = Field(..., env="POSTGRES_USER")
