@@ -1,20 +1,10 @@
-# https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
-# https://github.com/WinnerOK/uvicorn-gunicorn-fastapi-docker
+FROM python:3.9-slim
 
-FROM winnerokay/uvicorn-gunicorn-fastapi:python3.9-slim
-
-# set environment variables
-ENV PYTHONWRITEBYTECODE 1
-ENV PYTHONBUFFERED 1
-
-# set working directory
-#WORKDIR /code
-
-# copy dependencies
-COPY requirements.txt ./
-
-# install dependencies
-RUN pip install --upgrade pip
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY ./app /app
+USER 1000
+
+COPY app app
+
+CMD ["uvicorn", "app.main:app", "--host", "${HOST:-0.0.0.0}", "--port", "${PORT:-80}"]

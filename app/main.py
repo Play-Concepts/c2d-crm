@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core import tasks
-import users_module, custom_module
+from . import users_module
+from . import custom_module
 
 app = FastAPI(title="c2d CRM", version="0.5.0-20210517")
 
