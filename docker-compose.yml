@@ -2,7 +2,6 @@ version: "3.8"
 services:
   c2d-crm:
     container_name: "c2d-crm"
-    image: "c2d-crm:latest"
     restart: unless-stopped
     env_file:
       - .env
@@ -11,9 +10,11 @@ services:
       dockerfile: Dockerfile
       labels:
         - c2d-crm
+    volumes:
+      - ./app:/app
     ports:
       - "${HOST}:${PORT}:${PORT}"
-    command: uvicorn --log-level ${LOG_LEVEL} --host ${HOST} --port ${PORT} main:app
+    command: uvicorn --log-level ${LOG_LEVEL} --reload --host ${HOST} --port ${PORT} main:app
     depends_on:
       - db
 

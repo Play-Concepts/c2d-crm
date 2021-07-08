@@ -10,8 +10,8 @@ from app.models.core import CreatedCount
 from app.models.customer import CustomerNew
 
 
-async def do_file_upload(customers_file: UploadFile,
-                         customers_repo: CustomersRepository) -> CreatedCount:
+async def do_customer_file_upload(customers_file: UploadFile,
+                                  customers_repo: CustomersRepository) -> CreatedCount:
     created_customers: int = 0
     payload = _construct_payload(customers_file)
     for customer in payload:
