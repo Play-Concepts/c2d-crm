@@ -3,9 +3,18 @@
 
 FROM winnerokay/uvicorn-gunicorn-fastapi:python3.9-slim
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# set environment variables
+ENV PYTHONWRITEBYTECODE 1
+ENV PYTHONBUFFERED 1
 
-USER 1000
+# set working directory
+#WORKDIR /code
+
+# copy dependencies
+COPY requirements.txt ./
+
+# install dependencies
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 COPY ./app /app
