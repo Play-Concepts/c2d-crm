@@ -50,7 +50,7 @@ class CustomerView(IDModelMixin, CustomerBase):
 
 
 class CustomerBasicView(IDModelMixin):
-    pass
+    claimed_timestamp: Optional[datetime]
 
 
 class CustomerSearch(BaseModel):

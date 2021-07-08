@@ -4,7 +4,7 @@ from typing import Optional, List
 from .base import BaseRepository
 from app.models.customer import CustomerNew, CustomerView, CustomerBasicView, CustomerClaimResponse
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 NEW_CUSTOMER_SQL = """
@@ -26,7 +26,7 @@ GET_CUSTOMERS_SQL = """
 """
 
 VIEW_CUSTOMER_BASIC_SQL = """
-    SELECT id FROM customers WHERE pda_url = :pda_url
+    SELECT id, claimed_timestamp FROM customers WHERE pda_url = :pda_url
 """
 
 SEARCH_CUSTOMER_SQL = """
@@ -89,6 +89,6 @@ class CustomersRepository(BaseRepository):
         customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={
             "id": identifier,
             "pda_url": pda_url,
-            "claimed_timestamp": datetime.utcnow()
+            "claimed_timestamp": datetime.now(timezone.utc)
         })
         return None if customer is None else CustomerClaimResponse(**customer)

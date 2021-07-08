@@ -2,7 +2,7 @@ import uuid
 from typing import List, Union, Optional
 
 from app import global_state
-from app.apis.crm.mainmod import fn_get_customer, fn_list_customers, fn_upload
+from app.apis.crm.mainmod import fn_get_customer, fn_list_customers, fn_customer_upload, fn_merchant_upload
 from app.apis.dependencies.database import get_repository
 from app.db.repositories.customers import CustomersRepository
 from app.models.core import CreatedCount, NotFound
@@ -38,4 +38,10 @@ async def get_customer(customer_id: uuid.UUID,
 async def upload(customers_file: UploadFile = File(...),
                  customers_repository: CustomersRepository = Depends(get_repository(CustomersRepository)),
                  auth=Depends(crm_user)) -> CreatedCount:
-    return await fn_upload(customers_file, customers_repository)
+    return await fn_customer_upload(customers_file, customers_repository)
+
+
+@router.post("/merchants/upload", response_model=CreatedCount, tags=["crm"], status_code=HTTP_201_CREATED)
+async def upload(merchants_file: UploadFile = File(...),
+                 auth=Depends(crm_user)) -> CreatedCount:
+    return await fn_merchant_upload(merchants_file)

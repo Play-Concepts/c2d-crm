@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from .uploadmod import do_file_upload
+from .customer_upload import do_customer_file_upload
 import uuid
 
 from app.models.customer import CustomerView
@@ -8,6 +8,7 @@ from fastapi import UploadFile, Response, status
 
 from app.db.repositories.customers import CustomersRepository
 from app.models.core import CreatedCount, NotFound
+from .merchant_upload import do_merchant_file_upload
 
 
 async def fn_list_customers(page: int,
@@ -28,5 +29,9 @@ async def fn_get_customer(user_id: uuid.UUID,
     return customer
 
 
-async def fn_upload(file: UploadFile, customers_repo: CustomersRepository) -> CreatedCount:
-    return await do_file_upload(file, customers_repo)
+async def fn_customer_upload(file: UploadFile, customers_repo: CustomersRepository) -> CreatedCount:
+    return await do_customer_file_upload(file, customers_repo)
+
+
+async def fn_merchant_upload(file: UploadFile) -> CreatedCount:
+    return do_merchant_file_upload(file)

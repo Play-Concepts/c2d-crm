@@ -11,11 +11,6 @@ class GlobalConfig(BaseSettings):
 
     # the class Field is necessary while defining the global variables
     ENV_STATE: Optional[str] = Field(..., env="ENV_STATE")
-    HOST: Optional[str] = Field(..., env="HOST")
-
-    # environment specific configs
-    API_USERNAME: Optional[str] = None
-    API_PASSWORD: Optional[str] = None
 
     SECRET_KEY: Optional[str] = Field(..., env="SECRET_KEY")
     POSTGRES_USER: Optional[str] = Field(..., env="POSTGRES_USER")
