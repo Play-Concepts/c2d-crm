@@ -89,6 +89,6 @@ class CustomersRepository(BaseRepository):
         customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={
             "id": identifier,
             "pda_url": pda_url,
-            "claimed_timestamp": datetime.now(timezone.utc)
+            "claimed_timestamp": datetime.utcnow()
         })
         return None if customer is None else CustomerClaimResponse(**customer)

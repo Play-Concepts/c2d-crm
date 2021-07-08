@@ -1,5 +1,5 @@
 import uuid
-
+from datetime import timezone
 from typing import Union, List
 from fastapi import Response, status
 
@@ -36,6 +36,6 @@ async def fn_claim_data(identifier: uuid.UUID,
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Could not find the data to claim")
     data = claimed_data.data
-    data['person']['claimed_timestamp'] = claimed_data.claimed_timestamp.isoformat()
+    data['person']['claimed_timestamp'] = claimed_data.claimed_timestamp.replace(tzinfo=timezone.utc).isoformat()
     write_pda_data(pda_url, token, 'elyria', 'identity', claimed_data.data)
     return claimed_data
