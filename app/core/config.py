@@ -53,6 +53,9 @@ class FactoryConfig:
         elif self.env_state == "prod":
             return ProdConfig()
 
+        else:
+            return GlobalConfig()
+
 
 config = FactoryConfig(GlobalConfig().ENV_STATE)()
 # print(config.__repr__())
