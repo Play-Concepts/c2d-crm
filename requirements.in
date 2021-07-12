@@ -26,3 +26,6 @@ SQLAlchemy
 alembic
 
 fastapi-users[sqlalchemy]
+
+# AWS - for emailing with SES
+boto3

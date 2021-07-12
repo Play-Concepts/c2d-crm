@@ -4,7 +4,7 @@ from typing import Optional, List
 from .base import BaseRepository
 from app.models.customer import CustomerNew, CustomerView, CustomerBasicView, CustomerClaimResponse
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 NEW_CUSTOMER_SQL = """
@@ -33,7 +33,7 @@ SEARCH_CUSTOMER_SQL = """
     SELECT id, data, pda_url, status FROM customers WHERE 
     data->'person'->'profile'->>'last_name' ilike :last_name AND
     data->'person'->'address'->>'address_line_1' ilike :house_number AND 
-    data->'person'->'contact'->>'email' ilike :email AND 
+    data->'person'->'contact'->>'email' ilike :email AND  
     status='new'
 """
 
@@ -48,9 +48,9 @@ CLAIM_DATA_SQL = """
 
 class CustomersRepository(BaseRepository):
     async def create_customer(self, *, new_customer: CustomerNew) -> CustomerView:
+        new_customer.id = uuid.uuid4()
         query_values = new_customer.dict()
-        query_values['id']=uuid.uuid4()
-        query_values['data'] = json.dumps(new_customer.data)
+        query_values["data"] = json.dumps(new_customer.data)
 
         created_customer = await self.db.fetch_one(query=NEW_CUSTOMER_SQL, values=query_values)
         return CustomerView(**created_customer)
@@ -75,9 +75,9 @@ class CustomersRepository(BaseRepository):
             return '' if element == '' or element is None else "{}%".format(element)
 
         values = {
-            "last_name": param_format(last_name),
+            "last_name": last_name,
             "house_number": param_format(house_number),
-            "email": param_format(email)
+            "email": email
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
         customers_list = [CustomerView(**customer) for customer in customers]

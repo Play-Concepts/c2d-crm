@@ -4,10 +4,10 @@ from enum import Enum
 from pydantic.class_validators import validator
 from pydantic.main import BaseModel
 
-from app.models.core import IDModelMixin, CoreModel
+from app.models.core import IDModelMixin, CoreModel, decode_json
 from pydantic.types import Json
-import json
 from datetime import datetime
+
 
 class StatusType(str, Enum):
     new = 'new'
@@ -21,16 +21,10 @@ class CustomerBase(CoreModel):
 
     @validator('data', pre=True)
     def decode_json(cls, v):
-        if not isinstance(v, str):
-            try:
-                return json.dumps(v)
-            except Exception as err:
-                raise ValueError(f'Could not parse value into valid JSON: {err}')
-
-        return v
+        return decode_json(cls, v)
 
 
-class CustomerNew(CustomerBase):
+class CustomerNew(IDModelMixin, CustomerBase):
     data: Json
 
 

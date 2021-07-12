@@ -1,4 +1,5 @@
 import uuid
+import json
 from typing import Optional
 
 from pydantic import BaseModel
@@ -21,3 +22,13 @@ class CreatedCount(BaseModel):
 
 class NotFound(BaseModel):
     message: str
+
+
+def decode_json(cls, v):
+    if not isinstance(v, str):
+        try:
+            return json.dumps(v)
+        except Exception as err:
+            raise ValueError(f'Could not parse value into valid JSON: {err}')
+
+    return v
