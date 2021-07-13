@@ -2,6 +2,7 @@ import csv
 import codecs
 
 from app import global_state
+from app.apis.utils.random import random_string
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount
 
@@ -10,9 +11,6 @@ from fastapi_users import FastAPIUsers
 
 from app.models.merchant import MerchantNew
 from app.models.user import UserCreate
-
-import secrets
-import string
 
 
 async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:MerchantsRepository) -> CreatedCount:
@@ -48,10 +46,5 @@ async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:Mer
 async def _create_merchant_signin_account(email: str, fastapi_users: FastAPIUsers):
     await fastapi_users.create_user(UserCreate(
         email=email,
-        password=_random_password(),
+        password=random_string(),
     ))
-
-
-def _random_password() -> str:
-    alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for i in range(20))

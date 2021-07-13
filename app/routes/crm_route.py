@@ -48,9 +48,3 @@ async def upload(background_tasks: BackgroundTasks,
                  merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
                  auth=Depends(crm_user)) -> CreatedCount:
     return await fn_merchant_upload(merchants_file, merchants_repo, background_tasks)
-
-
-@router.get("/merchants", tags=["crm"])
-async def upload(merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
-                 auth=Depends(crm_user)) -> List:
-    return await merchants_repo.get_merchants_email_list()
