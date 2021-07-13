@@ -36,7 +36,6 @@ async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:Mer
                 "end_date": offer_end_date
             },
             logo_url=logo_url,
-            welcome_email_sent=False,
         )
         created_merchant = await merchants_repo.create_merchant(new_merchant=new_merchant)
         if created_merchant is not None:

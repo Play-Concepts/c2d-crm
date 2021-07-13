@@ -17,15 +17,19 @@ from pydantic.class_validators import validator
 
 from app.models.core import IDModelMixin, CoreModel, decode_json
 from pydantic.types import Json
+from datetime import datetime
 
 
-class MerchantBase(CoreModel):
+class MerchantBasicModel(CoreModel):
     first_name: str
+    email: str
+
+
+class MerchantBase(MerchantBasicModel):
     last_name: str
     company_name: str
     trade_name: Optional[str]
     address: Optional[str]
-    email: str
     phone_number: Optional[str]
     offer: Optional[Json]
     logo_url: Optional[str]
@@ -36,12 +40,20 @@ class MerchantBase(CoreModel):
 
 
 class MerchantNew(IDModelMixin, MerchantBase):
-    welcome_email_sent: bool
+    pass
 
 
 class MerchantDBModel(IDModelMixin, MerchantBase):
-    welcome_email_sent: Optional[bool]
+    welcome_email_sent: Optional[datetime]
 
 
 class MerchantView(IDModelMixin):
     pass
+
+
+class MerchantEmailView(IDModelMixin, MerchantBasicModel):
+    pass
+
+
+class MerchantEmailSentView(IDModelMixin):
+    welcome_email_sent: datetime

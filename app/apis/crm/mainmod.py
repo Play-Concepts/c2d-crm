@@ -4,10 +4,11 @@ from .customer_upload import do_customer_file_upload
 import uuid
 
 from app.models.customer import CustomerView
-from fastapi import UploadFile, Response, status
+from fastapi import UploadFile, Response, status, BackgroundTasks
 
 from app.db.repositories.customers import CustomersRepository
 from app.models.core import CreatedCount, NotFound
+from .merchant_email import send_merchant_welcome_email
 from .merchant_upload import do_merchant_file_upload
 from app.db.repositories.merchants import MerchantsRepository
 
@@ -34,5 +35,7 @@ async def fn_customer_upload(file: UploadFile, customers_repo: CustomersReposito
     return await do_customer_file_upload(file, customers_repo)
 
 
-async def fn_merchant_upload(file: UploadFile, merchant_repo: MerchantsRepository) -> CreatedCount:
-    return await do_merchant_file_upload(file, merchant_repo)
+async def fn_merchant_upload(file: UploadFile, merchant_repo: MerchantsRepository, background_tasks: BackgroundTasks) -> CreatedCount:
+    created_count = await do_merchant_file_upload(file, merchant_repo)
+    background_tasks.add_task(send_merchant_welcome_email, merchant_repo)
+    return created_count

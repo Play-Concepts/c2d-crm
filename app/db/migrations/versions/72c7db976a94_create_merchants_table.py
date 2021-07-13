@@ -28,7 +28,7 @@ def create_merchants_table() -> None:
         sa.Column("phone_number", sa.VARCHAR(47), nullable=True),
         sa.Column("offer", JSON, nullable=True),
         sa.Column("logo_url", sa.VARCHAR(4096), nullable=True),
-        sa.Column("welcome_email_sent", sa.BOOLEAN, nullable=True, default=False)
+        sa.Column("welcome_email_sent", sa.TIMESTAMP, nullable=True)
     )
     
     

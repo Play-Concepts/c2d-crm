@@ -8,7 +8,7 @@ from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, NotFound
 from app.models.customer import CustomerView
-from fastapi import APIRouter, Depends, UploadFile, File, Response
+from fastapi import APIRouter, Depends, UploadFile, File, Response, BackgroundTasks
 from starlette.status import HTTP_201_CREATED
 
 router = APIRouter()
@@ -43,7 +43,14 @@ async def upload(customers_file: UploadFile = File(...),
 
 
 @router.post("/merchants/upload", response_model=CreatedCount, tags=["crm"], status_code=HTTP_201_CREATED)
-async def upload(merchants_file: UploadFile = File(...),
+async def upload(background_tasks: BackgroundTasks,
+                 merchants_file: UploadFile = File(...),
                  merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
                  auth=Depends(crm_user)) -> CreatedCount:
-    return await fn_merchant_upload(merchants_file, merchants_repo)
+    return await fn_merchant_upload(merchants_file, merchants_repo, background_tasks)
+
+
+@router.get("/merchants", tags=["crm"])
+async def upload(merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+                 auth=Depends(crm_user)) -> List:
+    return await merchants_repo.get_merchants_email_list()
