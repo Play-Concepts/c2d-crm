@@ -1,12 +1,18 @@
 import csv
 import codecs
 
+from app import global_state
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount
 
 from fastapi import UploadFile
+from fastapi_users import FastAPIUsers
 
 from app.models.merchant import MerchantNew
+from app.models.user import UserCreate
+
+import secrets
+import string
 
 
 async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:MerchantsRepository) -> CreatedCount:
@@ -29,9 +35,24 @@ async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:Mer
                 "start_date": offer_start_date,
                 "end_date": offer_end_date
             },
-            logo_url=logo_url
+            logo_url=logo_url,
+            welcome_email_sent=False,
         )
-        await merchants_repo.create_merchant(new_merchant=new_merchant)
-        created_merchants += 1
+        created_merchant = await merchants_repo.create_merchant(new_merchant=new_merchant)
+        if created_merchant is not None:
+            await _create_merchant_signin_account(email=new_merchant.email, fastapi_users=global_state.fastapi_users)
+            created_merchants += 1
 
     return CreatedCount(count=created_merchants)
+
+
+async def _create_merchant_signin_account(email: str, fastapi_users: FastAPIUsers):
+    await fastapi_users.create_user(UserCreate(
+        email=email,
+        password=_random_password(),
+    ))
+
+
+def _random_password() -> str:
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for i in range(20))

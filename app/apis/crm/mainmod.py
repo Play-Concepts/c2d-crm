@@ -9,7 +9,7 @@ from fastapi import UploadFile, Response, status
 from app.db.repositories.customers import CustomersRepository
 from app.models.core import CreatedCount, NotFound
 from .merchant_upload import do_merchant_file_upload
-from ...db.repositories.merchants import MerchantsRepository
+from app.db.repositories.merchants import MerchantsRepository
 
 
 async def fn_list_customers(page: int,

@@ -6,7 +6,13 @@ from app import users_module
 from app import custom_module
 from app.routes import root_route, scratch_route
 
-app = FastAPI(title="c2d CRM", version="0.5.0-20210517")
+app = FastAPI(
+    title="c2d CRM",
+    version="0.5.0-20210517",
+    docs_url="/api/docs",
+    redoc_url=None,
+    openapi_url="/api/openapi.json",
+)
 
 # Set all CORS enabled origins
 app.add_middleware(

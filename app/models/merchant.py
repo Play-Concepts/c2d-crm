@@ -36,7 +36,7 @@ class MerchantBase(CoreModel):
 
 
 class MerchantNew(IDModelMixin, MerchantBase):
-    pass
+    welcome_email_sent: bool
 
 
 class MerchantDBModel(IDModelMixin, MerchantBase):
