@@ -9,6 +9,8 @@ from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from app import global_state
 from app.core.config import config
 from app.models.user import User, UserCreate, UserUpdate, UserDB
+from app.modules.helpers.password_management import on_after_forgot_password
+from app.modules.helpers.password_management import on_after_reset_password
 
 
 def mount_users_module(app: FastAPI) -> Callable:
@@ -47,7 +49,9 @@ def mount_users_module(app: FastAPI) -> Callable:
             tags=["auth"],
         )
         app.include_router(
-            fastapi_users.get_reset_password_router(secret),
+            fastapi_users.get_reset_password_router(secret,
+                                                    after_reset_password=on_after_reset_password,
+                                                    after_forgot_password=on_after_forgot_password),
             prefix="/api/auth",
             tags=["auth"],
         )
