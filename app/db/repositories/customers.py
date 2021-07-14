@@ -12,7 +12,7 @@ NEW_CUSTOMER_SQL = """
 """
 
 VIEW_CUSTOMER_SQL = """
-    SELECT id, data, pda_url, status FROM customers WHERE id = :id
+    SELECT id, data, pda_url, status FROM customers WHERE id = :id;
 """
 
 GET_CUSTOMERS_SQL = """
@@ -26,15 +26,15 @@ GET_CUSTOMERS_SQL = """
 """
 
 VIEW_CUSTOMER_BASIC_SQL = """
-    SELECT id, claimed_timestamp FROM customers WHERE pda_url = :pda_url
+    SELECT id, claimed_timestamp FROM customers WHERE pda_url = :pda_url;
 """
 
 SEARCH_CUSTOMER_SQL = """
     SELECT id, data, pda_url, status FROM customers WHERE 
-    data->'person'->'profile'->>'last_name' ilike :last_name AND
+    data->'person'->'profile'->>'last_name' ilike :last_name AND 
     data->'person'->'address'->>'address_line_1' ilike :house_number AND 
-    data->'person'->'contact'->>'email' ilike :email AND  
-    status='new'
+    data->'person'->'contact'->>'email' ilike :email AND 
+    status='new';
 """
 
 CLAIM_DATA_SQL = """
