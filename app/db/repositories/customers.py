@@ -1,11 +1,12 @@
+import json
 import uuid
-from typing import Optional, List
+from datetime import datetime
+from typing import List, Optional
+
+from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
+                                 CustomerNew, CustomerView)
 
 from .base import BaseRepository
-from app.models.customer import CustomerNew, CustomerView, CustomerBasicView, CustomerClaimResponse
-import json
-from datetime import datetime
-
 
 NEW_CUSTOMER_SQL = """
     INSERT INTO customers(id, data, pda_url, status) VALUES(:id, :data, :pda_url, :status) RETURNING id;

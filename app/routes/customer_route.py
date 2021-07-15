@@ -1,14 +1,17 @@
-from typing import Union, List
+from typing import List, Union
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
-from app.apis.customer.mainmod import fn_get_customer_basic, fn_search_customers, fn_claim_data
-from app.core.pda_auth import get_current_pda_user
+from app.apis.customer.mainmod import (fn_claim_data, fn_get_customer_basic,
+                                       fn_search_customers)
 from app.apis.dependencies.database import get_repository
+from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
 from app.models.core import NotFound
-from app.models.customer import CustomerBasicView, CustomerView, CustomerSearch, CustomerClaim, CustomerClaimResponse
+from app.models.customer import (CustomerBasicView, CustomerClaim,
+                                 CustomerClaimResponse, CustomerSearch,
+                                 CustomerView)
 
 router = APIRouter()
 router.prefix = "/api/customer"

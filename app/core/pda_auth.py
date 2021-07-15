@@ -1,13 +1,14 @@
-from fastapi import Depends, HTTPException, APIRouter, status
-from typing import Dict, Any
-from fastapi.security import OAuth2PasswordBearer
-
-import requests
-import jwt
-from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
-import json
 import base64
 import binascii
+import json
+from typing import Any, Dict
+
+import jwt
+import requests
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
+
 from app.core.config import config as app_config
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/pda_token")

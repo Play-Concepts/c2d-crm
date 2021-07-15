@@ -1,14 +1,13 @@
-import csv
 import codecs
+import csv
+
+from fastapi import UploadFile
+from fastapi_users import FastAPIUsers
 
 from app import global_state
 from app.apis.utils.random import random_string
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount
-
-from fastapi import UploadFile
-from fastapi_users import FastAPIUsers
-
 from app.models.merchant import MerchantNew
 from app.models.user import UserCreate
 

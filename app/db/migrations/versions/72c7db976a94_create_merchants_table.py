@@ -3,10 +3,11 @@ Revision ID: 72c7db976a94
 Revises: f7a36107bdcd
 Create Date: 2021-07-08 15:00:35.442093
 """
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID, JSON
 import uuid
+
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy.dialects.postgresql import JSON, UUID
 
 # revision identifiers, used by Alembic
 revision = '72c7db976a94'

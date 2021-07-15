@@ -2,9 +2,9 @@ import json
 from typing import List
 
 from app.apis.utils.emailer import send_bulk_templated_email
+from app.core.config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.merchant import MerchantEmailView
-from app.core.config import config as app_config
 
 BATCH_SIZE = 50
 MERCHANT_WELCOME_ROOT_LINK = app_config.APPLICATION_ROOT + '/merchant/verify-email'

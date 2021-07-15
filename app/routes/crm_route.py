@@ -1,15 +1,18 @@
 import uuid
-from typing import List, Union, Optional
+from typing import List, Optional, Union
+
+from fastapi import (APIRouter, BackgroundTasks, Depends, File, Response,
+                     UploadFile)
+from starlette.status import HTTP_201_CREATED
 
 from app import global_state
-from app.apis.crm.mainmod import fn_get_customer, fn_list_customers, fn_customer_upload, fn_merchant_upload
+from app.apis.crm.mainmod import (fn_customer_upload, fn_get_customer,
+                                  fn_list_customers, fn_merchant_upload)
 from app.apis.dependencies.database import get_repository
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, NotFound
 from app.models.customer import CustomerView
-from fastapi import APIRouter, Depends, UploadFile, File, Response, BackgroundTasks
-from starlette.status import HTTP_201_CREATED
 
 router = APIRouter()
 router.prefix = "/api/crm"

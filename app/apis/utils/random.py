@@ -1,5 +1,5 @@
-import string
 import secrets
+import string
 
 
 def random_string(length: int = 20) -> str:

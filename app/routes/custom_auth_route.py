@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, Body, Response, status
+from fastapi import APIRouter, Body, Depends, Response, status
 
 from app import global_state
 from app.apis.auth.mainmod import fn_create_password
 from app.apis.dependencies.database import get_repository
 from app.db.repositories.users import UsersRepository
 from app.models.core import InvalidToken
-
 
 router = APIRouter()
 router.prefix = "/api"

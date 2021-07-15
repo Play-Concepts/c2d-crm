@@ -1,10 +1,10 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic.class_validators import validator
-
-from app.models.core import IDModelMixin, CoreModel, decode_json
 from pydantic.types import Json
-from datetime import datetime
+
+from app.models.core import CoreModel, IDModelMixin, decode_json
 
 
 class MerchantBasicModel(CoreModel):

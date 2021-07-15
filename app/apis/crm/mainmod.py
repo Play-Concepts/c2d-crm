@@ -1,16 +1,16 @@
+import uuid
 from typing import List, Union
 
-from .customer_upload import do_customer_file_upload
-import uuid
-
-from app.models.customer import CustomerView
-from fastapi import UploadFile, Response, status, BackgroundTasks
+from fastapi import BackgroundTasks, Response, UploadFile, status
 
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, NotFound
+from app.models.customer import CustomerView
+
+from .customer_upload import do_customer_file_upload
 from .merchant_email import send_merchant_welcome_email
 from .merchant_upload import do_merchant_file_upload
-from app.db.repositories.merchants import MerchantsRepository
 
 
 async def fn_list_customers(page: int,

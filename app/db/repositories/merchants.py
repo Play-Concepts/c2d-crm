@@ -1,11 +1,11 @@
 import json
 import uuid
-from typing import Optional, List
+from typing import List, Optional
 
 from app.apis.utils.random import random_string
 from app.db.repositories.base import BaseRepository
-from app.models.merchant import MerchantNew, MerchantView, MerchantEmailView, MerchantEmailSentView
-
+from app.models.merchant import (MerchantEmailSentView, MerchantEmailView,
+                                 MerchantNew, MerchantView)
 
 NEW_MERCHANT_SQL = """
     INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token) 

@@ -2,8 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core import tasks
-from app.modules import users_module
-from app.modules import custom_module
+from app.modules import custom_module, users_module
 from app.routes import root_route
 
 app = FastAPI(

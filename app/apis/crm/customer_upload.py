@@ -1,7 +1,7 @@
-import csv
 import codecs
+import csv
 from functools import reduce
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from fastapi import UploadFile
 

@@ -1,8 +1,8 @@
-from app.apis.utils.emailer import send_templated_email
-from app.models.user import UserDB
 from fastapi import Request
 
+from app.apis.utils.emailer import send_templated_email
 from app.core.config import config as app_config
+from app.models.user import UserDB
 
 
 def on_after_forgot_password(user: UserDB, token: str, _: Request):

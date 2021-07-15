@@ -1,8 +1,7 @@
-from typing import List, Any, Dict
+import json
+from typing import Any, Dict, List
 
 import boto3
-import json
-
 
 session = boto3.Session()
 ses = session.client("ses")

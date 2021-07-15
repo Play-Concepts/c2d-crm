@@ -1,12 +1,12 @@
-from typing import Optional
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic.class_validators import validator
 from pydantic.main import BaseModel
-
-from app.models.core import IDModelMixin, CoreModel, decode_json
 from pydantic.types import Json
-from datetime import datetime
+
+from app.models.core import CoreModel, IDModelMixin, decode_json
 
 
 class StatusType(str, Enum):

@@ -3,10 +3,11 @@ Revision ID: 7e7fad16535e
 Revises: 
 Create Date: 2021-05-17 18:50:49.687522
 """
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID, JSON
 import uuid
+
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy.dialects.postgresql import JSON, UUID
 
 # revision identifiers, used by Alembic
 revision = '7e7fad16535e'

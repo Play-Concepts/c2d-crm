@@ -1,6 +1,6 @@
-# Validates a token and return the pda url.
-from typing import Any
 import json
+from typing import Any
+
 import requests
 from pydantic.types import Json
 
