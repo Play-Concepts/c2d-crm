@@ -26,7 +26,6 @@ def create_users_table() -> None:
         sa.Column("is_active", sa.BOOLEAN, nullable=False),
         sa.Column("is_superuser", sa.BOOLEAN, nullable=False),
         sa.Column("is_verified", sa.BOOLEAN, nullable=False),
-        sa.Column("password_change_token", sa.VARCHAR(4096), nullable=True)
     )
 
 

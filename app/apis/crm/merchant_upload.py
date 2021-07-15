@@ -47,4 +47,5 @@ async def _create_merchant_signin_account(email: str, fastapi_users: FastAPIUser
     await fastapi_users.create_user(UserCreate(
         email=email,
         password=random_string(),
+        is_verified=False,
     ))

@@ -20,6 +20,8 @@ class GlobalConfig(BaseSettings):
     POSTGRES_DB: Optional[str] = Field(..., env="POSTGRES_DB")
     APPLICATION_ID: Optional[str] = Field(..., env="APPLICATION_ID")
     APPLICATION_ROOT: Optional[str] = Field(..., env="APPLICATION_ROOT")
+    APPLICATION_NAME: Optional[str] = Field(..., env="APPLICATION_NAME")
+    APPLICATION_LOGO: Optional[str] = Field(..., env="APPLICATION_LOGO")
 
     class Config:
         """Loads the dotenv file."""

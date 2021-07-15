@@ -15,8 +15,8 @@ class UserCreate(models.BaseUserCreate):
 
 
 class UserUpdate(User, models.BaseUserUpdate):
-    password_change_token: Optional[str]
+    pass
 
 
 class UserDB(User, models.BaseUserDB):
-    password_change_token: Optional[str]
+    pass

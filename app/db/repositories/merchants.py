@@ -2,19 +2,20 @@ import json
 import uuid
 from typing import Optional, List
 
+from app.apis.utils.random import random_string
 from app.db.repositories.base import BaseRepository
 from app.models.merchant import MerchantNew, MerchantView, MerchantEmailView, MerchantEmailSentView
 
 
 NEW_MERCHANT_SQL = """
-    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, welcome_email_sent) 
-    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :welcome_email_sent) 
+    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token) 
+    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token) 
     ON CONFLICT(email) DO NOTHING 
     RETURNING id;
 """
 
 WELCOME_EMAIL_LIST_SQL = """
-    SELECT id, first_name, email FROM merchants WHERE welcome_email_sent is null;
+    SELECT id, first_name, email, password_change_token FROM merchants WHERE welcome_email_sent is null;
 """
 
 UPDATE_WELCOME_EMAIL_SENT_SQL = """
@@ -28,6 +29,7 @@ class MerchantsRepository(BaseRepository):
         new_merchant.id = uuid.uuid4()
         query_values = new_merchant.dict()
         query_values['offer'] = json.dumps(new_merchant.offer)
+        query_values['password_change_token'] = random_string(40)
         created_merchant = await self.db.fetch_one(query=NEW_MERCHANT_SQL, values=query_values)
         return None if created_merchant is None else MerchantView(**created_merchant)
 

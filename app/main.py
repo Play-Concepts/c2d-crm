@@ -10,7 +10,7 @@ app = FastAPI(
     title="c2d CRM",
     version="0.5.0-20210517",
     docs_url="/api/docs",
-    redoc_url=None,
+    redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
 )
 

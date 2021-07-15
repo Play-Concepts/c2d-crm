@@ -2,13 +2,13 @@ import json
 from typing import List
 
 from app.apis.utils.emailer import send_bulk_templated_email
-from app.apis.utils.random import random_string
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.merchant import MerchantEmailView
 from app.core.config import config as app_config
 
 BATCH_SIZE = 50
 MERCHANT_WELCOME_ROOT_LINK = app_config.APPLICATION_ROOT + '/merchant/verify-email'
+MERCHANT_WELCOME_TEMPLATE = 'datapassport-welcome'
 
 
 async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
@@ -24,22 +24,28 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
 def _do_send_merchant_welcome_email(merchants:List[MerchantEmailView]):
     destinations = [_create_merchant_email_destination(merchant) for merchant in merchants]
     # TODO extract to ENV file
+    default_data = {
+        "verificationLink": "",
+        "appName": app_config.APPLICATION_NAME,
+        "appLogo": app_config.APPLICATION_LOGO,
+    }
     send_bulk_templated_email(destinations,
-                              'test-welcome',
-                              '{ "name": "", "link": ""}'
-                              )
+                              MERCHANT_WELCOME_TEMPLATE,
+                              json.dumps(default_data))
 
 
 def _create_merchant_email_destination(merchant: MerchantEmailView):
     # TODO proper callback link
     template_data = {
-        'name': merchant.first_name,
-        'link': '{}/{}?email={}'.format(MERCHANT_WELCOME_ROOT_LINK, random_string(40), merchant.email),
+        'verificationLink': '{}/{}?email={}'.format(MERCHANT_WELCOME_ROOT_LINK, merchant.password_change_token, merchant.email),
     }
     return {
         'Destination': {
             'ToAddresses': [
                 merchant.email,
+            ],
+            'BccAddresses': [
+                'eleftherios.myteletsis@dataswift.io',
             ]
         },
         'ReplacementTemplateData': json.dumps(template_data)

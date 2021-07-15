@@ -32,6 +32,7 @@ class MerchantNew(IDModelMixin, MerchantBase):
 
 class MerchantDBModel(IDModelMixin, MerchantBase):
     welcome_email_sent: Optional[datetime]
+    password_change_token: Optional[str]
 
 
 class MerchantView(IDModelMixin):
@@ -39,7 +40,7 @@ class MerchantView(IDModelMixin):
 
 
 class MerchantEmailView(IDModelMixin, MerchantBasicModel):
-    pass
+    password_change_token: str
 
 
 class MerchantEmailSentView(IDModelMixin):
