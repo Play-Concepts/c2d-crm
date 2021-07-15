@@ -23,7 +23,7 @@ def send_templated_email(to: str,
                          template: str,
                          template_data: Dict[str, Any],
                          source: str = 'systems@dataswift.dev'):
-    return ses.send(
+    return ses.send_templated_email(
         Source=source,
         Template=template,
         TemplateData=json.dumps(template_data),

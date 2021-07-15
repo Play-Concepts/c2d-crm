@@ -29,7 +29,6 @@ def mount_users_module(app: FastAPI) -> Callable:
 
         class UsersTable(Base, SQLAlchemyBaseUserTable):
             __tablename__ = "users"
-            password_change_token = sa.Column(sa.VARCHAR(4096), default=None, nullable=True)
 
         users = UsersTable.__table__
         user_db = SQLAlchemyUserDatabase(UserDB, app.state.db, users)
@@ -57,5 +56,6 @@ def mount_users_module(app: FastAPI) -> Callable:
         )
 
         global_state.fastapi_users = fastapi_users
+        global_state.authenticator = jwt_authentication
 
     return start_app

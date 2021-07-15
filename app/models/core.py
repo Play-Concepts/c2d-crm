@@ -24,6 +24,10 @@ class NotFound(BaseModel):
     message: str
 
 
+class InvalidToken(BaseModel):
+    message: str
+
+
 def decode_json(cls, v):
     if not isinstance(v, str):
         try:
