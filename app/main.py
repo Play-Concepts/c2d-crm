@@ -2,11 +2,16 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core import tasks
-from app import users_module
-from app import custom_module
+from app.modules import custom_module, users_module
 from app.routes import root_route
 
-app = FastAPI(title="c2d CRM", version="0.5.0-20210517")
+app = FastAPI(
+    title="c2d CRM",
+    version="0.5.0-20210517",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
+)
 
 # Set all CORS enabled origins
 app.add_middleware(

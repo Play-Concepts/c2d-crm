@@ -3,11 +3,11 @@ Revision ID: f7a36107bdcd
 Revises: 7e7fad16535e
 Create Date: 2021-07-02 12:34:55.254359
 """
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy.dialects.postgresql import UUID
 
 # revision identifiers, used by Alembic
 revision = 'f7a36107bdcd'
@@ -26,7 +26,6 @@ def create_users_table() -> None:
         sa.Column("is_active", sa.BOOLEAN, nullable=False),
         sa.Column("is_superuser", sa.BOOLEAN, nullable=False),
         sa.Column("is_verified", sa.BOOLEAN, nullable=False),
-        sa.Column("password_change_token", sa.VARCHAR(4096), nullable=True)
     )
 
 

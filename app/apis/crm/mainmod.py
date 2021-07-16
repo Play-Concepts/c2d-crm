@@ -1,13 +1,15 @@
+import uuid
 from typing import List, Union
 
-from .customer_upload import do_customer_file_upload
-import uuid
-
-from app.models.customer import CustomerView
-from fastapi import UploadFile, Response, status
+from fastapi import BackgroundTasks, Response, UploadFile, status
 
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, NotFound
+from app.models.customer import CustomerView
+
+from .customer_upload import do_customer_file_upload
+from .merchant_email import send_merchant_welcome_email
 from .merchant_upload import do_merchant_file_upload
 
 
@@ -33,5 +35,7 @@ async def fn_customer_upload(file: UploadFile, customers_repo: CustomersReposito
     return await do_customer_file_upload(file, customers_repo)
 
 
-async def fn_merchant_upload(file: UploadFile) -> CreatedCount:
-    return do_merchant_file_upload(file)
+async def fn_merchant_upload(file: UploadFile, merchant_repo: MerchantsRepository, background_tasks: BackgroundTasks) -> CreatedCount:
+    created_count = await do_merchant_file_upload(file, merchant_repo)
+    background_tasks.add_task(send_merchant_welcome_email, merchant_repo)
+    return created_count

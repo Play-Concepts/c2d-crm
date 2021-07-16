@@ -1,12 +1,14 @@
 import uuid
 from datetime import timezone
-from typing import Union, List
+from typing import List, Union
+
 from fastapi import Response, status
 
+from app.apis.utils.pda_client import write_pda_data
 from app.db.repositories.customers import CustomersRepository
 from app.models.core import NotFound
-from app.models.customer import CustomerBasicView, CustomerView, CustomerClaimResponse
-from app.apis.utils.pda_client import write_pda_data
+from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
+                                 CustomerView)
 
 
 async def fn_get_customer_basic(pda_url: str,

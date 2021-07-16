@@ -1,13 +1,13 @@
-from typing import Optional
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic.class_validators import validator
 from pydantic.main import BaseModel
-
-from app.models.core import IDModelMixin, CoreModel
 from pydantic.types import Json
-import json
-from datetime import datetime
+
+from app.models.core import CoreModel, IDModelMixin, decode_json
+
 
 class StatusType(str, Enum):
     new = 'new'
@@ -21,16 +21,10 @@ class CustomerBase(CoreModel):
 
     @validator('data', pre=True)
     def decode_json(cls, v):
-        if not isinstance(v, str):
-            try:
-                return json.dumps(v)
-            except Exception as err:
-                raise ValueError(f'Could not parse value into valid JSON: {err}')
-
-        return v
+        return decode_json(cls, v)
 
 
-class CustomerNew(CustomerBase):
+class CustomerNew(IDModelMixin, CustomerBase):
     data: Json
 
 

@@ -19,6 +19,9 @@ class GlobalConfig(BaseSettings):
     POSTGRES_PORT: Optional[str] = Field(..., env="POSTGRES_PORT")
     POSTGRES_DB: Optional[str] = Field(..., env="POSTGRES_DB")
     APPLICATION_ID: Optional[str] = Field(..., env="APPLICATION_ID")
+    APPLICATION_ROOT: Optional[str] = Field(..., env="APPLICATION_ROOT")
+    APPLICATION_NAME: Optional[str] = Field(..., env="APPLICATION_NAME")
+    APPLICATION_LOGO: Optional[str] = Field(..., env="APPLICATION_LOGO")
 
     class Config:
         """Loads the dotenv file."""
@@ -26,36 +29,5 @@ class GlobalConfig(BaseSettings):
         env_file: str = ".env"
 
 
-class DevConfig(GlobalConfig):
-    """Development configurations."""
-
-    class Config:
-        env_prefix: str = "DEV_"
-
-
-class ProdConfig(GlobalConfig):
-    """Production configurations."""
-
-    class Config:
-        env_prefix: str = "PROD_"
-
-
-class FactoryConfig:
-    """Returns a config instance dependending on the ENV_STATE variable."""
-
-    def __init__(self, env_state: Optional[str]):
-        self.env_state = env_state
-
-    def __call__(self):
-        if self.env_state == "dev":
-            return DevConfig()
-
-        elif self.env_state == "prod":
-            return ProdConfig()
-
-        else:
-            return GlobalConfig()
-
-
-config = FactoryConfig(GlobalConfig().ENV_STATE)()
+config = GlobalConfig()
 # print(config.__repr__())

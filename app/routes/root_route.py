@@ -6,4 +6,4 @@ router.prefix = "/api"
 
 @router.get("/", tags=["hello"])
 async def hello():
-    return {"hello": "world"}
+    return {}

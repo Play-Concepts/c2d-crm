@@ -1,4 +1,5 @@
-from typing import Callable, Type, Any
+from typing import Any, Callable, Type
+
 from databases import Database
 from fastapi import Depends
 from starlette.requests import Request

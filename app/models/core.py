@@ -1,3 +1,4 @@
+import json
 import uuid
 from typing import Optional
 
@@ -21,3 +22,17 @@ class CreatedCount(BaseModel):
 
 class NotFound(BaseModel):
     message: str
+
+
+class InvalidToken(BaseModel):
+    message: str
+
+
+def decode_json(cls, v):
+    if not isinstance(v, str):
+        try:
+            return json.dumps(v)
+        except Exception as err:
+            raise ValueError(f'Could not parse value into valid JSON: {err}')
+
+    return v

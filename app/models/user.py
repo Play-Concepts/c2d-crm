@@ -1,9 +1,9 @@
 #
 # This defines the data model for BOTH Merchant and CRM User.
 #
-from typing import Optional
-
 from fastapi_users import models
+
+from app.models.core import IDModelMixin
 
 
 class User(models.BaseUser):
@@ -15,8 +15,12 @@ class UserCreate(models.BaseUserCreate):
 
 
 class UserUpdate(User, models.BaseUserUpdate):
-    password_change_token: Optional[str]
+    pass
 
 
 class UserDB(User, models.BaseUserDB):
-    password_change_token: Optional[str]
+    pass
+
+
+class UserView(IDModelMixin):
+    email: str
