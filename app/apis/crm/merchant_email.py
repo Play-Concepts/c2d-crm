@@ -44,9 +44,6 @@ def _create_merchant_email_destination(merchant: MerchantEmailView):
             'ToAddresses': [
                 merchant.email,
             ],
-            'BccAddresses': [
-                'eleftherios.myteletsis@dataswift.io',
-            ]
         },
         'ReplacementTemplateData': json.dumps(template_data)
     }

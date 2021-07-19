@@ -22,7 +22,7 @@ async def verify_barcode(request: ScanRequest,
     return ScanResult(verified=verified)
 
 
-@router.get("/merchant/scan_transactions_count/{last_n_days}", tags=["merchants"], response_model=ScanTransactionCount)
+@router.get("/merchant/scan_transactions_count", tags=["merchants"], response_model=ScanTransactionCount)
 async def get_scan_transactions_count(last_n_days: int,
                                       scan_transactions_repo: ScanTransactionsRepository = Depends(get_repository(ScanTransactionsRepository)),
                                       auth=Depends(merchant_user)) -> ScanTransactionCount:
