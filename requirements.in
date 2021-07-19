@@ -24,6 +24,7 @@ psycopg2-binary
 databases[postgresql]
 SQLAlchemy
 alembic
+alembic_utils
 
 fastapi-users[sqlalchemy]
 
