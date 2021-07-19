@@ -30,9 +30,6 @@ def send_templated_email(to: str,
             'ToAddresses': [
                 to,
             ],
-            'BccAddresses': [
-                'eleftherios.myteletsis@dataswift.io',
-            ],
         }
     )
 
