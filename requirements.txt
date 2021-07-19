@@ -20,9 +20,9 @@ bcrypt==3.2.0
     # via
     #   -r requirements.in
     #   passlib
-boto3==1.17.112
+boto3==1.18.1
     # via -r requirements.in
-botocore==1.20.112
+botocore==1.21.1
     # via
     #   boto3
     #   s3transfer
@@ -34,7 +34,7 @@ cffi==1.14.6
     # via
     #   bcrypt
     #   cryptography
-charset-normalizer==2.0.2
+charset-normalizer==2.0.3
     # via requests
 click==8.0.1
     # via uvicorn
@@ -128,7 +128,7 @@ requests==2.26.0
     # via -r requirements.in
 rfc3986[idna2008]==1.5.0
     # via httpx
-s3transfer==0.4.2
+s3transfer==0.5.0
     # via boto3
 six==1.16.0
     # via
