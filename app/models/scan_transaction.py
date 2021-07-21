@@ -36,3 +36,14 @@ class ScanResult(CoreModel):
 class ScanTransactionCount(CoreModel):
     valid: int
     total: int
+    fails: Optional[int]
+
+    def compute(self):
+        self.fails = self.total - self.valid
+        return self
+
+
+class ScanTransactionCounts(CoreModel):
+    interval_1: Optional[ScanTransactionCount]
+    interval_2: Optional[ScanTransactionCount]
+    interval_3: Optional[ScanTransactionCount]
