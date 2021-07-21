@@ -17,7 +17,8 @@ GET_SCAN_TRANSACTIONS_SQL = """
 """
 
 GET_SCAN_TRANSACTIONS_COUNT_SQL = """
-    SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN customer_id is not null THEN 1 ELSE 0 END), 0) AS valid 
+    SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN customer_id is not null THEN 1 ELSE 0 END), 0) AS valid, 
+    CAST(:from_date AS timestamp) as from_date, CAST(:to_date AS timestamp) as to_date 
     FROM scan_transactions 
     WHERE created_at BETWEEN :from_date AND :to_date AND user_id=:user_id;
 """
@@ -40,14 +41,15 @@ class ScanTransactionsRepository(BaseRepository):
         return [ScanTransactionView(**transaction) for transaction in transactions]
 
     async def get_scan_transactions_count_with_interval_n_days(self, *, interval_days: int, user_id: uuid.UUID) -> ScanTransactionCounts:
-        first_from_date = (datetime.now() - timedelta(days=interval_days)).replace(hour=0, minute=0, second=0, microsecond=0)
+        now = datetime.now()
+        first_from_date = (now - timedelta(days=interval_days)).replace(hour=0, minute=0, second=0, microsecond=0)
         second_from_date = first_from_date - timedelta(days=interval_days)
         third_from_date = second_from_date - timedelta(days=interval_days)
 
         first_transaction = await self.db.fetch_one(query=GET_SCAN_TRANSACTIONS_COUNT_SQL,
                                                     values={
                                                         "from_date": first_from_date,
-                                                        "to_date": datetime.now(),
+                                                        "to_date": now,
                                                         "user_id": user_id})
 
         second_transaction = await self.db.fetch_one(query=GET_SCAN_TRANSACTIONS_COUNT_SQL,

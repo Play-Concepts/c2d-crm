@@ -37,6 +37,8 @@ class ScanTransactionCount(CoreModel):
     valid: int
     total: int
     fails: Optional[int]
+    from_date: datetime
+    to_date: datetime
 
     def compute(self):
         self.fails = self.total - self.valid
