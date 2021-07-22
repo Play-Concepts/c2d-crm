@@ -5,7 +5,7 @@ from app.apis.dependencies.database import get_repository
 from app.apis.merchant.mainmod import fn_verify_barcode, fn_get_scan_transactions_count
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.scan_transaction import ScanResult, ScanRequest, ScanTransactionCount
+from app.models.scan_transaction import ScanResult, ScanRequest, ScanTransactionCounts
 
 router = APIRouter()
 router.prefix = "/api"
@@ -22,8 +22,8 @@ async def verify_barcode(request: ScanRequest,
     return ScanResult(verified=verified)
 
 
-@router.get("/merchant/scan_transactions_count", tags=["merchants"], response_model=ScanTransactionCount)
-async def get_scan_transactions_count(last_n_days: int,
+@router.get("/merchant/scan_transactions_count", tags=["merchants"], response_model=ScanTransactionCounts)
+async def get_scan_transactions_count(interval_days: int,
                                       scan_transactions_repo: ScanTransactionsRepository = Depends(get_repository(ScanTransactionsRepository)),
-                                      auth=Depends(merchant_user)) -> ScanTransactionCount:
-    return await fn_get_scan_transactions_count(last_n_days, auth.id, scan_transactions_repo)
+                                      auth=Depends(merchant_user)) -> ScanTransactionCounts:
+    return await fn_get_scan_transactions_count(interval_days, auth.id, scan_transactions_repo)

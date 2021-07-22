@@ -2,7 +2,7 @@ import uuid
 
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.scan_transaction import ScanTransactionNew, ScanTransactionCount
+from app.models.scan_transaction import ScanTransactionNew, ScanTransactionCounts
 
 
 async def fn_verify_barcode(barcode: str,
@@ -27,8 +27,9 @@ async def fn_verify_barcode(barcode: str,
     return customer_id is not None
 
 
-async def fn_get_scan_transactions_count(last_n_days: int,
+async def fn_get_scan_transactions_count(interval_days: int,
                                          user_id: uuid.UUID,
                                          scan_transactions_repo: ScanTransactionsRepository) \
-        -> ScanTransactionCount:
-    return await scan_transactions_repo.get_scan_transactions_count_from_last_n_days(n=last_n_days, user_id=user_id)
+        -> ScanTransactionCounts:
+    return await scan_transactions_repo.get_scan_transactions_count_with_interval_n_days(
+        interval_days=interval_days, user_id=user_id)
