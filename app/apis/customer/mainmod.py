@@ -6,9 +6,11 @@ from fastapi import Response, status
 
 from app.apis.utils.pda_client import write_pda_data
 from app.db.repositories.customers import CustomersRepository
-from app.models.core import NotFound
+from app.db.repositories.customers_log_repository import CustomersLogRepository
+from app.models.core import NotFound, BooleanResponse
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerView)
+from app.models.customer_log import CustomerLogNew
 
 
 async def fn_get_customer_basic(pda_url: str,
@@ -42,3 +44,12 @@ async def fn_claim_data(identifier: uuid.UUID,
     data['person']['claimed_timestamp'] = claimed_data.claimed_timestamp.replace(tzinfo=timezone.utc).isoformat()
     write_pda_data(pda_url, token, 'elyria', 'identity', claimed_data.data)
     return claimed_data
+
+
+async def fn_check_first_login(pda_url: str,
+                               customers_log_repo: CustomersLogRepository,
+                               )-> BooleanResponse:
+    boolean_response = await customers_log_repo.customer_exists(pda_url=pda_url)
+    await customers_log_repo.log_event(customer_log_new=CustomerLogNew(pda_url=pda_url, event='signin').new())
+    return boolean_response
+
