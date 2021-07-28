@@ -49,7 +49,7 @@ async def claim_data(claim_params: CustomerClaim,
 
 
 @router.get("/check-first-login", tags=["customer"], response_model=BooleanResponse)
-async def get_customer_basic(customers_log_repository: CustomersLogRepository =
+async def check_first_login(customers_log_repository: CustomersLogRepository =
                              Depends(get_repository(CustomersLogRepository)),
                              auth_tuple=Depends(get_current_pda_user)) -> BooleanResponse:
     auth, _ = auth_tuple

@@ -4,7 +4,7 @@
   "checkout": null,
   "context": {
     "cookiecutter": {
-      "repo": "c2d-crm",
+      "repo": "datapassport-backend",
       "api_a": "crm",
       "api_b": "admin",
       "year": "2021",
