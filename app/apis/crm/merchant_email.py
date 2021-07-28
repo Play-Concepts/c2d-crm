@@ -28,6 +28,7 @@ def _do_send_merchant_welcome_email(merchants:List[MerchantEmailView]):
         "verificationLink": "",
         "appName": app_config.APPLICATION_NAME,
         "appLogo": app_config.APPLICATION_LOGO,
+        "issuer": app_config.DATA_PASSPORT_ISSUER,
     }
     send_bulk_templated_email(destinations,
                               MERCHANT_WELCOME_TEMPLATE,
