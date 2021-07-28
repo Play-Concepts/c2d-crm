@@ -20,6 +20,10 @@ class CreatedCount(BaseModel):
     count: int
 
 
+class BooleanResponse(BaseModel):
+    value: bool
+
+
 class NotFound(BaseModel):
     message: str
 

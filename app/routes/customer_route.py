@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
 from app.apis.customer.mainmod import (fn_claim_data, fn_get_customer_basic,
-                                       fn_search_customers)
+                                       fn_search_customers, fn_check_first_login)
 from app.apis.dependencies.database import get_repository
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
-from app.models.core import NotFound
+from app.db.repositories.customers_log_repository import CustomersLogRepository
+from app.models.core import NotFound, BooleanResponse
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,
                                  CustomerView)
@@ -45,3 +46,11 @@ async def claim_data(claim_params: CustomerClaim,
                      auth_tuple=Depends(get_current_pda_user)) -> Union[CustomerClaimResponse, NotFound]:
     auth, token = auth_tuple
     return await fn_claim_data(claim_params.id, auth['iss'], token, customers_repository, response)
+
+
+@router.get("/check-first-login", tags=["customer"], response_model=BooleanResponse)
+async def get_customer_basic(customers_log_repository: CustomersLogRepository =
+                             Depends(get_repository(CustomersLogRepository)),
+                             auth_tuple=Depends(get_current_pda_user)) -> BooleanResponse:
+    auth, _ = auth_tuple
+    return await fn_check_first_login(auth['iss'], customers_log_repository)
