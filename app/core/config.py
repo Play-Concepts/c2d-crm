@@ -24,6 +24,7 @@ class GlobalConfig(BaseSettings):
     APPLICATION_LOGO: Optional[str] = Field(..., env="APPLICATION_LOGO")
 
     MAILER_FROM: Optional[str] = Field(..., env="MAILER_FROM")
+    DATA_PASSPORT_ISSUER: Optional[str] = Field(..., env="DATA_PASSPORT_ISSUER")
 
     class Config:
         """Loads the dotenv file."""
