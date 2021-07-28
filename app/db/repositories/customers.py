@@ -9,7 +9,7 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
-    INSERT INTO customers(id, data, pda_url, status) VALUES(:id, :data, :pda_url, :status) RETURNING id;
+    INSERT INTO customers(id, data, pda_url, status, created_at) VALUES(:id, :data, :pda_url, :status, now()) RETURNING id;
 """
 
 VIEW_CUSTOMER_SQL = """
@@ -40,7 +40,8 @@ SEARCH_CUSTOMER_SQL = """
 
 CLAIM_DATA_SQL = """
     UPDATE customers SET status='claimed', 
-    claimed_timestamp=:claimed_timestamp,  
+    claimed_timestamp=:claimed_timestamp, 
+    updated_at=now(),
     pda_url=:pda_url 
     WHERE id=:id 
     RETURNING id, data, status, pda_url, claimed_timestamp;

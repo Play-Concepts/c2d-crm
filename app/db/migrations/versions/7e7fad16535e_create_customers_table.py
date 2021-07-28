@@ -4,6 +4,7 @@ Revises:
 Create Date: 2021-05-17 18:50:49.687522
 """
 import uuid
+from datetime import datetime
 
 import sqlalchemy as sa
 from alembic import op
@@ -19,10 +20,13 @@ depends_on = None
 def create_customers_table() -> None:
     op.create_table(
         "customers",
-        sa.Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True),
         sa.Column("data", JSON, nullable=False),
         sa.Column("status", sa.VARCHAR(10), nullable=False),
-        sa.Column("pda_url", sa.VARCHAR(255), nullable=True)
+        sa.Column("pda_url", sa.VARCHAR(255), nullable=True),
+        sa.Column("claimed_timestamp", sa.TIMESTAMP, nullable=True),
+        sa.Column("created_at", sa.TIMESTAMP, nullable=False),
+        sa.Column("updated_at", sa.TIMESTAMP, nullable=True),
     )
 
 

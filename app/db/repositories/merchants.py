@@ -8,8 +8,8 @@ from app.models.merchant import (MerchantEmailSentView, MerchantEmailView,
                                  MerchantNew, MerchantView)
 
 NEW_MERCHANT_SQL = """
-    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token) 
-    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token) 
+    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token, created_at) 
+    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token, now()) 
     ON CONFLICT(email) DO NOTHING 
     RETURNING id;
 """
@@ -19,7 +19,7 @@ WELCOME_EMAIL_LIST_SQL = """
 """
 
 UPDATE_WELCOME_EMAIL_SENT_SQL = """
-    UPDATE merchants SET welcome_email_sent=now() WHERE id=:id 
+    UPDATE merchants SET welcome_email_sent=now(), updated_at=now() WHERE id=:id 
     RETURNING id, welcome_email_sent;
 """
 

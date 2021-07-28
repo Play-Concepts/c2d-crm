@@ -1,8 +1,8 @@
 version: "3"
 
 services:
-  c2d-crm:
-    container_name: "c2d-crm"
+  datapassport-backend:
+    container_name: "datapassport-backend"
     restart: unless-stopped
     env_file:
       - .env

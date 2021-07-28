@@ -3,8 +3,6 @@ Revision ID: 72c7db976a94
 Revises: f7a36107bdcd
 Create Date: 2021-07-08 15:00:35.442093
 """
-import uuid
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.postgresql import JSON, UUID
@@ -19,7 +17,7 @@ depends_on = None
 def create_merchants_table() -> None:
     op.create_table(
         "merchants",
-        sa.Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True),
         sa.Column("first_name", sa.VARCHAR(128), nullable=False),
         sa.Column("last_name", sa.VARCHAR(128), nullable=False),
         sa.Column("company_name", sa.VARCHAR(128), nullable=False),
@@ -31,6 +29,8 @@ def create_merchants_table() -> None:
         sa.Column("logo_url", sa.VARCHAR(4096), nullable=True),
         sa.Column("welcome_email_sent", sa.TIMESTAMP, nullable=True),
         sa.Column("password_change_token", sa.VARCHAR(4096), nullable=True),
+        sa.Column("created_at", sa.TIMESTAMP, nullable=False),
+        sa.Column("updated_at", sa.TIMESTAMP, nullable=True),
     )
     
     

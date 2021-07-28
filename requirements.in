@@ -10,7 +10,6 @@
 
 bcrypt
 fastapi
-gunicorn
 passlib
 pyjwt
 cryptography
@@ -35,3 +34,6 @@ pytest
 pytest-asyncio
 httpx
 asgi-lifespan
+
+# logging
+loguru

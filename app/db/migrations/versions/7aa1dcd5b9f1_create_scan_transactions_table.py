@@ -3,8 +3,6 @@ Revision ID: 7aa1dcd5b9f1
 Revises: 72c7db976a94
 Create Date: 2021-07-16 08:42:32.772866
 """
-import uuid
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.postgresql import UUID
@@ -20,7 +18,7 @@ depends_on = None
 def create_scan_transactions_table() -> None:
     op.create_table(
         "scan_transactions",
-        sa.Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True),
         sa.Column("user_id", UUID(as_uuid=True), nullable=False),
         sa.Column("customer_id", UUID(as_uuid=True), nullable=True),
         sa.Column("created_at", sa.TIMESTAMP, nullable=False),
