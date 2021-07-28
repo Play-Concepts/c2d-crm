@@ -1,14 +1,3 @@
-#   op.create_table(
-#         "data_passes",
-#         sa.Column("id", UUID(as_uuid=True), primary_key=True),
-#         sa.Column("name", sa.VARCHAR(50), nullable=False),
-#         sa.Column("description", sa.VARCHAR(512), nullable=True),
-#         sa.Column("dataspace", sa.VARCHAR(512), nullable=False),
-#         sa.Column("data_provided", sa.VARCHAR(256), nullable=False),
-#         sa.Column("status", sa.VARCHAR(10), nullable=False),
-#         sa.Column("created_at", sa.TIMESTAMP, nullable=False),
-#         sa.Column("updated_at", sa.TIMESTAMP, nullable=True),
-#     )
 from Tools.scripts.patchcheck import status
 from datetime import datetime
 from enum import Enum
@@ -29,7 +18,9 @@ class StatusType(str, Enum):
 
 class DataPassBase(CoreModel):
     name: str
-    description: Optional[str]
+    title: str
+    description_for_merchants: Optional[str]
+    description_for_customers: Optional[str]
     dataspace: str
     data_provided: str
     status: Optional[StatusType]
@@ -40,5 +31,14 @@ class DataPassNew(IDModelMixin, DataPassBase, ModelDatesMixin):
     created_at: datetime = datetime.utcnow()
 
 
+class DataPassUpdate(CoreModel, ModelDatesMixin):
+    description_for_merchants: str
+    description_for_customers: str
+    updated_at: datetime = datetime.utcnow()
+
+
 class DataPassDBModel(IDModelMixin, DataPassBase, ModelDatesMixin):
     pass
+
+
+DataPassView = DataPassDBModel

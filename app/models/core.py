@@ -17,8 +17,8 @@ class IDModelMixin(BaseModel):
     id: Optional[uuid.UUID]
 
 
-class ModelDatesMixin(BaseModel):
-    created_at: datetime
+class ModelDateMixin(BaseModel):
+    created_at: datetime = datetime.utcnow()
     updated_at: Optional[datetime]
 
 

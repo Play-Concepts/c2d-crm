@@ -19,10 +19,14 @@ def create_data_passes_table():
     op.create_table(
         "data_passes",
         sa.Column("id", UUID(as_uuid=True), primary_key=True),
-        sa.Column("name", sa.VARCHAR, nullable=False),
-        sa.Column("description", sa.VARCHAR, nullable=True),
+        sa.Column("name", sa.VARCHAR, nullable=False), # e
+        sa.Column("title", sa.VARCHAR, nullable=False), # Elyrai  R D P
+        sa.Column("logo_url", sa.VARCHAR, nullable=True),
+        sa.Column("description_for_merchants", sa.VARCHAR, nullable=True),
+        sa.Column("description_for_customers", sa.VARCHAR, nullable=True),
         sa.Column("dataspace", sa.VARCHAR, nullable=False),
         sa.Column("data_provided", sa.VARCHAR, nullable=False),
+        sa.Column("data_provider", sa.VARCHAR, nullable=False), #"City of Elyria"
         sa.Column("status", sa.VARCHAR, nullable=False),
         sa.Column("created_at", sa.TIMESTAMP, nullable=False),
         sa.Column("updated_at", sa.TIMESTAMP, nullable=True),
