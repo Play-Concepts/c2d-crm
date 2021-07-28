@@ -6,8 +6,8 @@ from app.modules import custom_module, users_module
 from app.routes import root_route
 
 app = FastAPI(
-    title="c2d CRM",
-    version="0.5.0-20210517",
+    title="Data Passport Management System",
+    version="0.6.0-20210728",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
