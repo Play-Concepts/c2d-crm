@@ -6,9 +6,6 @@ on:
     branches:
       - main
       - dev
-  release:
-    types:
-      - released
 
 env:
   REGISTRY: 126761267783.dkr.ecr.us-east-1.amazonaws.com/datapassport
@@ -90,9 +87,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      TASK_DEFINITION_CONTAINER: app
-      TASK_DEFINITION_CLUSTER: dataswift-products-datapassport-prd
-      TASK_DEFINITION_SERVICE: dataswift-products-datapassport-prd-app
+      TASK_DEFINITION_CLUSTER: dataswift-products-datapassport-dev
+      TASK_DEFINITION_SERVICE: dataswift-products-datapassport-dev-app
+      TASK_DEFINITION_CONTAINER: dataswift-products-datapassport-dev-app
 
     steps:
       - name: AWS - Configure
