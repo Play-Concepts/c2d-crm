@@ -10,7 +10,7 @@ NEW_CUSTOMER_LOG_SQL="""
 
 
 CHECK_FIRST_LOGIN_CUSTOMER_SQL="""
-    SELECT EXISTS(SELECT 1 FROM customers_log WHERE pda_url=:pda_url) AS value;
+    SELECT NOT EXISTS(SELECT 1 FROM customers_log WHERE pda_url=:pda_url) AS value;
 """
 
 
