@@ -20,6 +20,7 @@ class MerchantBase(MerchantBasicModel):
     phone_number: Optional[str]
     offer: Optional[Json]
     logo_url: Optional[str]
+    terms_agreed: bool
 
     @validator('offer', pre=True)
     def decode_json(cls, v):

@@ -8,8 +8,8 @@ from app.models.merchant import (MerchantEmailSentView, MerchantEmailView,
                                  MerchantNew, MerchantView)
 
 NEW_MERCHANT_SQL = """
-    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token) 
-    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token) 
+    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token, terms_agreed)  
+    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token, :terms_agreed) 
     ON CONFLICT(email) DO NOTHING 
     RETURNING id;
 """
