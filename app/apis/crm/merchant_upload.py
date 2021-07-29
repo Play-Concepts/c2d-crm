@@ -15,10 +15,10 @@ from app.models.user import UserCreate
 async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:MerchantsRepository) -> CreatedCount:
     created_merchants: int = 0
     lines = csv.reader(codecs.iterdecode(merchants_file.file, 'utf-8'), delimiter=',')
-    header = next(lines)
+    _ = next(lines)
     for line in lines:
-        first_name, last_name, company_name, trade_name, address, email, phone_number, offer_description, \
-            offer_start_date, offer_end_date, logo_url, *end = line
+        first_name, last_name, company_name, trade_name, address, email, phone_number, logo_url, offer_description, \
+            offer_start_date, offer_end_date, agreed_to, *end = line
         new_merchant: MerchantNew = MerchantNew(
             first_name=first_name,
             last_name=last_name,
@@ -33,6 +33,7 @@ async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:Mer
                 "end_date": offer_end_date
             },
             logo_url=logo_url,
+            terms_agreed=(agreed_to == "Yes")
         )
         created_merchant = await merchants_repo.create_merchant(new_merchant=new_merchant)
         if created_merchant is not None:
