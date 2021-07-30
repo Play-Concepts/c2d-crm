@@ -1,6 +1,5 @@
 import json
 import uuid
-from datetime import datetime
 from typing import List, Optional
 
 from app.models.customer import (
@@ -44,8 +43,9 @@ SEARCH_CUSTOMER_SQL = """
 
 CLAIM_DATA_SQL = """
     UPDATE customers SET status='claimed', 
-    claimed_timestamp=:claimed_timestamp,  
-    pda_url=:pda_url 
+    claimed_timestamp=now(),  
+    pda_url=:pda_url, 
+    updated_at=now() 
     WHERE id=:id 
     RETURNING id, data, status, pda_url, claimed_timestamp;
 """
@@ -107,7 +107,6 @@ class CustomersRepository(BaseRepository):
             values={
                 "id": identifier,
                 "pda_url": pda_url,
-                "claimed_timestamp": datetime.utcnow(),
             },
         )
         return None if customer is None else CustomerClaimResponse(**customer)

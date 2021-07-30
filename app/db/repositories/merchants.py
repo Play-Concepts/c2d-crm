@@ -23,7 +23,7 @@ WELCOME_EMAIL_LIST_SQL = """
 """
 
 UPDATE_WELCOME_EMAIL_SENT_SQL = """
-    UPDATE merchants SET welcome_email_sent=now() WHERE id=:id 
+    UPDATE merchants SET welcome_email_sent=now(), updated_at=now() WHERE id=:id 
     RETURNING id, welcome_email_sent;
 """
 
