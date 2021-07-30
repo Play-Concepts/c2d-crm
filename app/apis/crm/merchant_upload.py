@@ -49,7 +49,7 @@ async def do_merchant_file_upload(
             },
             logo_url=logo_url,
             terms_agreed=(agreed_to == "Yes"),
-        ).init_new()
+        )
 
         created_merchant = await merchants_repo.create_merchant(
             new_merchant=new_merchant

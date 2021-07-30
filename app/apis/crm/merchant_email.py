@@ -25,7 +25,6 @@ def _do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
     destinations = [
         _create_merchant_email_destination(merchant) for merchant in merchants
     ]
-    # TODO extract to ENV file
     default_data = {
         "verificationLink": "",
         "appName": app_config.APPLICATION_NAME,
@@ -38,7 +37,6 @@ def _do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
 
 
 def _create_merchant_email_destination(merchant: MerchantEmailView):
-    # TODO proper callback link
     template_data = {
         "verificationLink": "{}/{}?email={}".format(
             MERCHANT_WELCOME_ROOT_LINK, merchant.password_change_token, merchant.email
