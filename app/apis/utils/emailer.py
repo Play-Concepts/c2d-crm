@@ -9,9 +9,12 @@ session = boto3.Session()
 ses = session.client("ses")
 
 
-def send_bulk_templated_email(destinations: List[Any],
-                              template: str, template_defaults: str,
-                              source: str = app_config.MAILER_FROM):
+def send_bulk_templated_email(
+    destinations: List[Any],
+    template: str,
+    template_defaults: str,
+    source: str = app_config.MAILER_FROM,
+):
     return ses.send_bulk_templated_email(
         Source=source,
         Template=template,
@@ -20,16 +23,18 @@ def send_bulk_templated_email(destinations: List[Any],
     )
 
 
-def send_templated_email(to: str,
-                         template: str,
-                         template_data: Dict[str, Any],
-                         source: str = app_config.MAILER_FROM):
+def send_templated_email(
+    to: str,
+    template: str,
+    template_data: Dict[str, Any],
+    source: str = app_config.MAILER_FROM,
+):
     return ses.send_templated_email(
         Source=source,
         Template=template,
         TemplateData=json.dumps(template_data),
         Destination={
-            'ToAddresses': [
+            "ToAddresses": [
                 to,
             ],
         },

@@ -8,7 +8,7 @@ from alembic import op
 from sqlalchemy.dialects.postgresql import JSON, UUID
 
 # revision identifiers, used by Alembic
-revision = '7e7fad16535e'
+revision = "7e7fad16535e"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -20,7 +20,7 @@ def create_customers_table() -> None:
         sa.Column("id", UUID(as_uuid=True), primary_key=True),
         sa.Column("data", JSON, nullable=False),
         sa.Column("status", sa.VARCHAR(10), nullable=False),
-        sa.Column("pda_url", sa.VARCHAR(255), nullable=True)
+        sa.Column("pda_url", sa.VARCHAR(255), nullable=True),
     )
 
 

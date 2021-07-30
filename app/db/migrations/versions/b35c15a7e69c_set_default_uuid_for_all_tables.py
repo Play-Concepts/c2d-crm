@@ -3,12 +3,12 @@ Revision ID: b35c15a7e69c
 Revises: 51618267f7dd
 Create Date: 2021-07-29 11:30:43.384292
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic
-revision = 'b35c15a7e69c'
-down_revision = '51618267f7dd'
+revision = "b35c15a7e69c"
+down_revision = "51618267f7dd"
 branch_labels = None
 depends_on = None
 

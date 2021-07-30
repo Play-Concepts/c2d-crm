@@ -7,8 +7,8 @@ from alembic import op
 from sqlalchemy.sql.expression import text
 
 # revision identifiers, used by Alembic
-revision = 'eaec9daee0ba'
-down_revision = '7aa1dcd5b9f1'
+revision = "eaec9daee0ba"
+down_revision = "7aa1dcd5b9f1"
 branch_labels = None
 depends_on = None
 

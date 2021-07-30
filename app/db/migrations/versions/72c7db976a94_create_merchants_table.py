@@ -8,8 +8,8 @@ from alembic import op
 from sqlalchemy.dialects.postgresql import JSON, UUID
 
 # revision identifiers, used by Alembic
-revision = '72c7db976a94'
-down_revision = 'f7a36107bdcd'
+revision = "72c7db976a94"
+down_revision = "f7a36107bdcd"
 branch_labels = None
 depends_on = None
 
@@ -30,8 +30,8 @@ def create_merchants_table() -> None:
         sa.Column("welcome_email_sent", sa.TIMESTAMP, nullable=True),
         sa.Column("password_change_token", sa.VARCHAR(4096), nullable=True),
     )
-    
-    
+
+
 def upgrade() -> None:
     create_merchants_table()
 

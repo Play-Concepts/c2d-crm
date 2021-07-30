@@ -8,8 +8,8 @@ from alembic import op
 from sqlalchemy.dialects.postgresql import UUID
 
 # revision identifiers, used by Alembic
-revision = 'f7a36107bdcd'
-down_revision = '2dc82837151c'
+revision = "f7a36107bdcd"
+down_revision = "2dc82837151c"
 branch_labels = None
 depends_on = None
 

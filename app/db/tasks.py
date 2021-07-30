@@ -11,7 +11,9 @@ logger.setLevel(logging.INFO)
 
 async def connect_to_db(app: FastAPI) -> None:
     database_url = f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PASSWORD}@{config.POSTGRES_SERVER}:{config.POSTGRES_PORT}/{config.POSTGRES_DB}"
-    database = Database(database_url, min_size=2, max_size=10)  # these can be configured in config as well
+    database = Database(
+        database_url, min_size=2, max_size=10
+    )  # these can be configured in config as well
     try:
         await database.connect()
         app.state.db = database

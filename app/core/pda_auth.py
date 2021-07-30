@@ -19,7 +19,7 @@ def http_exception(detail: str):
     return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail=detail,
-        headers={"WWW-Authenticate": "Bearer"}
+        headers={"WWW-Authenticate": "Bearer"},
     )
 
 
@@ -40,24 +40,27 @@ def validate(token: str) -> [Dict[str, Any], str]:
     pda_url = _get_pda_url(token)
     pda_public_key = _get_pda_public_key(pda_url)
     try:
-        decoded = jwt.decode(token, pda_public_key,
-                             options={"verify_signature": True, "verify_exp": True},
-                             algorithms=["RS256"])
+        decoded = jwt.decode(
+            token,
+            pda_public_key,
+            options={"verify_signature": True, "verify_exp": True},
+            algorithms=["RS256"],
+        )
     except ExpiredSignatureError:
         raise expired_signature_exception
     except InvalidSignatureError:
         raise invalid_signature_exception
 
-    if decoded['application'] != app_config.APPLICATION_ID:
+    if decoded["application"] != app_config.APPLICATION_ID:
         raise invalid_application
     return decoded, token
 
 
 def _get_pda_url(token: str) -> str:
     encoded_payload = token.split(".")[1]
-    payload_str = base64.b64decode(encoded_payload + '===').decode("utf-8")
+    payload_str = base64.b64decode(encoded_payload + "===").decode("utf-8")
     payload = json.loads(payload_str)
-    return payload['iss']
+    return payload["iss"]
 
 
 def _get_pda_public_key(pda_url: str) -> str:

@@ -3,8 +3,12 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 
-from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
-                                 CustomerNew, CustomerView)
+from app.models.customer import (
+    CustomerBasicView,
+    CustomerClaimResponse,
+    CustomerNew,
+    CustomerView,
+)
 
 from .base import BaseRepository
 
@@ -52,32 +56,42 @@ class CustomersRepository(BaseRepository):
         query_values = new_customer.dict()
         query_values["data"] = json.dumps(new_customer.data)
 
-        created_customer = await self.db.fetch_one(query=NEW_CUSTOMER_SQL, values=query_values)
+        created_customer = await self.db.fetch_one(
+            query=NEW_CUSTOMER_SQL, values=query_values
+        )
         return CustomerView(**created_customer)
 
     async def get_customers(self, *, offset: int, limit: int) -> List[CustomerView]:
-        customers = await self.db.fetch_all(query=GET_CUSTOMERS_SQL, values={"offset": offset, "limit": limit})
+        customers = await self.db.fetch_all(
+            query=GET_CUSTOMERS_SQL, values={"offset": offset, "limit": limit}
+        )
         customers_list = [CustomerView(**customer) for customer in customers]
         if len(customers_list) == 1 and customers_list[0].total_count == 0:
             return []
         return customers_list
 
     async def get_customer(self, *, customer_id: uuid.UUID) -> Optional[CustomerView]:
-        customer = await self.db.fetch_one(query=VIEW_CUSTOMER_SQL, values={"id": customer_id})
+        customer = await self.db.fetch_one(
+            query=VIEW_CUSTOMER_SQL, values={"id": customer_id}
+        )
         return None if customer is None else CustomerView(**customer)
 
     async def get_customer_basic(self, *, pda_url: str) -> Optional[CustomerBasicView]:
-        customer = await self.db.fetch_one(query=VIEW_CUSTOMER_BASIC_SQL, values={"pda_url": pda_url})
+        customer = await self.db.fetch_one(
+            query=VIEW_CUSTOMER_BASIC_SQL, values={"pda_url": pda_url}
+        )
         return None if customer is None else CustomerBasicView(**customer)
 
-    async def search_customers(self, *, last_name: str, house_number:str, email: str) -> List[CustomerView]:
+    async def search_customers(
+        self, *, last_name: str, house_number: str, email: str
+    ) -> List[CustomerView]:
         def param_format(element: str) -> str:
-            return '' if element == '' or element is None else "{}%".format(element)
+            return "" if element == "" or element is None else "{}%".format(element)
 
         values = {
             "last_name": last_name,
             "house_number": param_format(house_number),
-            "email": email
+            "email": email,
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
         customers_list = [CustomerView(**customer) for customer in customers]
@@ -85,10 +99,15 @@ class CustomersRepository(BaseRepository):
             return []
         return customers_list
 
-    async def claim_data(self, *, identifier: uuid.UUID, pda_url: str) -> Optional[CustomerClaimResponse]:
-        customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={
-            "id": identifier,
-            "pda_url": pda_url,
-            "claimed_timestamp": datetime.utcnow()
-        })
+    async def claim_data(
+        self, *, identifier: uuid.UUID, pda_url: str
+    ) -> Optional[CustomerClaimResponse]:
+        customer = await self.db.fetch_one(
+            query=CLAIM_DATA_SQL,
+            values={
+                "id": identifier,
+                "pda_url": pda_url,
+                "claimed_timestamp": datetime.utcnow(),
+            },
+        )
         return None if customer is None else CustomerClaimResponse(**customer)

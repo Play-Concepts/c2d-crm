@@ -10,8 +10,9 @@ from app.models.core import CreatedCount
 from app.models.customer import CustomerNew
 
 
-async def do_customer_file_upload(customers_file: UploadFile,
-                                  customers_repo: CustomersRepository) -> CreatedCount:
+async def do_customer_file_upload(
+    customers_file: UploadFile, customers_repo: CustomersRepository
+) -> CreatedCount:
     created_customers: int = 0
     payload = _construct_payload(customers_file)
     for customer in payload:
@@ -24,7 +25,7 @@ async def do_customer_file_upload(customers_file: UploadFile,
 
 def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
     data = []
-    lines = csv.reader(codecs.iterdecode(customers_file.file, 'utf-8'), delimiter=',')
+    lines = csv.reader(codecs.iterdecode(customers_file.file, "utf-8"), delimiter=",")
     header = next(lines)
     for log_line in lines:
         data.append(_dot_to_dict(dict(zip(header, log_line))))
@@ -35,13 +36,13 @@ def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
 def _dot_to_dict(a):
     output = {}
     for key, value in a.items():
-        pre_path, *data_type = key.split('/')
-        path = pre_path.split('.')
+        pre_path, *data_type = key.split("/")
+        path = pre_path.split(".")
         val = value
         if len(data_type) == 1:
-            if data_type[0] == 'int':
+            if data_type[0] == "int":
                 val = int(value)
-            if data_type[0] == 'float':
+            if data_type[0] == "float":
                 val = float(value)
         target = reduce(lambda d, k: d.setdefault(k, {}), path[:-1], output)
         target[path[-1]] = val
