@@ -19,5 +19,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute(text('DROP EXTENSION IF EXISTS "pgcrypto";'))
-    op.execute(text('DROP EXTENSION IF EXISTS "uuid-ossp";'))
+    pass

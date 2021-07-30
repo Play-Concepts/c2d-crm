@@ -1,4 +1,5 @@
 import logging
+import os
 
 from databases import Database
 from fastapi import FastAPI
@@ -11,6 +12,9 @@ logger.setLevel(logging.INFO)
 
 async def connect_to_db(app: FastAPI) -> None:
     database_url = f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PASSWORD}@{config.POSTGRES_SERVER}:{config.POSTGRES_PORT}/{config.POSTGRES_DB}"
+    if os.environ.get("TEST"):
+        database_url += "_test"
+
     database = Database(
         database_url, min_size=2, max_size=10
     )  # these can be configured in config as well
