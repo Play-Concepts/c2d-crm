@@ -8,8 +8,8 @@ from app.models.merchant import (MerchantEmailSentView, MerchantEmailView,
                                  MerchantNew, MerchantView)
 
 NEW_MERCHANT_SQL = """
-    INSERT INTO merchants(id, first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token, terms_agreed)  
-    VALUES(:id, :first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token, :terms_agreed) 
+    INSERT INTO merchants(first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token, terms_agreed)  
+    VALUES(:first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token, :terms_agreed) 
     ON CONFLICT(email) DO NOTHING 
     RETURNING id;
 """
@@ -26,7 +26,6 @@ UPDATE_WELCOME_EMAIL_SENT_SQL = """
 
 class MerchantsRepository(BaseRepository):
     async def create_merchant(self, *, new_merchant: MerchantNew) -> Optional[MerchantView]:
-        new_merchant.id = uuid.uuid4()
         query_values = new_merchant.dict()
         query_values['offer'] = json.dumps(new_merchant.offer)
         query_values['password_change_token'] = random_string(40)

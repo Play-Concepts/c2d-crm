@@ -34,7 +34,8 @@ async def do_merchant_file_upload(merchants_file: UploadFile, merchants_repo:Mer
             },
             logo_url=logo_url,
             terms_agreed=(agreed_to == "Yes")
-        )
+        ).init_new()
+
         created_merchant = await merchants_repo.create_merchant(new_merchant=new_merchant)
         if created_merchant is not None:
             await _create_merchant_signin_account(email=new_merchant.email, fastapi_users=global_state.fastapi_users)

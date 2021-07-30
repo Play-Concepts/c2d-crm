@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 from typing import Optional
 
@@ -12,10 +11,7 @@ class CustomerLogBase(CoreModel):
 
 
 class CustomerLogNew(IDModelMixin, CustomerLogBase):
-    def new(self):
-        self.id = uuid.uuid4()
-        self.created_at = datetime.now()
-        return self
+    pass
 
 
 class CustomerLogDBModel(IDModelMixin, CustomerLogBase):

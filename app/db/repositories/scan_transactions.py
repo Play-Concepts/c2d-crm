@@ -7,8 +7,8 @@ from app.models.scan_transaction import ScanTransactionNew, ScanTransactionBasic
     ScanTransactionCount, ScanTransactionCounts
 
 NEW_SCAN_TRANSACTION_SQL = """
-    INSERT INTO scan_transactions(id, customer_id, user_id, created_at) 
-    VALUES (:id, :customer_id, :user_id, now()) RETURNING id;
+    INSERT INTO scan_transactions(customer_id, user_id) 
+    VALUES (:customer_id, :user_id) RETURNING id;
 """
 
 GET_SCAN_TRANSACTIONS_SQL = """
@@ -27,7 +27,6 @@ GET_SCAN_TRANSACTIONS_COUNT_SQL = """
 class ScanTransactionsRepository(BaseRepository):
     async def create_scan_transaction(self, *, scan_transaction: ScanTransactionNew) -> \
             Optional[ScanTransactionBasicView]:
-        scan_transaction.id = uuid.uuid4()
         query_values = scan_transaction.dict()
         created_scan_transaction = await self.db.fetch_one(query=NEW_SCAN_TRANSACTION_SQL, values=query_values)
 

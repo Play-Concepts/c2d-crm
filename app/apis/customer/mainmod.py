@@ -6,7 +6,7 @@ from fastapi import Response, status
 
 from app.apis.utils.pda_client import write_pda_data
 from app.db.repositories.customers import CustomersRepository
-from app.db.repositories.customers_log_repository import CustomersLogRepository
+from app.db.repositories.customers_log import CustomersLogRepository
 from app.models.core import NotFound, BooleanResponse
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerView)

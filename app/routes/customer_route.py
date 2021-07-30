@@ -8,7 +8,7 @@ from app.apis.customer.mainmod import (fn_claim_data, fn_get_customer_basic,
 from app.apis.dependencies.database import get_repository
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
-from app.db.repositories.customers_log_repository import CustomersLogRepository
+from app.db.repositories.customers_log import CustomersLogRepository
 from app.models.core import NotFound, BooleanResponse
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,

@@ -9,7 +9,7 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
-    INSERT INTO customers(id, data, pda_url, status) VALUES(:id, :data, :pda_url, :status) RETURNING id;
+    INSERT INTO customers(data, pda_url, status) VALUES(:data, :pda_url, :status) RETURNING id;
 """
 
 VIEW_CUSTOMER_SQL = """
@@ -49,7 +49,6 @@ CLAIM_DATA_SQL = """
 
 class CustomersRepository(BaseRepository):
     async def create_customer(self, *, new_customer: CustomerNew) -> CustomerView:
-        new_customer.id = uuid.uuid4()
         query_values = new_customer.dict()
         query_values["data"] = json.dumps(new_customer.data)
 

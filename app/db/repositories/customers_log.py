@@ -4,7 +4,7 @@ from app.models.customer_log import CustomerLogNew
 
 
 NEW_CUSTOMER_LOG_SQL="""
-    INSERT INTO customers_log(id, pda_url, event, created_at) VALUES(:id, :pda_url, :event, :created_at) 
+    INSERT INTO customers_log(pda_url, event, created_at) VALUES(:pda_url, :event, :created_at) 
     RETURNING id;
 """
 
