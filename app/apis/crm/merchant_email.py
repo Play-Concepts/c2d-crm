@@ -2,7 +2,7 @@ import json
 from typing import List
 
 from app.apis.utils.emailer import send_bulk_templated_email
-from app.core.config import config as app_config
+from app.core.global_config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.merchant import MerchantEmailView
 

@@ -1,14 +1,13 @@
 from typing import Callable
 
-import sqlalchemy as sa
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import JWTAuthentication
 from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
-from app import global_state
-from app.core.config import config
+from app.core import global_state
+from app.core.global_config import config
 from app.models.user import User, UserCreate, UserDB, UserUpdate
 from app.modules.helpers.password_management import (on_after_forgot_password,
                                                      on_after_reset_password)

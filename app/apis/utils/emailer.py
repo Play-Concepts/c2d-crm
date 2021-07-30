@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import boto3
 
-from app.core.config import config as app_config
+from app.core.global_config import config as app_config
 
 session = boto3.Session()
 ses = session.client("ses")

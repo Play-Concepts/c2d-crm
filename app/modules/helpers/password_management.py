@@ -1,7 +1,7 @@
 from fastapi import Request
 
 from app.apis.utils.emailer import send_templated_email
-from app.core.config import config as app_config
+from app.core.global_config import config as app_config
 from app.models.user import UserDB
 
 

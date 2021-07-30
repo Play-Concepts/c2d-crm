@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
 
-from app.core.config import config as app_config
+from app.core.global_config import config as app_config
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/pda_token")
 router = APIRouter()

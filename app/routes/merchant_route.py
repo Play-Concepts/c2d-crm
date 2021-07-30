@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app import global_state
+from app.core import global_state
 from app.apis.dependencies.database import get_repository
 from app.apis.merchant.mainmod import fn_verify_barcode, fn_get_scan_transactions_count
 from app.db.repositories.customers import CustomersRepository

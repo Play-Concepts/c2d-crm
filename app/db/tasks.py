@@ -3,7 +3,7 @@ import logging
 from databases import Database
 from fastapi import FastAPI
 
-from app.core.config import config
+from app.core.global_config import config
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
