@@ -17,11 +17,11 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
     for i in (0, len(merchants), BATCH_SIZE):
         merchants_to_email = merchants[i:i+BATCH_SIZE]
         if len(merchants_to_email) > 0:
-            _do_send_merchant_welcome_email(merchants_to_email)
+            do_send_merchant_welcome_email(merchants_to_email)
             await _flag_merchant_welcome_email_sent(merchants_to_email, merchants_repo)
 
 
-def _do_send_merchant_welcome_email(merchants:List[MerchantEmailView]):
+def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
     destinations = [_create_merchant_email_destination(merchant) for merchant in merchants]
     # TODO extract to ENV file
     default_data = {
