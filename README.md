@@ -40,7 +40,7 @@ docker-compose exec db psql -h localhost -U <postgres_user> <db_name>
 You will be in the `psql` console
 ``` sql
 # Make sure to update the email address and password below
-INSERT INTO users(id, email, hashed_password, is_active, is_superuser, is_verified) VALUES (uuid_generate_v4(), '<root@localhost.local>', crypt('<password>', gen_salt('bf', 10)), true, true, true); 
+INSERT INTO users(email, hashed_password, is_active, is_superuser, is_verified) VALUES ('root@localhost.local', crypt('password', gen_salt('bf', 10)), true, true, true); 
 ```
 
 `Ctrl-D` to exit

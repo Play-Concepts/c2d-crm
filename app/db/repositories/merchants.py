@@ -57,5 +57,7 @@ class MerchantsRepository(BaseRepository):
         return MerchantEmailSentView(**updated_merchant)
 
     async def get_merchant_by_email(self, *, email: str) -> MerchantEmailView:
-        merchant = await self.db.fetch_one(query=GET_MERCHANT_BY_EMAIL_SQL, values={"email": email})
+        merchant = await self.db.fetch_one(
+            query=GET_MERCHANT_BY_EMAIL_SQL, values={"email": email}
+        )
         return None if merchant is None else MerchantEmailView(**merchant)

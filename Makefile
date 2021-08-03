@@ -4,10 +4,10 @@ isort-src:
 format: isort-src
 	black ./app
 
-isort-tests:
+isort-test:
 	isort ./app/tests
 
-format-tests: isort-test
+format-test: isort-test
 	black ./app/tests
 
 stop:
@@ -21,3 +21,9 @@ test: start
 
 dev:
 	docker-compose up --build
+
+dev-test:
+	docker-compose exec datapassport-backend pytest app/tests
+
+db-connect:
+	docker-compose exec db psql -h localhost -U postgres elyria
