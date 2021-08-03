@@ -27,6 +27,10 @@ UPDATE_WELCOME_EMAIL_SENT_SQL = """
     RETURNING id, welcome_email_sent;
 """
 
+GET_MERCHANT_BY_EMAIL_SQL = """
+    SELECT id, first_name, email, password_change_token FROM merchants WHERE email=:email;
+"""
+
 
 class MerchantsRepository(BaseRepository):
     async def create_merchant(
@@ -51,3 +55,7 @@ class MerchantsRepository(BaseRepository):
             query=UPDATE_WELCOME_EMAIL_SENT_SQL, values={"id": merchant_id}
         )
         return MerchantEmailSentView(**updated_merchant)
+
+    async def get_merchant_by_email(self, *, email: str) -> MerchantEmailView:
+        merchant = await self.db.fetch_one(query=GET_MERCHANT_BY_EMAIL_SQL, values={"email": email})
+        return None if merchant is None else MerchantEmailView(**merchant)

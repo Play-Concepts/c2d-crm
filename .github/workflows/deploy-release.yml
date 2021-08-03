@@ -1,0 +1,119 @@
+name: Deploy Release
+
+on:
+  release:
+    types:
+      - released
+
+env:
+  REGISTRY: 126761267783.dkr.ecr.us-east-1.amazonaws.com/datapassport
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Container - Setup QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Container - Setup Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - id: date
+        run: |
+          echo "::set-output name=ts::$(date +%s)"
+
+      - name: Container - Meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ env.REGISTRY }}
+          tags: |
+            type=semver,prefix=v,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=semver,prefix=v,pattern={{major}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=semver,prefix=v,pattern={{major}}.{{minor}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/heads/main') }}
+            type=sha,prefix=main-,format=short,suffix=-${{ steps.date.outputs.ts }},enable=${{ startsWith(github.ref, 'refs/heads/main') }}
+            type=sha,prefix=dev-,format=long,suffix=-${{ steps.date.outputs.ts }},enable=${{ !startsWith(github.ref, 'refs/heads/main') && !startsWith(github.ref, 'refs/tags/v') }}
+            type=sha,prefix=sha-,format=long
+
+      - name: AWS - Configure
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEPLOYER_PRODUCTS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEPLOYER_PRODUCTS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: AWS ECR - Login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Container - Build & Push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          cache-from: type=registry,ref=${{ env.REGISTRY }}:latest
+
+      - name: Slack
+        uses: lazy-actions/slatify@master
+        if: failure()
+        with:
+          type: ${{ job.status }}
+          job_name: "*${{ env.GITHUB_WORKFLOW }}*"
+          channel: "ci"
+          mention: "here"
+          mention_if: "failure"
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  deploy:
+    name: Deploy
+    needs: [build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TASK_DEFINITION_CLUSTER: dataswift-products-datapassport-prd
+      TASK_DEFINITION_SERVICE: dataswift-products-datapassport-prd-app
+      TASK_DEFINITION_CONTAINER: dataswift-products-datapassport-prd-app
+
+    steps:
+      - name: AWS - Configure
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEPLOYER_PRODUCTS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEPLOYER_PRODUCTS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: AWS ECS - Download task
+        id: download-task-definition
+        run: aws ecs describe-task-definition --task-definition ${{ env.TASK_DEFINITION_SERVICE }} --query taskDefinition > task-definition.json
+
+      - name: AWS ECS - Update task
+        id: fill-task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.TASK_DEFINITION_CONTAINER }}
+          image: ${{ env.REGISTRY }}:sha-${{ github.sha }}
+
+      - name: AWS ECS - Deploy task
+        id: deploy-task-definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.fill-task-definition.outputs.task-definition }}
+          service: ${{ env.TASK_DEFINITION_SERVICE }}
+          cluster: ${{ env.TASK_DEFINITION_CLUSTER }}
+          wait-for-service-stability: false
