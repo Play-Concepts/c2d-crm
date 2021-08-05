@@ -9,6 +9,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+      args:
+        - stage=${STAGE:-none}
     volumes:
       - ./app:/app
     ports:

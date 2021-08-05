@@ -14,16 +14,16 @@ stop:
 	docker-compose down
 
 start: stop
-	docker-compose up --build -d
-
-test: start
-	docker-compose exec datapassport-backend pytest app/tests
-
-dev:
 	docker-compose up --build
 
-dev-test:
-	docker-compose exec datapassport-backend pytest app/tests
+daemon: stop
+	docker-compose up --build -d
+
+dev: stop
+	STAGE=dev docker-compose up --build
+
+test:
+	docker-compose exec datapassport-backend pytest -v app/tests
 
 db-connect:
 	docker-compose exec db psql -h localhost -U postgres elyria

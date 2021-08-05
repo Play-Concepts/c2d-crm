@@ -13,7 +13,7 @@ fastapi_users = global_state.fastapi_users
 authenticator = global_state.authenticator
 
 
-@router.post("/auth/create-password", tags=["auth"])
+@router.post("/auth/create-password", name="auth:create-password", tags=["auth"])
 async def create_password(
     response: Response,
     token: str = Body(...),

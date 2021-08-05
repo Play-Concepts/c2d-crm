@@ -25,7 +25,12 @@ crm_user = global_state.fastapi_users.current_user(
 )
 
 
-@router.get("/customers", tags=["crm"], response_model=List[CustomerView])
+@router.get(
+    "/customers",
+    name="crm:list_customers",
+    tags=["crm"],
+    response_model=List[CustomerView],
+)
 async def list_customers(
     page: Optional[int] = 1,
     page_count: Optional[int] = 20,
@@ -39,6 +44,7 @@ async def list_customers(
 
 @router.get(
     "/customers/{customer_id}",
+    name="crm:get_customer",
     tags=["crm"],
     response_model=CustomerView,
     responses={404: {"model": NotFound}},
@@ -55,10 +61,11 @@ async def get_customer(
 @router.post(
     "/customers/upload",
     response_model=CreatedCount,
+    name="crm:upload_customers",
     tags=["crm"],
     status_code=HTTP_201_CREATED,
 )
-async def upload(
+async def upload_customers(
     customers_file: UploadFile = File(...),
     customers_repo: CustomersRepository = Depends(get_repository(CustomersRepository)),
     auth=Depends(crm_user),
@@ -68,11 +75,12 @@ async def upload(
 
 @router.post(
     "/merchants/upload",
+    name="crm:upload_merchants",
     response_model=CreatedCount,
     tags=["crm"],
     status_code=HTTP_201_CREATED,
 )
-async def upload(
+async def upload_merchants(
     background_tasks: BackgroundTasks,
     merchants_file: UploadFile = File(...),
     merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
