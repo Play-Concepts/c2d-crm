@@ -3,6 +3,7 @@ import warnings
 
 import alembic
 import pytest
+import requests
 import requests as requests
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
@@ -11,7 +12,6 @@ from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from fastapi_users.password import get_password_hash
 from httpx import AsyncClient
-import requests
 
 # Apply migrations at beginning and end of testing session
 from app.models.user import UserDB
@@ -75,5 +75,8 @@ def merchant() -> UserDB:
 
 @pytest.fixture(scope="session")
 def pda_user():
-    r = requests.get("https://testing.hubat.net/users/access_token", headers={'username':'testing', 'password':'labai-geras-slaptazodis'})
-    return r.json()['accessToken']
+    r = requests.get(
+        "https://testing.hubat.net/users/access_token",
+        headers={"username": "testing", "password": "labai-geras-slaptazodis"},
+    )
+    return r.json()["accessToken"]
