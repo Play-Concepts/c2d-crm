@@ -16,12 +16,6 @@ class TestCustomAuthCreatePasswordRoutes:
     ) -> None:
         res = await client.post(app.url_path_for("auth:create-password"), json={})
         assert res.status_code != HTTP_404_NOT_FOUND
-
-    @pytest.mark.asyncio
-    async def test_create_password_input_raises_error(
-        self, app: FastAPI, client: AsyncClient
-    ) -> None:
-        res = await client.post(app.url_path_for("auth:create-password"), json={})
         assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
 
     # TODO Test the Actual Create Password API

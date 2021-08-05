@@ -28,6 +28,7 @@ router.prefix = "/api/customer"
 
 @router.get(
     "/basic",
+    name="customer:basic",
     tags=["customer"],
     response_model=CustomerBasicView,
     responses={404: {"model": NotFound}},
@@ -43,7 +44,7 @@ async def get_customer_basic(
     return await fn_get_customer_basic(auth["iss"], customers_repository, response)
 
 
-@router.post("/search", tags=["customer"], response_model=List[CustomerView])
+@router.post("/search", name="customer:search", tags=["customer"], response_model=List[CustomerView])
 async def search_customers(
     search_params: CustomerSearch,
     customers_repository: CustomersRepository = Depends(
@@ -61,6 +62,7 @@ async def search_customers(
 
 @router.post(
     "/claim",
+    name="customer:claim",
     tags=["customer"],
     response_model=CustomerClaimResponse,
     responses={404: {"model": NotFound}},
@@ -79,7 +81,8 @@ async def claim_data(
     )
 
 
-@router.get("/check-first-login", tags=["customer"], response_model=BooleanResponse)
+@router.get("/check-first-login",
+            name="customer:check-first-login", tags=["customer"], response_model=BooleanResponse)
 async def check_first_login(
     customers_log_repository: CustomersLogRepository = Depends(
         get_repository(CustomersLogRepository)
