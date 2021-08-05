@@ -16,40 +16,27 @@ from starlette.status import (
 )
 
 
-class TestCrmCustomersRoutes:
+class TestCrmRoutes:
+    @pytest.mark.parametrize("route_name, route_path", [
+        ("crm:list_customers", "/api/crm/customers"),
+        ("crm:upload_customers", "/api/crm/customers/upload"),
+        ("crm:upload_merchants", "/api/crm/merchants/upload"),
+    ])
     @pytest.mark.asyncio
-    async def test_list_customers_route_exist(
-        self, app: FastAPI, client: AsyncClient
-    ) -> None:
-        res = await client.get(app.url_path_for("crm:list_customers"))
-        assert res.status_code != HTTP_404_NOT_FOUND
-
-    @pytest.mark.xfail(reason="TODO: Authenticated Route")
-    @pytest.mark.asyncio
-    async def test_get_customer_route_exist(
-        self, app: FastAPI, client: AsyncClient
-    ) -> None:
-        res = await client.get(
-            app.url_path_for("crm:get_customer", path_params="/dummy")
+    async def test_crm_routes_exists(self, app: FastAPI, route_name: str, route_path: str) -> None:
+        assert (
+                app.url_path_for(route_name)
+                == route_path
         )
-        assert res.status_code == HTTP_201_CREATED
 
-    @pytest.mark.xfail(reason="TODO: Authenticated Route")
+    @pytest.mark.parametrize("route_name", [
+        "crm:upload_merchants",
+        "crm:upload_customers",
+    ])
+    @pytest.mark.xfail(reason="TODO: CRM Authenticated Route")
     @pytest.mark.asyncio
-    async def test_upload_customers_route_exists_and_raises_error_on_invalid(
-        self, app: FastAPI, client: AsyncClient
+    async def test_merchant_routes_raise_error_on_invalid(
+            self, app: FastAPI, client: AsyncClient, route_name: str,
     ) -> None:
-        res = await client.post(app.url_path_for("crm:upload_customers"), json={})
-        assert res.status_code != HTTP_404_NOT_FOUND
-        assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
-
-
-class TestCrmMerchantsRoutes:
-    @pytest.mark.xfail(reason="TODO: Authenticated Route")
-    @pytest.mark.asyncio
-    async def test_upload_merchants_route_exists_and_raises_error_on_invalid(
-        self, app: FastAPI, client: AsyncClient
-    ) -> None:
-        res = await client.post(app.url_path_for("crm:upload_merchants"), json={})
-        assert res.status_code != HTTP_404_NOT_FOUND
+        res = await client.post(app.url_path_for(route_name), json={})
         assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
