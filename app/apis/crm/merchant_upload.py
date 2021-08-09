@@ -13,7 +13,10 @@ from app.models.user import UserCreate
 
 
 async def do_merchant_file_upload(
-    merchants_file: UploadFile, merchants_repo: MerchantsRepository
+    merchants_file: UploadFile,
+    merchants_repo: MerchantsRepository,
+    *,
+    send_email: bool = True
 ) -> CreatedCount:
     created_merchants: int = 0
     lines = csv.reader(codecs.iterdecode(merchants_file.file, "utf-8"), delimiter=",")

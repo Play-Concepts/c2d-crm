@@ -11,42 +11,38 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
 
+pytestmark = pytest.mark.asyncio
+
 
 class TestAuthRoutes:
-    @pytest.mark.asyncio
     async def test_login_route_exist(self, app: FastAPI, client: AsyncClient) -> None:
         res = await client.post("/api/auth/jwt/login", json={})
         assert res.status_code != HTTP_404_NOT_FOUND
 
-    @pytest.mark.asyncio
     async def test_login_invalid_input_raises_error(
         self, app: FastAPI, client: AsyncClient
     ) -> None:
         res = await client.post("/api/auth/jwt/login", json={})
         assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
 
-    @pytest.mark.asyncio
     async def test_forgot_password_route_exist(
         self, app: FastAPI, client: AsyncClient
     ) -> None:
         res = await client.post("/api/auth/forgot-password", json={})
         assert res.status_code != HTTP_404_NOT_FOUND
 
-    @pytest.mark.asyncio
     async def test_forgot_password_invalid_input_raises_error(
         self, app: FastAPI, client: AsyncClient
     ) -> None:
         res = await client.post("/api/auth/forgot-password", json={})
         assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
 
-    @pytest.mark.asyncio
     async def test_reset_password_route_exist(
         self, app: FastAPI, client: AsyncClient
     ) -> None:
         res = await client.post("/api/auth/reset-password", json={})
         assert res.status_code != HTTP_404_NOT_FOUND
 
-    @pytest.mark.asyncio
     async def test_reset_password_invalid_input_raises_error(
         self, app: FastAPI, client: AsyncClient
     ) -> None:

@@ -28,7 +28,7 @@ class MerchantBase(MerchantBasicModel):
         return decode_json(cls, v)
 
 
-class MerchantNew(IDModelMixin, MerchantBase):
+class MerchantNew(MerchantBase):
     pass
 
 

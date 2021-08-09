@@ -8,9 +8,10 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
 
+pytestmark = pytest.mark.asyncio
+
 
 class TestCustomAuthCreatePasswordRoutes:
-    @pytest.mark.asyncio
     async def test_create_password_route_exist(
         self, app: FastAPI, client: AsyncClient
     ) -> None:

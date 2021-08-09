@@ -4,16 +4,16 @@ import warnings
 import alembic
 import pytest
 import requests
-import requests as requests
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from databases import Database
 from fastapi import FastAPI
-from fastapi_users import FastAPIUsers
 from fastapi_users.password import get_password_hash
 from httpx import AsyncClient
 
 # Apply migrations at beginning and end of testing session
+from app.db.repositories.merchants import MerchantsRepository
+from app.db.repositories.users import UsersRepository
 from app.models.user import UserDB
 
 viviane_password_hash = get_password_hash("viviane")
@@ -32,15 +32,27 @@ def apply_migrations():
 # Create a new application for testing
 @pytest.fixture
 def app(apply_migrations: None) -> FastAPI:
-    from app.main import app as application
+    from app.main import init_application
 
-    return application
+    return init_application()
 
 
-# Grab a reference to our database when needed
 @pytest.fixture
 def db(app: FastAPI) -> Database:
     return app.state.db
+
+
+# Users Repo
+@pytest.fixture
+async def users_repository(db: Database) -> UsersRepository:
+    return UsersRepository(db)
+
+
+# Merchants Repo
+@pytest.fixture
+async def merchants_repository(db: Database) -> MerchantsRepository:
+    print("merchant_repo")
+    return MerchantsRepository(db)
 
 
 # Make requests in our tests

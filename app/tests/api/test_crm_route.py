@@ -9,34 +9,38 @@ The exception is /api/auth/create-password. This is a custom endpoint, which mus
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
-from starlette.status import (
-    HTTP_201_CREATED,
-    HTTP_404_NOT_FOUND,
-    HTTP_422_UNPROCESSABLE_ENTITY,
-)
+from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
+
+pytestmark = pytest.mark.asyncio
 
 
 class TestCrmRoutes:
-    @pytest.mark.parametrize("route_name, route_path", [
-        ("crm:list_customers", "/api/crm/customers"),
-        ("crm:upload_customers", "/api/crm/customers/upload"),
-        ("crm:upload_merchants", "/api/crm/merchants/upload"),
-    ])
-    @pytest.mark.asyncio
-    async def test_crm_routes_exists(self, app: FastAPI, route_name: str, route_path: str) -> None:
-        assert (
-                app.url_path_for(route_name)
-                == route_path
-        )
+    @pytest.mark.parametrize(
+        "route_name, route_path",
+        [
+            ("crm:list_customers", "/api/crm/customers"),
+            ("crm:upload_customers", "/api/crm/customers/upload"),
+            ("crm:upload_merchants", "/api/crm/merchants/upload"),
+        ],
+    )
+    async def test_crm_routes_exists(
+        self, app: FastAPI, route_name: str, route_path: str
+    ) -> None:
+        assert app.url_path_for(route_name) == route_path
 
-    @pytest.mark.parametrize("route_name", [
-        "crm:upload_merchants",
-        "crm:upload_customers",
-    ])
+    @pytest.mark.parametrize(
+        "route_name",
+        [
+            "crm:upload_merchants",
+            "crm:upload_customers",
+        ],
+    )
     @pytest.mark.xfail(reason="TODO: CRM Authenticated Route")
-    @pytest.mark.asyncio
     async def test_merchant_routes_raise_error_on_invalid(
-            self, app: FastAPI, client: AsyncClient, route_name: str,
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        route_name: str,
     ) -> None:
         res = await client.post(app.url_path_for(route_name), json={})
         assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY

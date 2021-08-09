@@ -11,3 +11,4 @@ httpx
 asgi-lifespan
 coverage
 pytest-cov
+faker
