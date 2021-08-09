@@ -42,7 +42,8 @@ async def fn_claim_data(identifier: uuid.UUID,
     data = claimed_data.data
     data['person']['identifier'] = str(identifier)
     data['person']['claimed_timestamp'] = claimed_data.claimed_timestamp.replace(tzinfo=timezone.utc).isoformat()
-    write_pda_data(pda_url, token, 'elyria', 'identity', claimed_data.data)
+    # TODO: remove hardcoding of default pass when multipass is implemented
+    write_pda_data(pda_url, token, 'elyria', 'elyria-resident', claimed_data.data)
     return claimed_data
 
 
