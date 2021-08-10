@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Any, Dict, List
 
 import boto3
@@ -8,6 +9,8 @@ from app.core.global_config import config as app_config
 session = boto3.Session()
 ses = session.client("ses")
 
+is_test = os.environ.get("TEST")
+
 
 def send_bulk_templated_email(
     destinations: List[Any],
@@ -15,11 +18,15 @@ def send_bulk_templated_email(
     template_defaults: str,
     source: str = app_config.MAILER_FROM,
 ):
-    return ses.send_bulk_templated_email(
-        Source=source,
-        Template=template,
-        DefaultTemplateData=template_defaults,
-        Destinations=destinations,
+    return (
+        None
+        if is_test
+        else ses.send_bulk_templated_email(
+            Source=source,
+            Template=template,
+            DefaultTemplateData=template_defaults,
+            Destinations=destinations,
+        )
     )
 
 
@@ -29,13 +36,17 @@ def send_templated_email(
     template_data: Dict[str, Any],
     source: str = app_config.MAILER_FROM,
 ):
-    return ses.send_templated_email(
-        Source=source,
-        Template=template,
-        TemplateData=json.dumps(template_data),
-        Destination={
-            "ToAddresses": [
-                to,
-            ],
-        },
+    return (
+        None
+        if is_test
+        else ses.send_templated_email(
+            Source=source,
+            Template=template,
+            TemplateData=json.dumps(template_data),
+            Destination={
+                "ToAddresses": [
+                    to,
+                ],
+            },
+        )
     )
