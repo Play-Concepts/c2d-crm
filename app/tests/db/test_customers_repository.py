@@ -46,7 +46,7 @@ class TestCustomersRepository:
         assert isinstance(created_customer, CustomerView)
         assert created_customer.id is not None
 
-        # Prep for the folloing tests
+        # Prep for the following tests
         test_customer.customer = created_customer
 
         for customer in new_customers_test_data[1:]:

@@ -1,5 +1,5 @@
 from app.models.core import BooleanResponse, IDModelMixin
-from app.models.customer_log import CustomerLogNew, CustomerLog
+from app.models.customer_log import CustomerLog, CustomerLogNew
 
 from .base import BaseRepository
 

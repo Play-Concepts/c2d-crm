@@ -7,7 +7,6 @@ from app.models.core import CoreModel, IDModelMixin
 class CustomerLogBase(CoreModel):
     pda_url: Optional[str]
     event: Optional[str]
-    created_at: Optional[datetime]
 
 
 class CustomerLogNew(CustomerLogBase):
@@ -19,4 +18,4 @@ class CustomerLog(IDModelMixin, CustomerLogBase):
 
 
 class CustomerLogDBModel(IDModelMixin, CustomerLogBase):
-    pass
+    created_at: Optional[datetime]

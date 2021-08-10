@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from pydantic import BaseSettings, Field
@@ -29,7 +30,7 @@ class GlobalConfig(BaseSettings):
     class Config:
         """Loads the dotenv file."""
 
-        env_file: str = ".env"
+        env_file: str = os.environ.get("ENV_FILE", ".env")
 
 
 config = GlobalConfig()

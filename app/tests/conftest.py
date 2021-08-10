@@ -13,6 +13,7 @@ from httpx import AsyncClient
 
 # Apply migrations at beginning and end of testing session
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.users import UsersRepository
 from app.models.user import UserDB
@@ -47,6 +48,12 @@ def db(app: FastAPI) -> Database:
 @pytest.fixture
 async def customers_repository(db: Database) -> CustomersRepository:
     return CustomersRepository(db)
+
+
+# Customers Log Repo
+@pytest.fixture
+async def customers_log_repository(db: Database) -> CustomersLogRepository:
+    return CustomersLogRepository(db)
 
 
 # Merchants Repo

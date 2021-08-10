@@ -9,6 +9,7 @@ from pydantic.types import Json
 
 from app.models.customer import CustomerNew
 from app.models.customer import StatusType as CustomerStatusType
+from app.models.customer_log import CustomerLogNew
 from app.models.merchant import MerchantNew
 
 fake = Faker()
@@ -69,3 +70,14 @@ def _customer_data() -> Json:
 
 def _customer_status() -> List[CustomerStatusType]:
     return [CustomerStatusType.new, CustomerStatusType.claimed]
+
+
+def create_new_customer_log() -> CustomerLogNew:
+    return CustomerLogNew(
+        pda_url=fake.domain_name(),
+        event="signup",
+    )
+
+
+def fake_hostname() -> str:
+    return fake.hostname()
