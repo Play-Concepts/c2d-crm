@@ -1,11 +1,11 @@
 from app.models.core import BooleanResponse, IDModelMixin
-from app.models.customer_log import CustomerLogNew
+from app.models.customer_log import CustomerLogNew, CustomerLog
 
 from .base import BaseRepository
 
 NEW_CUSTOMER_LOG_SQL = """
-    INSERT INTO customers_log(pda_url, event, created_at) VALUES(:pda_url, :event, :created_at) 
-    RETURNING id;
+    INSERT INTO customers_log(pda_url, event) VALUES(:pda_url, :event) 
+    RETURNING id, created_at;
 """
 
 
@@ -15,13 +15,13 @@ CHECK_FIRST_LOGIN_CUSTOMER_SQL = """
 
 
 class CustomersLogRepository(BaseRepository):
-    async def log_event(self, *, customer_log_new: CustomerLogNew) -> IDModelMixin:
+    async def log_event(self, *, customer_log_new: CustomerLogNew) -> CustomerLog:
         query_values = customer_log_new.dict()
 
         created_customer_log = await self.db.fetch_one(
             query=NEW_CUSTOMER_LOG_SQL, values=query_values
         )
-        return IDModelMixin(**created_customer_log)
+        return CustomerLog(**created_customer_log)
 
     async def customer_exists(self, *, pda_url: str) -> BooleanResponse:
         response = await self.db.fetch_one(

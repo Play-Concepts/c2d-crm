@@ -10,8 +10,12 @@ class CustomerLogBase(CoreModel):
     created_at: Optional[datetime]
 
 
-class CustomerLogNew(IDModelMixin, CustomerLogBase):
+class CustomerLogNew(CustomerLogBase):
     pass
+
+
+class CustomerLog(IDModelMixin, CustomerLogBase):
+    created_at: datetime
 
 
 class CustomerLogDBModel(IDModelMixin, CustomerLogBase):
