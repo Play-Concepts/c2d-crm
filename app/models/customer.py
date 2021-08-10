@@ -24,7 +24,7 @@ class CustomerBase(CoreModel):
         return decode_json(cls, v)
 
 
-class CustomerNew(IDModelMixin, CustomerBase):
+class CustomerNew(CustomerBase):
     data: Json
 
 

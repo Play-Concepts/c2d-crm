@@ -1,5 +1,4 @@
 import random
-import uuid
 from datetime import datetime
 from typing import List
 
@@ -36,7 +35,7 @@ class TestMerchantsRepository:
         )
         assert created_merchant is not None
         assert isinstance(created_merchant, MerchantView)
-        assert isinstance(created_merchant.id, uuid.UUID)
+        assert created_merchant.id is not None
 
         # Prep for the folloing tests
         for merchant in new_merchants_test_data[1:]:
