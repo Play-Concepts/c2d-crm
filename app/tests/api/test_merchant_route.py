@@ -27,7 +27,7 @@ class TestMerchantRoutes:
         ],
     )
     async def test_merchant_routes_exists(
-        self, app: FastAPI, route_name: str, route_path: str
+        self, app: FastAPI, client: AsyncClient, route_name: str, route_path: str
     ) -> None:
         assert app.url_path_for(route_name) == route_path
 

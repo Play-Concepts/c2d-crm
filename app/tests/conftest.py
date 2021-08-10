@@ -51,7 +51,6 @@ async def users_repository(db: Database) -> UsersRepository:
 # Merchants Repo
 @pytest.fixture
 async def merchants_repository(db: Database) -> MerchantsRepository:
-    print("merchant_repo")
     return MerchantsRepository(db)
 
 
