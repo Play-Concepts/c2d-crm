@@ -15,7 +15,8 @@ services:
       - ./app:/app
     ports:
       - ${PORT:-80}:${PORT:-80}
-    command: dev
+    entrypoint: "/entrypoint.sh"
+    command: "dev"
     depends_on:
       db:
         condition: service_healthy

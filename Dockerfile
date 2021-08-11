@@ -9,6 +9,3 @@ RUN if [ "${STAGE}" = "dev" ]; then pip install -r requirements-dev.txt; fi
 
 USER 1000
 COPY app app
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["start"]

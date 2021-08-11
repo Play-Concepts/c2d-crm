@@ -23,10 +23,10 @@ dev: stop
 	STAGE=dev docker-compose up --build
 
 test:
-	docker-compose exec datapassport-backend pytest -v --setup-show app/tests/db/test_customers_log_repository.py
+	STAGE=dev docker-compose -f docker-compose.yml -f docker-compose-test.yml up --build --remove-orphans --exit-code-from datapassport-backend-test
 
-testx:
+devtest:
 	docker-compose exec datapassport-backend pytest -s -v --setup-show app/tests/db/test_customers_log_repository.py
 
-db-connect:
+dbconnect:
 	docker-compose exec db psql -h localhost -U postgres elyria

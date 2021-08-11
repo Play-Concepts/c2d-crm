@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  datapassport-backend-test:
+    container_name: "datapassport-backend-test"
+    env_file:
+      - .env
+    environment:
+      - PORT=5${PORT}
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - stage=dev
+    volumes:
+      - ./app:/app
+    ports:
+      - 5${PORT:-80}:5${PORT:-80}
+    entrypoint: "/entrypoint.sh"
+    command: "test"
+    depends_on:
+      db:
+        condition: service_healthy
