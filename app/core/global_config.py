@@ -11,26 +11,27 @@ class GlobalConfig(BaseSettings):
     # shell environment variable having the same name, that will take precedence.
 
     # the class Field is necessary while defining the global variables
-    ENV_STATE: Optional[str] = Field(..., env="ENV_STATE")
+    ENV_STATE: Optional[str] = os.environ.get("ENV_STATE", "dev")
 
-    SECRET_KEY: Optional[str] = Field(..., env="SECRET_KEY")
-    POSTGRES_USER: Optional[str] = Field(..., env="POSTGRES_USER")
-    POSTGRES_PASSWORD: Optional[str] = Field(..., env="POSTGRES_PASSWORD")
-    POSTGRES_SERVER: Optional[str] = Field(..., env="POSTGRES_SERVER")
-    POSTGRES_PORT: Optional[str] = Field(..., env="POSTGRES_PORT")
-    POSTGRES_DB: Optional[str] = Field(..., env="POSTGRES_DB")
-    APPLICATION_ID: Optional[str] = Field(..., env="APPLICATION_ID")
-    APPLICATION_ROOT: Optional[str] = Field(..., env="APPLICATION_ROOT")
-    APPLICATION_NAME: Optional[str] = Field(..., env="APPLICATION_NAME")
-    APPLICATION_LOGO: Optional[str] = Field(..., env="APPLICATION_LOGO")
+    SECRET_KEY: Optional[str] = os.environ.get("SECRET_KEY", None)
+    POSTGRES_USER: Optional[str] = os.environ.get("POSTGRES_USER", None)
+    POSTGRES_PASSWORD: Optional[str] = os.environ.get("POSTGRES_PASSWORD", None)
+    POSTGRES_SERVER: Optional[str] = os.environ.get("POSTGRES_SERVER", None)
+    POSTGRES_PORT: Optional[str] = os.environ.get("POSTGRES_PORT", None)
+    POSTGRES_DB: Optional[str] = os.environ.get("POSTGRES_DB", None)
+    APPLICATION_ID: Optional[str] = os.environ.get("APPLICATION_ID", "")
+    APPLICATION_ROOT: Optional[str] = os.environ.get(
+        "APPLICATION_ROOT", "http://localhost:3000"
+    )
+    APPLICATION_NAME: Optional[str] = os.environ.get(
+        "APPLICATION_NAME", "sample-datapassport-application"
+    )
+    APPLICATION_LOGO: Optional[str] = os.environ.get("APPLICATION_LOGO", "")
 
-    MAILER_FROM: Optional[str] = Field(..., env="MAILER_FROM")
-    DATA_PASSPORT_ISSUER: Optional[str] = Field(..., env="DATA_PASSPORT_ISSUER")
-
-    class Config:
-        """Loads the dotenv file."""
-
-        env_file: str = os.environ.get("ENV_FILE", ".env")
+    MAILER_FROM: Optional[str] = os.environ.get("MAILER_FROM", "root@localhost")
+    DATA_PASSPORT_ISSUER: Optional[str] = os.environ.get(
+        "DATA_PASSPORT_ISSUER", "Sample DP Issuer"
+    )
 
 
 config = GlobalConfig()

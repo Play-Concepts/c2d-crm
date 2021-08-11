@@ -3,10 +3,15 @@ version: "3"
 services:
   datapassport-backend-test:
     container_name: "datapassport-backend-test"
-    env_file:
-      - .env
     environment:
-      - PORT=5${PORT}
+      - SECRET_KEY=some_test_secret_41fce277853e607896d01de34514b3dc339db452aa1d0c93fbfde
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=some_postgres_password
+      - POSTGRES_SERVER=db-test
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=elyria
+      - AWS_DEFAULT_REGION=eu-west-1
+      - PORT=52188
     build:
       context: ./
       dockerfile: Dockerfile
@@ -14,10 +19,27 @@ services:
         - stage=dev
     volumes:
       - ./app:/app
-    ports:
-      - 5${PORT:-80}:5${PORT:-80}
     entrypoint: "/entrypoint.sh"
     command: "test"
     depends_on:
-      db:
+      db-test:
         condition: service_healthy
+
+  db-test:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=some_postgres_password
+      - POSTGRES_SERVER=db-test
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=elyria
+
+volumes:
+  postgres_data_test:

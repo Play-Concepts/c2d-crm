@@ -22,11 +22,15 @@ daemon: stop
 dev: stop
 	STAGE=dev docker-compose up --build
 
-test:
-	STAGE=dev docker-compose -f docker-compose.yml -f docker-compose-test.yml up --build --remove-orphans --exit-code-from datapassport-backend-test
-
 devtest:
 	docker-compose exec datapassport-backend pytest -s -v --setup-show app/tests/db/test_customers_log_repository.py
 
 dbconnect:
 	docker-compose exec db psql -h localhost -U postgres elyria
+
+test:
+	STAGE=dev docker-compose -f docker-compose-test.yml up --build --remove-orphans --exit-code-from datapassport-backend-test
+	$(MAKE) cleantest
+
+cleantest:
+	docker system prune -f

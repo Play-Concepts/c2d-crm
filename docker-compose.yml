@@ -23,6 +23,7 @@ services:
 
   db:
     image: postgres:13-alpine
+    restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     healthcheck:
@@ -30,6 +31,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
