@@ -33,7 +33,7 @@ VIEW_CUSTOMER_BASIC_SQL = """
 SEARCH_CUSTOMER_SQL = """
     SELECT id, data, pda_url, status FROM customers WHERE 
     data->'person'->'profile'->>'last_name' ilike :last_name AND 
-    data->'person'->'address'->>'address_line_1' ilike :house_number AND 
+    SPLIT_PART(data->'person'->'address'->>'address_line_1', ' ', 1) = :house_number AND 
     data->'person'->'contact'->>'email' ilike :email AND 
     status='new';
 """
@@ -77,7 +77,7 @@ class CustomersRepository(BaseRepository):
 
         values = {
             "last_name": last_name,
-            "house_number": "{} ".format(param_format(house_number)),
+            "house_number": house_number,
             "email": email
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
