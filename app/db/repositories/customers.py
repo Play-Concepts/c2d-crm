@@ -77,7 +77,7 @@ class CustomersRepository(BaseRepository):
 
         values = {
             "last_name": last_name,
-            "house_number": param_format(house_number),
+            "house_number": "{} ".format(param_format(house_number)),
             "email": email
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
