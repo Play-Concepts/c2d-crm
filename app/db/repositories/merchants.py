@@ -4,17 +4,15 @@ from typing import List, Optional
 
 from app.apis.utils.random import random_string
 from app.db.repositories.base import BaseRepository
-from app.models.merchant import (
-    MerchantEmailSentView,
-    MerchantEmailView,
-    MerchantNew,
-    MerchantView,
-)
+from app.models.merchant import (MerchantEmailSentView, MerchantEmailView,
+                                 MerchantNew, MerchantView)
 
 NEW_MERCHANT_SQL = """
-    INSERT INTO merchants(first_name, last_name, company_name, trade_name, address, email, phone_number, offer, logo_url, password_change_token, terms_agreed)  
-    VALUES(:first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number, :offer, :logo_url, :password_change_token, :terms_agreed) 
-    ON CONFLICT(email) DO NOTHING 
+    INSERT INTO merchants(first_name, last_name, company_name, trade_name, address, email, phone_number,
+    offer, logo_url, password_change_token, terms_agreed)
+    VALUES(:first_name, :last_name, :company_name, :trade_name, :address, :email, :phone_number,
+    :offer, :logo_url, :password_change_token, :terms_agreed)
+    ON CONFLICT(email) DO NOTHING
     RETURNING id;
 """
 
@@ -23,7 +21,7 @@ WELCOME_EMAIL_LIST_SQL = """
 """
 
 UPDATE_WELCOME_EMAIL_SENT_SQL = """
-    UPDATE merchants SET welcome_email_sent=now(), updated_at=now() WHERE id=:id 
+    UPDATE merchants SET welcome_email_sent=now(), updated_at=now() WHERE id=:id
     RETURNING id, welcome_email_sent;
 """
 

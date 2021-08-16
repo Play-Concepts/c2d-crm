@@ -1,10 +1,10 @@
-from app.models.core import BooleanResponse, IDModelMixin
+from app.models.core import BooleanResponse
 from app.models.customer_log import CustomerLog, CustomerLogNew
 
 from .base import BaseRepository
 
 NEW_CUSTOMER_LOG_SQL = """
-    INSERT INTO customers_log(pda_url, event) VALUES(:pda_url, :event) 
+    INSERT INTO customers_log(pda_url, event) VALUES(:pda_url, :event)
     RETURNING id, created_at;
 """
 

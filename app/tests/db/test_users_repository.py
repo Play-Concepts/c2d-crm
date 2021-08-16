@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from faker import Faker
 from faker.providers import misc
@@ -30,7 +28,7 @@ def new_merchant() -> MerchantNew:
 async def active_merchant(
     merchants_repository: MerchantsRepository, new_merchant: MerchantNew
 ) -> MerchantEmailView:
-    # create merchant\
+    # create merchant
     await merchants_repository.create_merchant(new_merchant=new_merchant)
     await global_state.fastapi_users.create_user(
         UserCreate(

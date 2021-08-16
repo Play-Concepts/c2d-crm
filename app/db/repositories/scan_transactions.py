@@ -1,30 +1,28 @@
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from app.db.repositories.base import BaseRepository
-from app.models.scan_transaction import (
-    ScanTransactionBasicView,
-    ScanTransactionCount,
-    ScanTransactionCounts,
-    ScanTransactionNew,
-    ScanTransactionView,
-)
+from app.models.scan_transaction import (ScanTransactionBasicView,
+                                         ScanTransactionCount,
+                                         ScanTransactionCounts,
+                                         ScanTransactionNew,
+                                         ScanTransactionView)
 
 NEW_SCAN_TRANSACTION_SQL = """
-    INSERT INTO scan_transactions(customer_id, user_id) 
+    INSERT INTO scan_transactions(customer_id, user_id)
     VALUES (:customer_id, :user_id) RETURNING id;
 """
 
 GET_SCAN_TRANSACTIONS_SQL = """
-    SELECT id, customer_id, user_id, created_at FROM scan_transactions 
+    SELECT id, customer_id, user_id, created_at FROM scan_transactions
     WHERE created_at>:from_date AND user_id=:user_id;
 """
 
 GET_SCAN_TRANSACTIONS_COUNT_SQL = """
-    SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN customer_id is not null THEN 1 ELSE 0 END), 0) AS valid, 
-    CAST(:from_date AS timestamp) as from_date, CAST(:to_date AS timestamp) as to_date 
-    FROM scan_transactions 
+    SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN customer_id is not null THEN 1 ELSE 0 END), 0) AS valid,
+    CAST(:from_date AS timestamp) as from_date, CAST(:to_date AS timestamp) as to_date
+    FROM scan_transactions
     WHERE created_at BETWEEN :from_date AND :to_date AND user_id=:user_id;
 """
 

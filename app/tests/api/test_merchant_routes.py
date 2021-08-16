@@ -47,4 +47,4 @@ class TestMerchantRoutes:
         res = await client.post(app.url_path_for(route_name), json={})
         assert res.status_code == HTTP_422_UNPROCESSABLE_ENTITY
 
-    ## TODO To implement scan-transactions-count logic check
+    # TODO To implement scan-transactions-count logic check

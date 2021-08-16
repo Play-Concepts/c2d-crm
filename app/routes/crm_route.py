@@ -1,15 +1,12 @@
 import uuid
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Response, UploadFile
+from fastapi import (APIRouter, BackgroundTasks, Depends, File, Response,
+                     UploadFile)
 from starlette.status import HTTP_201_CREATED
 
-from app.apis.crm.mainmod import (
-    fn_customer_upload,
-    fn_get_customer,
-    fn_list_customers,
-    fn_merchant_upload,
-)
+from app.apis.crm.mainmod import (fn_customer_upload, fn_get_customer,
+                                  fn_list_customers, fn_merchant_upload)
 from app.apis.dependencies.database import get_repository
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository

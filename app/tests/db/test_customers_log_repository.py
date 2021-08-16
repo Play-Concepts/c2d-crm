@@ -9,7 +9,8 @@ from httpx import AsyncClient
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.models.core import BooleanResponse
 from app.models.customer_log import CustomerLog, CustomerLogNew
-from app.tests.helpers.data_generator import create_new_customer_log, fake_hostname
+from app.tests.helpers.data_generator import (create_new_customer_log,
+                                              fake_hostname)
 
 pytestmark = pytest.mark.asyncio
 

@@ -9,10 +9,8 @@ from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from app.core import global_state
 from app.core.global_config import config
 from app.models.user import User, UserCreate, UserDB, UserUpdate
-from app.modules.helpers.password_management import (
-    on_after_forgot_password,
-    on_after_reset_password,
-)
+from app.modules.helpers.password_management import (on_after_forgot_password,
+                                                     on_after_reset_password)
 
 
 def mount_users_module(app: FastAPI) -> Callable:

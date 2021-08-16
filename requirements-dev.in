@@ -3,6 +3,7 @@ pip-tools
 # formatters
 isort
 black
+flake8
 
 # tests
 pytest

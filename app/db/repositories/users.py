@@ -4,9 +4,9 @@ from app.db.repositories.base import BaseRepository
 from app.models.user import UserView
 
 CREATE_PASSWORD_SQL = """
-    UPDATE users SET hashed_password=crypt(:password, gen_salt('bf', 10)), is_verified=true 
-    WHERE email in (SELECT email FROM merchants WHERE password_change_token=:password_change_token) 
-    AND is_verified is false 
+    UPDATE users SET hashed_password=crypt(:password, gen_salt('bf', 10)), is_verified=true
+    WHERE email in (SELECT email FROM merchants WHERE password_change_token=:password_change_token)
+    AND is_verified is false
     RETURNING id, email;
 """
 

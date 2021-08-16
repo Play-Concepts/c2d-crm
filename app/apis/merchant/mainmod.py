@@ -2,7 +2,8 @@ import uuid
 
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.scan_transaction import ScanTransactionCounts, ScanTransactionNew
+from app.models.scan_transaction import (ScanTransactionCounts,
+                                         ScanTransactionNew)
 
 
 async def fn_verify_barcode(

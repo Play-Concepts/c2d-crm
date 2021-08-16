@@ -11,7 +11,10 @@ logger.setLevel(logging.INFO)
 
 
 async def connect_to_db(app: FastAPI) -> None:
-    database_url = f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PASSWORD}@{config.POSTGRES_SERVER}:{config.POSTGRES_PORT}/{config.POSTGRES_DB}"
+    database_url = (
+        f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PASSWORD}@{config.POSTGRES_SERVER}"
+        f":{config.POSTGRES_PORT}/{config.POSTGRES_DB}"
+    )
     if os.environ.get("TEST"):
         database_url += "_test"
 

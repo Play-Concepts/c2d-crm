@@ -3,24 +3,17 @@ from typing import List, Union
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
-from app.apis.customer.mainmod import (
-    fn_check_first_login,
-    fn_claim_data,
-    fn_get_customer_basic,
-    fn_search_customers,
-)
+from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
+                                       fn_get_customer_basic,
+                                       fn_search_customers)
 from app.apis.dependencies.database import get_repository
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.models.core import BooleanResponse, NotFound
-from app.models.customer import (
-    CustomerBasicView,
-    CustomerClaim,
-    CustomerClaimResponse,
-    CustomerSearch,
-    CustomerView,
-)
+from app.models.customer import (CustomerBasicView, CustomerClaim,
+                                 CustomerClaimResponse, CustomerSearch,
+                                 CustomerView)
 
 router = APIRouter()
 router.prefix = "/api/customer"

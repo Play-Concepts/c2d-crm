@@ -20,7 +20,10 @@ config = alembic.context.config
 fileConfig(config.config_file_name)
 logger = logging.getLogger("alembic.env")
 
-database_url = f"postgresql://{app_config.POSTGRES_USER}:{app_config.POSTGRES_PASSWORD}@{app_config.POSTGRES_SERVER}:{app_config.POSTGRES_PORT}/{app_config.POSTGRES_DB}"
+database_url = (
+    f"postgresql://{app_config.POSTGRES_USER}:{app_config.POSTGRES_PASSWORD}@{app_config.POSTGRES_SERVER}"
+    f":{app_config.POSTGRES_PORT}/{app_config.POSTGRES_DB}"
+)
 test_database_url = f"{database_url}_test"
 
 

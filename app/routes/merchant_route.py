@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends
 
 from app.apis.dependencies.database import get_repository
-from app.apis.merchant.mainmod import fn_get_scan_transactions_count, fn_verify_barcode
+from app.apis.merchant.mainmod import (fn_get_scan_transactions_count,
+                                       fn_verify_barcode)
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.scan_transaction import ScanRequest, ScanResult, ScanTransactionCounts
+from app.models.scan_transaction import (ScanRequest, ScanResult,
+                                         ScanTransactionCounts)
 
 router = APIRouter()
 router.prefix = "/api"

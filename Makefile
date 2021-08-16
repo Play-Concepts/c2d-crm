@@ -1,14 +1,24 @@
+lint: black-src isort-src flake-src
+
 isort-src:
 	isort ./app
 
-format: isort-src
+black-src:
 	black ./app
+
+flake-src:
+	flake8 ./app
+
+lint-test: black-test isort-test flake-test
 
 isort-test:
 	isort ./app/tests
 
-format-test: isort-test
+black-test:
 	black ./app/tests
+
+flake-test:
+	flake8 ./app/tests
 
 stop:
 	docker-compose down
@@ -23,7 +33,7 @@ dev: stop
 	STAGE=dev docker-compose up --build
 
 devtest:
-	docker-compose exec datapassport-backend pytest -s -v --setup-show app/tests/db/test_customers_log_repository.py
+	docker-compose exec datapassport-backend pytest -s -v --setup-show app/tests/functional
 
 dbconnect:
 	docker-compose exec db psql -h localhost -U postgres elyria
