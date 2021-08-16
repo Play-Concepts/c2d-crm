@@ -84,10 +84,15 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      TASK_DEFINITION_CLUSTER: dataswift-products-datapassport-prd
-      TASK_DEFINITION_SERVICE: dataswift-products-datapassport-prd-app
-      TASK_DEFINITION_CONTAINER: dataswift-products-datapassport-prd-app
+    strategy:
+      matrix:
+        include:
+          - cluster: dataswift-products-datapassport-prd
+            service: dataswift-products-datapassport-prd-app
+            container: dataswift-products-datapassport-prd-app
+          - cluster: dataswift-products-datapassport-prd
+            service: dataswift-products-datapassport-prd-triune
+            container: dataswift-products-datapassport-prd-triune
 
     steps:
       - name: AWS - Configure
@@ -99,14 +104,14 @@ jobs:
 
       - name: AWS ECS - Download task
         id: download-task-definition
-        run: aws ecs describe-task-definition --task-definition ${{ env.TASK_DEFINITION_SERVICE }} --query taskDefinition > task-definition.json
+        run: aws ecs describe-task-definition --task-definition ${{ matrix.service }} --query taskDefinition > task-definition.json
 
       - name: AWS ECS - Update task
         id: fill-task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: ${{ env.TASK_DEFINITION_CONTAINER }}
+          container-name: ${{ matrix.container }}
           image: ${{ env.REGISTRY }}:sha-${{ github.sha }}
 
       - name: AWS ECS - Deploy task
@@ -114,6 +119,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.fill-task-definition.outputs.task-definition }}
-          service: ${{ env.TASK_DEFINITION_SERVICE }}
-          cluster: ${{ env.TASK_DEFINITION_CLUSTER }}
+          service: ${{ matrix.service }}
+          cluster: ${{ matrix.cluster }}
           wait-for-service-stability: false
