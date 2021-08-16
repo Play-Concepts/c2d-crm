@@ -22,11 +22,6 @@ def test_customer():
     return create_new_customer()
 
 
-@pytest.fixture
-def test_response():
-    return Response()
-
-
 class TestCrmFunctions:
     @pytest.mark.xfail(
         reason="IGNORING: no additional codes in function to test. "
@@ -90,6 +85,6 @@ class TestCrmFunctions:
     ) -> None:
         from app.apis.crm.mainmod import fn_merchant_upload as fn_to_test
 
-        res_count = await fn_to_test(merchants_test_file, merchants_repository, None)
+        res_count = await fn_to_test(merchants_test_file, merchants_repository)
         assert isinstance(res_count, CreatedCount)
         assert res_count.count == merchants_test_file_records_number

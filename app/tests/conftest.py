@@ -9,7 +9,7 @@ import requests
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from databases import Database
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, Response, UploadFile
 from fastapi_users.password import get_password_hash
 from httpx import AsyncClient
 
@@ -106,6 +106,11 @@ def merchants_test_file() -> UploadFile:
 @pytest.fixture
 def merchants_test_file_records_number() -> int:
     return 1
+
+
+@pytest.fixture
+def test_response():
+    return Response()
 
 
 @pytest.fixture
