@@ -29,9 +29,3 @@ fastapi-users[sqlalchemy]
 
 # AWS - for emailing with SES
 boto3
-
-# tests
-pytest
-pytest-asyncio
-httpx
-asgi-lifespan

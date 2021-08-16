@@ -10,21 +10,21 @@ from app.models.core import CoreModel, IDModelMixin, decode_json
 
 
 class StatusType(str, Enum):
-    new = 'new'
-    claimed = 'claimed'
+    new = "new"
+    claimed = "claimed"
 
 
 class CustomerBase(CoreModel):
     data: Optional[Json]
-    status: Optional[StatusType] = 'new'
+    status: Optional[StatusType] = "new"
     pda_url: Optional[str]
 
-    @validator('data', pre=True)
+    @validator("data", pre=True)
     def decode_json(cls, v):
         return decode_json(cls, v)
 
 
-class CustomerNew(IDModelMixin, CustomerBase):
+class CustomerNew(CustomerBase):
     data: Json
 
 
@@ -48,9 +48,9 @@ class CustomerBasicView(IDModelMixin):
 
 
 class CustomerSearch(BaseModel):
-    last_name: Optional[str] = ''
-    house_number: Optional[str] = ''
-    email: Optional[str] = ''
+    last_name: Optional[str] = ""
+    house_number: Optional[str] = ""
+    email: Optional[str] = ""
 
 
 class CustomerClaim(IDModelMixin):

@@ -3,24 +3,21 @@ Revision ID: f7a36107bdcd
 Revises: 7e7fad16535e
 Create Date: 2021-07-02 12:34:55.254359
 """
-import uuid
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.postgresql import UUID
 
 # revision identifiers, used by Alembic
-revision = 'f7a36107bdcd'
-down_revision = '2dc82837151c'
+revision = "f7a36107bdcd"
+down_revision = "2dc82837151c"
 branch_labels = None
 depends_on = None
 
 
-# https://frankie567.github.io/fastapi-users/configuration/model.html
 def create_users_table() -> None:
     op.create_table(
         "users",
-        sa.Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True),
         sa.Column("email", sa.VARCHAR(255), nullable=False),
         sa.Column("hashed_password", sa.VARCHAR(4096), nullable=False),
         sa.Column("is_active", sa.BOOLEAN, nullable=False),

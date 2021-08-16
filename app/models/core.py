@@ -9,6 +9,7 @@ class CoreModel(BaseModel):
     """
     Any common logic to be shared by all models goes here.
     """
+
     pass
 
 
@@ -37,6 +38,6 @@ def decode_json(cls, v):
         try:
             return json.dumps(v)
         except Exception as err:
-            raise ValueError(f'Could not parse value into valid JSON: {err}')
+            raise ValueError(f"Could not parse value into valid JSON: {err}")
 
     return v

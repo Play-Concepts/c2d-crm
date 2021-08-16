@@ -3,14 +3,13 @@ Revision ID: b42b86e63910
 Revises: eaec9daee0ba
 Create Date: 2021-07-28 14:10:41.155771
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects.postgresql import UUID
 
-
 # revision identifiers, used by Alembic
-revision = 'b42b86e63910'
-down_revision = 'eaec9daee0ba'
+revision = "b42b86e63910"
+down_revision = "eaec9daee0ba"
 branch_labels = None
 depends_on = None
 

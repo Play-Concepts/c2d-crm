@@ -1,2 +1,15 @@
 pip-tools
+
+# formatters
 isort
+black
+flake8
+
+# tests
+pytest
+pytest-asyncio
+httpx
+asgi-lifespan
+coverage
+pytest-cov
+faker
