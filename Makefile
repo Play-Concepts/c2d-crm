@@ -33,7 +33,7 @@ dev: stop
 	STAGE=dev docker-compose up --build
 
 devtest:
-	docker-compose exec datapassport-backend pytest -s -v --setup-show app/tests/functional
+	docker-compose exec datapassport-backend pytest -s -v --setup-show app/tests
 
 dbconnect:
 	docker-compose exec db psql -h localhost -U postgres elyria
@@ -43,4 +43,6 @@ test:
 	$(MAKE) cleantest
 
 cleantest:
-	docker system prune -f
+	docker rm datapassport-backend_db-test_1
+	docker rm datapassport-backend-test
+	docker network rm datapassport-backend-testnet
