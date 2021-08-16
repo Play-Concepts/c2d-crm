@@ -1,5 +1,7 @@
 import os
 import warnings
+from io import BytesIO
+from pathlib import Path
 
 import alembic
 import pytest
@@ -7,7 +9,7 @@ import requests
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from databases import Database
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 from fastapi_users.password import get_password_hash
 from httpx import AsyncClient
 
@@ -78,6 +80,32 @@ async def client(app: FastAPI) -> AsyncClient:
             headers={"Content-Type": "application/json"},
         ) as client:
             yield client
+
+
+@pytest.fixture
+def customers_test_file() -> UploadFile:
+    customer_file = Path("app/tests/data/customers-test.csv")
+    with open(customer_file, "rb") as f:
+        return UploadFile("customers-test.csv", BytesIO(f.read()), "csv")
+
+
+# Make sure this number is the number of records in customer_test_file
+@pytest.fixture
+def customers_test_file_records_number() -> int:
+    return 200
+
+
+@pytest.fixture
+def merchants_test_file() -> UploadFile:
+    merchant_file = Path("app/tests/data/merchants-test.csv")
+    with open(merchant_file, "rb") as f:
+        return UploadFile("merchants-test.csv", BytesIO(f.read()), "csv")
+
+
+# Make sure this number is the number of records in merchant_test_file
+@pytest.fixture
+def merchants_test_file_records_number() -> int:
+    return 1
 
 
 @pytest.fixture

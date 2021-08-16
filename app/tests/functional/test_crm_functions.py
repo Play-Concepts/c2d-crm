@@ -1,10 +1,12 @@
 import uuid
 
 import pytest
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, UploadFile, status
 from httpx import AsyncClient
 
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.merchants import MerchantsRepository
+from app.models.core import CreatedCount, NotFound
 from app.models.customer import CustomerNew, CustomerView
 from app.tests.helpers.data_generator import create_new_customer
 
@@ -37,7 +39,6 @@ class TestCrmFunctions:
     ) -> None:
         assert False
 
-    @pytest.mark.xfail(reason="TODO")
     async def test_fn_get_customer(
         self,
         app: FastAPI,
@@ -62,21 +63,33 @@ class TestCrmFunctions:
         assert customer.id == created_customer.id
 
         customer = await fn_to_test(uuid.uuid4(), customers_repository, test_response)
-        assert customer is None
+        assert isinstance(customer, NotFound)
         assert test_response.status_code == status.HTTP_404_NOT_FOUND
 
-    @pytest.mark.xfail(reason="TODO")
     async def test_fn_customer_upload(
         self,
         app: FastAPI,
         client: AsyncClient,
+        customers_repository: CustomersRepository,
+        customers_test_file: UploadFile,
+        customers_test_file_records_number: int,
     ) -> None:
-        assert True
+        from app.apis.crm.mainmod import fn_customer_upload as fn_to_test
 
-    @pytest.mark.xfail(reason="TODO")
+        res_count = await fn_to_test(customers_test_file, customers_repository)
+        assert isinstance(res_count, CreatedCount)
+        assert res_count.count == customers_test_file_records_number
+
     async def test_fn_merchant_upload(
         self,
         app: FastAPI,
         client: AsyncClient,
+        merchants_repository: MerchantsRepository,
+        merchants_test_file: UploadFile,
+        merchants_test_file_records_number: int,
     ) -> None:
-        assert True
+        from app.apis.crm.mainmod import fn_merchant_upload as fn_to_test
+
+        res_count = await fn_to_test(merchants_test_file, merchants_repository, None)
+        assert isinstance(res_count, CreatedCount)
+        assert res_count.count == merchants_test_file_records_number
