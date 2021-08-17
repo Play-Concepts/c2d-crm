@@ -17,10 +17,11 @@ def mount_users_module(app: FastAPI) -> Callable:
     async def start_app() -> None:
         secret = config.SECRET_KEY
         auth_backends = []
+        # 8 hour token
         jwt_authentication = JWTAuthentication(
             name="datapassword-auth",
             secret=secret,
-            lifetime_seconds=3600,
+            lifetime_seconds=28800,
             tokenUrl="auth/jwt/login",
         )
         auth_backends.append(jwt_authentication)
