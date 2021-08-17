@@ -88,8 +88,8 @@ jobs:
       matrix:
         include:
           - cluster: dataswift-products-datapassport-prd
-            service: dataswift-products-datapassport-prd-app
-            container: dataswift-products-datapassport-prd-app
+            service: dataswift-products-datapassport-prd-elyria
+            container: dataswift-products-datapassport-prd-elyria
           - cluster: dataswift-products-datapassport-prd
             service: dataswift-products-datapassport-prd-triune
             container: dataswift-products-datapassport-prd-triune
