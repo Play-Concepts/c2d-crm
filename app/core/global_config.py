@@ -33,6 +33,10 @@ class GlobalConfig(BaseSettings):
         "DATA_PASSPORT_ISSUER", "Sample DP Issuer"
     )
 
+    NOTIFY_MARKETING_EMAIL: Optional[str] = os.environ.get(
+        "NOTIFY_MARKETING_EMAIL", None
+    )
+
 
 config = GlobalConfig()
 # print(config.__repr__())

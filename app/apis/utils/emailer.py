@@ -50,3 +50,49 @@ def send_templated_email(
             },
         )
     )
+
+
+def send_notification_email_to_marketing(
+    merchant_email: str,
+    to: str,
+    source: str = app_config.MAILER_FROM,
+):
+    charset = "UTF-8"
+    html_body = """<html>
+                    <head></head>
+                    <body>
+                      <p>
+                        New Merchant with email address {} is now active.
+                      </p>
+                    </body>
+                    </html>
+            """.format(merchant_email)
+    text_body = "New Merchant with email address {} is now active.".format(merchant_email)
+    return (
+        None
+        if is_test
+        else ses.send_templated_email(
+            Source=source,
+            Destination={
+                "ToAddresses": [
+                    to,
+                ],
+            },
+            Message={
+                "Body": {
+                    "Html": {
+                        "Charset": charset,
+                        "Data": html_body,
+                    },
+                    "Text": {
+                        "Charset": charset,
+                        "Data": text_body,
+                    },
+                },
+                "Subject": {
+                    "Charset": charset,
+                    "Data": "[Elyria Data Passport] New Merchant active",
+                },
+            },
+        )
+    )
