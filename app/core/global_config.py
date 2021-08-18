@@ -27,6 +27,7 @@ class GlobalConfig(BaseSettings):
         "APPLICATION_NAME", "sample-datapassport-application"
     )
     APPLICATION_LOGO: Optional[str] = os.environ.get("APPLICATION_LOGO", "")
+    SENTRY_DSN: Optional[str] = os.environ.get("SENTRY_DSN", "")
 
     MAILER_FROM: Optional[str] = os.environ.get("MAILER_FROM", "root@localhost")
     DATA_PASSPORT_ISSUER: Optional[str] = os.environ.get(

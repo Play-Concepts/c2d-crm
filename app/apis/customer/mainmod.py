@@ -25,10 +25,10 @@ async def fn_get_customer_basic(
 
 
 async def fn_search_customers(
-    last_name: str, house_number: str, email: str, customers_repo: CustomersRepository
+    last_name: str, address: str, email: str, customers_repo: CustomersRepository
 ) -> List[CustomerView]:
     return await customers_repo.search_customers(
-        last_name=last_name, house_number=house_number, email=email
+        last_name=last_name, address=address, email=email
     )
 
 

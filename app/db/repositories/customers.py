@@ -33,7 +33,7 @@ VIEW_CUSTOMER_BASIC_SQL = """
 SEARCH_CUSTOMER_SQL = """
     SELECT id, data, pda_url, status FROM customers WHERE
     data->'person'->'profile'->>'last_name' ilike :last_name AND
-    SPLIT_PART(data->'person'->'address'->>'address_line_1', ' ', 1) = :house_number AND
+    data->'person'->'address'->>'address_line_1' ilike :address AND
     data->'person'->'contact'->>'email' ilike :email AND
     status='new';
 """
@@ -80,14 +80,14 @@ class CustomersRepository(BaseRepository):
         return None if customer is None else CustomerBasicView(**customer)
 
     async def search_customers(
-        self, *, last_name: str, house_number: str, email: str
+        self, *, last_name: str, address: str, email: str
     ) -> List[CustomerView]:
         def param_format(element: str) -> str:
             return "" if element == "" or element is None else "{}%".format(element)
 
         values = {
             "last_name": last_name,
-            "house_number": house_number,
+            "address": address,
             "email": email,
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
