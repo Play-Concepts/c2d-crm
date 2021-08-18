@@ -18,6 +18,7 @@ python-dotenv
 python-multipart
 uvicorn
 requests
+sentry_sdk
 
 # db
 psycopg2-binary

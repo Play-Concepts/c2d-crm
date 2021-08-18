@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+import sentry_sdk
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from app.core import tasks
+from app.core.global_config import config
 from app.modules import custom_module, users_module
 from app.routes import root_route
 
+sentry_sdk.init(dsn=config.SENTRY_DSN)
 
 def init_application():
     app = FastAPI(
@@ -15,6 +19,8 @@ def init_application():
         openapi_url="/api/openapi.json",
     )
 
+    app.add_middleware(SentryAsgiMiddleware)
+    
     # Set all CORS enabled origins
     app.add_middleware(
         CORSMiddleware,
