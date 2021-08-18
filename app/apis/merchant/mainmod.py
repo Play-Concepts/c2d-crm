@@ -1,5 +1,6 @@
 import uuid
 
+from app.apis.merchant import merchant_data_pass
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.scan_transaction import (ScanTransactionCounts,
@@ -46,3 +47,6 @@ async def fn_get_scan_transactions_count(
             interval_days=interval_days, user_id=user_id
         )
     )
+
+
+fn_get_merchant_data_passes = merchant_data_pass.fn_get_merchant_data_passes

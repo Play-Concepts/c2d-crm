@@ -5,15 +5,18 @@ from fastapi.responses import Response
 
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_get_customer_basic,
+                                       fn_get_customer_data_passes,
                                        fn_search_customers)
 from app.apis.dependencies.database import get_repository
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
+from app.db.repositories.data_passes import DataPassesRepository
 from app.models.core import BooleanResponse, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,
                                  CustomerView)
+from app.models.data_pass import DataPassCustomerView
 
 router = APIRouter()
 router.prefix = "/api/customer"
@@ -93,3 +96,19 @@ async def check_first_login(
 ) -> BooleanResponse:
     auth, _ = auth_tuple
     return await fn_check_first_login(auth["iss"], customers_log_repository)
+
+
+@router.get(
+    "/data-passes",
+    name="customer:data-passes",
+    tags=["customer"],
+    response_model=List[DataPassCustomerView],
+)
+async def get_customer_data_passes(
+    data_passes_repository: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> List[DataPassCustomerView]:
+    auth, _ = auth_tuple
+    return await fn_get_customer_data_passes(auth["iss"], data_passes_repository)

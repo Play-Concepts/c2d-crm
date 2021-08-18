@@ -1,16 +1,21 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 
 from app.apis.dependencies.database import get_repository
-from app.apis.merchant.mainmod import (fn_get_scan_transactions_count,
+from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
+                                       fn_get_scan_transactions_count,
                                        fn_verify_barcode)
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
+from app.models.data_pass import DataPassMerchantView
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
 
 router = APIRouter()
-router.prefix = "/api"
+router.prefix = "/api/merchant"
 
 merchant_user = global_state.fastapi_users.current_user(
     active=True, verified=True, superuser=False
@@ -18,7 +23,7 @@ merchant_user = global_state.fastapi_users.current_user(
 
 
 @router.post(
-    "/merchant/barcode/verify",
+    "/barcode/verify",
     name="merchant:barcode:verify",
     tags=["merchants"],
     response_model=ScanResult,
@@ -38,13 +43,13 @@ async def verify_barcode(
 
 
 @router.get(
-    "/merchant/scan-transactions-count",
+    "/scan-transactions-count",
     name="merchant:scan-transactions-count",
     tags=["merchants"],
     response_model=ScanTransactionCounts,
 )
 @router.get(
-    "/merchant/scan_transactions_count",
+    "/scan_transactions_count",
     name="merchant:scan_transactions_count",
     tags=["merchants"],
     response_model=ScanTransactionCounts,
@@ -60,3 +65,18 @@ async def get_scan_transactions_count(
     return await fn_get_scan_transactions_count(
         interval_days, auth.id, scan_transactions_repo
     )
+
+
+@router.get(
+    "/data-passes",
+    name="merchant:data-passes",
+    tags=["merchants"],
+    response_model=List[DataPassMerchantView],
+)
+async def get_customer_data_passes(
+    data_passes_repository: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
+    auth_tuple=Depends(merchant_user),
+) -> List[DataPassMerchantView]:
+    return await fn_get_merchant_data_passes(data_passes_repository)

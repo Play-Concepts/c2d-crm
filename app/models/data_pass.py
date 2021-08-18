@@ -1,19 +1,24 @@
-from Tools.scripts.patchcheck import status
-from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic.class_validators import validator
-from pydantic.main import BaseModel
-from pydantic.types import Json
-
-from app.models.core import CoreModel, IDModelMixin, ModelDatesMixin
+from app.models.core import CoreModel, IDModelMixin
 
 
 class StatusType(str, Enum):
-    active = 'active'
-    draft = 'draft'
-    inactive = 'inactive'
+    active = "active"
+    inactive = "inactive"
+
+
+class DataPassSource(CoreModel):
+    source_name: str
+    source_description: str
+    source_logo_url: str
+
+
+class DataPassVerifier(CoreModel):
+    verifier_name: str
+    verifier_description: str
+    verifier_logo_url: str
 
 
 class DataPassBase(CoreModel):
@@ -21,24 +26,19 @@ class DataPassBase(CoreModel):
     title: str
     description_for_merchants: Optional[str]
     description_for_customers: Optional[str]
-    dataspace: str
-    data_provided: str
+    perks_url_for_merchants: Optional[str]
+    perks_url_for_customers: Optional[str]
+
+
+class DataPassCustomerView(
+    IDModelMixin, DataPassBase, DataPassSource, DataPassVerifier
+):
+    activation_status: Optional[StatusType]
+
+
+class DataPassMerchantView(
+    IDModelMixin, DataPassBase, DataPassSource, DataPassVerifier
+):
+    currency_code: str
+    price: float
     status: Optional[StatusType]
-
-
-class DataPassNew(IDModelMixin, DataPassBase, ModelDatesMixin):
-    status: StatusType = 'draft'
-    created_at: datetime = datetime.utcnow()
-
-
-class DataPassUpdate(CoreModel, ModelDatesMixin):
-    description_for_merchants: str
-    description_for_customers: str
-    updated_at: datetime = datetime.utcnow()
-
-
-class DataPassDBModel(IDModelMixin, DataPassBase, ModelDatesMixin):
-    pass
-
-
-DataPassView = DataPassDBModel
