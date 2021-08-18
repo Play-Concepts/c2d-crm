@@ -1,7 +1,9 @@
+import uuid
 from typing import List
 
 from app.models.data_pass import DataPassCustomerView, DataPassMerchantView
 
+from ...models.core import IDModelMixin
 from .base import BaseRepository
 
 GET_CUSTOMER_DATA_PASSES_SQL = """
@@ -28,6 +30,13 @@ GET_MERCHANT_DATA_PASSES_SQL = """
     ORDER BY data_passes.title;
 """
 
+ACTIVATE_DATA_PASS_SQL = """
+    INSERT INTO data_pass_activations(data_pass_id, pda_url) VALUES(:data_pass_id, :pda_url)
+    ON CONFLICT (data_pass_id, pda_url)
+    DO UPDATE SET status='active', updated_at=now()
+    RETURNING id;
+"""
+
 
 class DataPassesRepository(BaseRepository):
     async def get_customer_data_passes(
@@ -44,3 +53,12 @@ class DataPassesRepository(BaseRepository):
             query=GET_MERCHANT_DATA_PASSES_SQL, values={}
         )
         return [DataPassMerchantView(**data_pass) for data_pass in data_passes]
+
+    async def activate_data_pass(
+        self, *, data_pass_id: uuid.UUID, pda_url: str
+    ) -> IDModelMixin:
+        query_values = {"data_pass_id": data_pass_id, "pda_url": pda_url}
+        data_activation = await self.db.fetch_one(
+            query=ACTIVATE_DATA_PASS_SQL, values=query_values
+        )
+        return IDModelMixin(**data_activation)

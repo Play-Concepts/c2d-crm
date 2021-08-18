@@ -1,9 +1,11 @@
+import uuid
 from typing import List, Union
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
+                                       fn_customer_activate_data_pass,
                                        fn_get_customer_basic,
                                        fn_get_customer_data_passes,
                                        fn_search_customers)
@@ -12,7 +14,7 @@ from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_passes import DataPassesRepository
-from app.models.core import BooleanResponse, NotFound
+from app.models.core import BooleanResponse, IDModelMixin, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,
                                  CustomerView)
@@ -112,3 +114,22 @@ async def get_customer_data_passes(
 ) -> List[DataPassCustomerView]:
     auth, _ = auth_tuple
     return await fn_get_customer_data_passes(auth["iss"], data_passes_repository)
+
+
+@router.get(
+    "/data-passes/{data_pass_id}/enable",
+    name="customer:data-passes",
+    tags=["customer"],
+    response_model=IDModelMixin,
+)
+async def activate_data_pass(
+    data_pass_id: uuid.UUID,
+    data_passes_repository: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> IDModelMixin:
+    auth, _ = auth_tuple
+    return await fn_customer_activate_data_pass(
+        data_pass_id, auth["iss"], data_passes_repository
+    )

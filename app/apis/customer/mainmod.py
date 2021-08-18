@@ -67,3 +67,4 @@ async def fn_check_first_login(
 
 
 fn_get_customer_data_passes = customer_data_pass.fn_get_customer_data_passes
+fn_customer_activate_data_pass = customer_data_pass.fn_customer_activate_data_pass
