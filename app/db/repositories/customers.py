@@ -1,6 +1,5 @@
 import json
 import uuid
-from datetime import datetime
 from typing import List, Optional
 
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
@@ -9,7 +8,11 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
+<<<<<<< HEAD
     INSERT INTO customers(id, data, pda_url, status, created_at) VALUES(:id, :data, :pda_url, :status, now()) RETURNING id;
+=======
+    INSERT INTO customers(data, pda_url, status) VALUES(:data, :pda_url, :status) RETURNING id;
+>>>>>>> 11f09988c85ca796a47667289f370f1c72d9f9a5
 """
 
 VIEW_CUSTOMER_SQL = """
@@ -17,7 +20,8 @@ VIEW_CUSTOMER_SQL = """
 """
 
 GET_CUSTOMERS_SQL = """
-    WITH cte AS (SELECT id, data, pda_url, status FROM customers ORDER BY data->'person'->'profile'->>'last_name', data->'person'->'profile'->>'first_name')
+    WITH cte AS (SELECT id, data, pda_url, status FROM customers
+    ORDER BY data->'person'->'profile'->>'last_name', data->'person'->'profile'->>'first_name')
     SELECT * FROM (
         TABLE cte
         LIMIT :limit
@@ -31,55 +35,64 @@ VIEW_CUSTOMER_BASIC_SQL = """
 """
 
 SEARCH_CUSTOMER_SQL = """
-    SELECT id, data, pda_url, status FROM customers WHERE 
-    data->'person'->'profile'->>'last_name' ilike :last_name AND 
-    data->'person'->'address'->>'address_line_1' ilike :house_number AND 
-    data->'person'->'contact'->>'email' ilike :email AND 
+    SELECT id, data, pda_url, status FROM customers WHERE
+    data->'person'->'profile'->>'last_name' ilike :last_name AND
+    SPLIT_PART(data->'person'->'address'->>'address_line_1', ' ', 1) = :house_number AND
+    data->'person'->'contact'->>'email' ilike :email AND
     status='new';
 """
 
 CLAIM_DATA_SQL = """
-    UPDATE customers SET status='claimed', 
-    claimed_timestamp=:claimed_timestamp, 
-    updated_at=now(),
-    pda_url=:pda_url 
-    WHERE id=:id 
+    UPDATE customers SET status='claimed',
+    claimed_timestamp=now(),
+    pda_url=:pda_url,
+    updated_at=now()
+    WHERE id=:id
     RETURNING id, data, status, pda_url, claimed_timestamp;
 """
 
 
 class CustomersRepository(BaseRepository):
     async def create_customer(self, *, new_customer: CustomerNew) -> CustomerView:
-        new_customer.id = uuid.uuid4()
         query_values = new_customer.dict()
         query_values["data"] = json.dumps(new_customer.data)
 
-        created_customer = await self.db.fetch_one(query=NEW_CUSTOMER_SQL, values=query_values)
+        created_customer = await self.db.fetch_one(
+            query=NEW_CUSTOMER_SQL, values=query_values
+        )
         return CustomerView(**created_customer)
 
     async def get_customers(self, *, offset: int, limit: int) -> List[CustomerView]:
-        customers = await self.db.fetch_all(query=GET_CUSTOMERS_SQL, values={"offset": offset, "limit": limit})
+        customers = await self.db.fetch_all(
+            query=GET_CUSTOMERS_SQL, values={"offset": offset, "limit": limit}
+        )
         customers_list = [CustomerView(**customer) for customer in customers]
         if len(customers_list) == 1 and customers_list[0].total_count == 0:
             return []
         return customers_list
 
     async def get_customer(self, *, customer_id: uuid.UUID) -> Optional[CustomerView]:
-        customer = await self.db.fetch_one(query=VIEW_CUSTOMER_SQL, values={"id": customer_id})
+        customer = await self.db.fetch_one(
+            query=VIEW_CUSTOMER_SQL, values={"id": customer_id}
+        )
         return None if customer is None else CustomerView(**customer)
 
     async def get_customer_basic(self, *, pda_url: str) -> Optional[CustomerBasicView]:
-        customer = await self.db.fetch_one(query=VIEW_CUSTOMER_BASIC_SQL, values={"pda_url": pda_url})
+        customer = await self.db.fetch_one(
+            query=VIEW_CUSTOMER_BASIC_SQL, values={"pda_url": pda_url}
+        )
         return None if customer is None else CustomerBasicView(**customer)
 
-    async def search_customers(self, *, last_name: str, house_number:str, email: str) -> List[CustomerView]:
+    async def search_customers(
+        self, *, last_name: str, house_number: str, email: str
+    ) -> List[CustomerView]:
         def param_format(element: str) -> str:
-            return '' if element == '' or element is None else "{}%".format(element)
+            return "" if element == "" or element is None else "{}%".format(element)
 
         values = {
             "last_name": last_name,
-            "house_number": param_format(house_number),
-            "email": email
+            "house_number": house_number,
+            "email": email,
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
         customers_list = [CustomerView(**customer) for customer in customers]
@@ -87,10 +100,14 @@ class CustomersRepository(BaseRepository):
             return []
         return customers_list
 
-    async def claim_data(self, *, identifier: uuid.UUID, pda_url: str) -> Optional[CustomerClaimResponse]:
-        customer = await self.db.fetch_one(query=CLAIM_DATA_SQL, values={
-            "id": identifier,
-            "pda_url": pda_url,
-            "claimed_timestamp": datetime.utcnow()
-        })
+    async def claim_data(
+        self, *, identifier: uuid.UUID, pda_url: str
+    ) -> Optional[CustomerClaimResponse]:
+        customer = await self.db.fetch_one(
+            query=CLAIM_DATA_SQL,
+            values={
+                "id": identifier,
+                "pda_url": pda_url,
+            },
+        )
         return None if customer is None else CustomerClaimResponse(**customer)
