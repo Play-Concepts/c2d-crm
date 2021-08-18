@@ -10,7 +10,7 @@ class ScanTransactionBase(CoreModel):
     user_id: Optional[uuid.UUID]
 
 
-class ScanTransactionNew(IDModelMixin, ScanTransactionBase):
+class ScanTransactionNew(ScanTransactionBase):
     pass
 
 
