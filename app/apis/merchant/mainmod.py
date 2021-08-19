@@ -14,9 +14,12 @@ async def fn_verify_barcode(
     scan_transactions_repo: ScanTransactionsRepository,
 ) -> bool:
     try:
-        barcode_str = uuid.UUID(barcode)
+        barcode_val, data_pass_str = barcode.split(":")
+        barcode_str = uuid.UUID(barcode_val)
+        data_pass_id = uuid.UUID(data_pass_str)
     except ValueError:
         barcode_str = None
+        data_pass_id = None
 
     valid_uuid = barcode_str is not None
 
@@ -31,6 +34,7 @@ async def fn_verify_barcode(
         scan_transaction=ScanTransactionNew(
             customer_id=customer_id,
             user_id=user_id,
+            data_pass_id=data_pass_id,
         )
     )
 
@@ -40,11 +44,12 @@ async def fn_verify_barcode(
 async def fn_get_scan_transactions_count(
     interval_days: int,
     user_id: uuid.UUID,
+    data_pass_id: uuid.UUID,
     scan_transactions_repo: ScanTransactionsRepository,
 ) -> ScanTransactionCounts:
     return (
         await scan_transactions_repo.get_scan_transactions_count_with_interval_n_days(
-            interval_days=interval_days, user_id=user_id
+            interval_days=interval_days, user_id=user_id, data_pass_id=data_pass_id
         )
     )
 

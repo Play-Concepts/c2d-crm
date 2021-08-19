@@ -10,20 +10,20 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
                                          ScanTransactionView)
 
 NEW_SCAN_TRANSACTION_SQL = """
-    INSERT INTO scan_transactions(customer_id, user_id)
-    VALUES (:customer_id, :user_id) RETURNING id;
+    INSERT INTO scan_transactions(customer_id, user_id, data_pass_id)
+    VALUES (:customer_id, :user_id, :data_pass_id) RETURNING id;
 """
 
 GET_SCAN_TRANSACTIONS_SQL = """
     SELECT id, customer_id, user_id, created_at FROM scan_transactions
-    WHERE created_at>:from_date AND user_id=:user_id;
+    WHERE created_at>:from_date AND user_id=:user_id AND data_pass_id=:data_pass_id;
 """
 
 GET_SCAN_TRANSACTIONS_COUNT_SQL = """
     SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN customer_id is not null THEN 1 ELSE 0 END), 0) AS valid,
     CAST(:from_date AS timestamp) as from_date, CAST(:to_date AS timestamp) as to_date
     FROM scan_transactions
-    WHERE created_at BETWEEN :from_date AND :to_date AND user_id=:user_id;
+    WHERE created_at BETWEEN :from_date AND :to_date AND user_id=:user_id AND data_pass_id=:data_pass_id;
 """
 
 
@@ -43,20 +43,24 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
     async def get_scan_transactions_from_last_n_days(
-        self, *, n: int, user_id: uuid.UUID
+        self, *, n: int, user_id: uuid.UUID, data_pass_id: uuid.UUID
     ) -> List[ScanTransactionView]:
         from_date = (datetime.now() - timedelta(days=n)).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
         transactions = await self.db.fetch_all(
             query=GET_SCAN_TRANSACTIONS_SQL,
-            values={"from_date": from_date, "user_id": user_id},
+            values={
+                "from_date": from_date,
+                "user_id": user_id,
+                "data_pass_id": data_pass_id,
+            },
         )
 
         return [ScanTransactionView(**transaction) for transaction in transactions]
 
     async def get_scan_transactions_count_with_interval_n_days(
-        self, *, interval_days: int, user_id: uuid.UUID
+        self, *, interval_days: int, user_id: uuid.UUID, data_pass_id: uuid.UUID
     ) -> ScanTransactionCounts:
         now = datetime.now()
         first_from_date = (now - timedelta(days=interval_days)).replace(
@@ -67,7 +71,12 @@ class ScanTransactionsRepository(BaseRepository):
 
         first_transaction = await self.db.fetch_one(
             query=GET_SCAN_TRANSACTIONS_COUNT_SQL,
-            values={"from_date": first_from_date, "to_date": now, "user_id": user_id},
+            values={
+                "from_date": first_from_date,
+                "to_date": now,
+                "user_id": user_id,
+                "data_pass_id": data_pass_id,
+            },
         )
 
         second_transaction = await self.db.fetch_one(

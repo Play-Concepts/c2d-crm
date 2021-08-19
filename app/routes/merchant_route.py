@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -24,7 +25,7 @@ merchant_user = global_state.fastapi_users.current_user(
 
 @router.post(
     "/barcode/verify",
-    name="merchant:barcode:verify",
+    name="merchant:barcode_verify",
     tags=["merchants"],
     response_model=ScanResult,
 )
@@ -43,19 +44,20 @@ async def verify_barcode(
 
 
 @router.get(
-    "/scan-transactions-count",
+    "/{data_pass_id}/scan-transactions-count",
     name="merchant:scan-transactions-count",
     tags=["merchants"],
     response_model=ScanTransactionCounts,
 )
 @router.get(
-    "/scan_transactions_count",
+    "/{data_pass_id}/scan_transactions_count",
     name="merchant:scan_transactions_count",
     tags=["merchants"],
     response_model=ScanTransactionCounts,
     deprecated=True,
 )
 async def get_scan_transactions_count(
+    data_pass_id: uuid.UUID,
     interval_days: int,
     scan_transactions_repo: ScanTransactionsRepository = Depends(
         get_repository(ScanTransactionsRepository)
@@ -63,7 +65,7 @@ async def get_scan_transactions_count(
     auth=Depends(merchant_user),
 ) -> ScanTransactionCounts:
     return await fn_get_scan_transactions_count(
-        interval_days, auth.id, scan_transactions_repo
+        interval_days, auth.id, data_pass_id, scan_transactions_repo
     )
 
 
