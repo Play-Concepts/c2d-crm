@@ -4,6 +4,7 @@ from typing import List, Union
 
 from fastapi import Response, status
 
+from app.apis.customer import customer_data_pass
 from app.apis.utils.pda_client import write_pda_data
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
@@ -63,3 +64,7 @@ async def fn_check_first_login(
         customer_log_new=CustomerLogNew(pda_url=pda_url, event="signin")
     )
     return boolean_response
+
+
+fn_get_customer_data_passes = customer_data_pass.fn_get_customer_data_passes
+fn_customer_activate_data_pass = customer_data_pass.fn_customer_activate_data_pass

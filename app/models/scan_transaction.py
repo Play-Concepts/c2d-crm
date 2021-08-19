@@ -8,6 +8,7 @@ from app.models.core import CoreModel, IDModelMixin
 class ScanTransactionBase(CoreModel):
     customer_id: Optional[uuid.UUID]
     user_id: Optional[uuid.UUID]
+    data_pass_id: Optional[uuid.UUID]
 
 
 class ScanTransactionNew(ScanTransactionBase):
@@ -19,7 +20,7 @@ class ScanTransactionDBModel(IDModelMixin, ScanTransactionBase):
 
 
 class ScanTransactionBasicView(IDModelMixin):
-    pass
+    data_pass_id: Optional[uuid.UUID]
 
 
 ScanTransactionView = ScanTransactionDBModel

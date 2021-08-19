@@ -50,8 +50,6 @@ fastapi==0.68.0
     #   fastapi-users
 fastapi-users[sqlalchemy]==6.1.2
     # via -r requirements.in
-gunicorn==20.1.0
-    # via -r requirements.in
 h11==0.12.0
     # via uvicorn
 idna==3.2
@@ -124,6 +122,3 @@ uvicorn==0.15.0
     # via -r requirements.in
 wrapt==1.12.1
     # via deprecated
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
