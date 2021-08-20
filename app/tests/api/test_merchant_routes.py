@@ -40,10 +40,11 @@ class TestMerchantRoutes:
         test_data_pass_id: uuid.UUID,
     ) -> None:
         if include_data_pass_id:
-            assert app.url_path_for(route_name, data_pass_id=str(test_data_pass_id)) == route_path.format(str(test_data_pass_id))
+            assert app.url_path_for(
+                route_name, data_pass_id=str(test_data_pass_id)
+            ) == route_path.format(str(test_data_pass_id))
         else:
             assert app.url_path_for(route_name) == route_path
-
 
     @pytest.mark.parametrize(
         "route_name",
