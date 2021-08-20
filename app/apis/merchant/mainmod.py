@@ -9,6 +9,7 @@ from app.models.scan_transaction import (ScanTransactionCounts,
 
 async def fn_verify_barcode(
     barcode: str,
+    data_pass_id: uuid.UUID,
     user_id: uuid.UUID,
     customers_repo: CustomersRepository,
     scan_transactions_repo: ScanTransactionsRepository,
@@ -16,12 +17,12 @@ async def fn_verify_barcode(
     try:
         barcode_val, data_pass_str = barcode.split(":")
         barcode_str = uuid.UUID(barcode_val)
-        data_pass_id = uuid.UUID(data_pass_str)
+        data_pass_ident = uuid.UUID(data_pass_str)
     except ValueError:
         barcode_str = None
-        data_pass_id = None
+        data_pass_ident = None
 
-    valid_uuid = barcode_str is not None
+    valid_uuid = barcode_str is not None and data_pass_id == data_pass_ident
 
     customer = (
         await customers_repo.get_customer(customer_id=barcode_str)
@@ -34,7 +35,7 @@ async def fn_verify_barcode(
         scan_transaction=ScanTransactionNew(
             customer_id=customer_id,
             user_id=user_id,
-            data_pass_id=data_pass_id,
+            data_pass_id=data_pass_ident if valid_uuid else None,
         )
     )
 
