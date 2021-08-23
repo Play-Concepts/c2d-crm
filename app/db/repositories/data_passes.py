@@ -62,3 +62,69 @@ class DataPassesRepository(BaseRepository):
             query=ACTIVATE_DATA_PASS_SQL, values=query_values
         )
         return IDModelMixin(**data_activation)
+
+    # TODO: TRANSIENT - not currently used in application, only in test suite
+    async def create_data_pass_source_(
+        self,
+        *,
+        name: str,
+        description: str,
+        logo_url: str,
+        is_data_source: bool,
+        is_data_verifier: bool,
+    ) -> IDModelMixin:
+        sql = """
+            INSERT INTO data_pass_sources(name, description, logo_url, is_data_source, is_data_verifier)
+            VALUES(:name, :description, :logo_url, :is_data_source, :is_data_verifier)
+            RETURNING id
+            """
+        query_values = {
+            "name": name,
+            "description": description,
+            "logo_url": logo_url,
+            "is_data_source": is_data_source,
+            "is_data_verifier": is_data_verifier,
+        }
+        data_pass_source = await self.db.fetch_one(query=sql, values=query_values)
+        return IDModelMixin(**data_pass_source)
+
+    # TODO: TRANSIENT - not currently used in application, only in test suite
+    async def create_data_pass_(
+        self,
+        *,
+        name: str,
+        title: str,
+        description_for_merchants: str,
+        description_for_customers: str,
+        perks_url_for_merchants: str,
+        perks_url_for_customers: str,
+        data_pass_source_id: uuid.UUID,
+        data_pass_verifier_id: uuid.UUID,
+        currency_code: str,
+        price: float,
+        status: str,
+    ):
+        sql = """
+            INSERT INTO data_passes(name, title, description_for_merchants, description_for_customers,
+            perks_url_for_merchants, perks_url_for_customers, data_pass_source_id,
+            data_pass_verifier_id, currency_code, price, status)
+            VALUES(:name, :title, :description_for_merchants, :description_for_customers,
+            :perks_url_for_merchants, :perks_url_for_customers, :data_pass_source_id,
+            :data_pass_verifier_id, :currency_code, :price, :status)
+            RETURNING id
+        """
+        query_values = {
+            "name": name,
+            "title": title,
+            "description_for_merchants": description_for_merchants,
+            "description_for_customers": description_for_customers,
+            "perks_url_for_merchants": perks_url_for_merchants,
+            "perks_url_for_customers": perks_url_for_customers,
+            "data_pass_source_id": data_pass_source_id,
+            "data_pass_verifier_id": data_pass_verifier_id,
+            "currency_code": currency_code,
+            "price": price,
+            "status": status,
+        }
+        data_pass = await self.db.fetch_one(query=sql, values=query_values)
+        return IDModelMixin(**data_pass)

@@ -1,4 +1,5 @@
 import uuid
+from typing import List, Union
 
 from app.apis.merchant import merchant_data_pass
 from app.db.repositories.customers import CustomersRepository
@@ -13,7 +14,9 @@ async def fn_verify_barcode(
     user_id: uuid.UUID,
     customers_repo: CustomersRepository,
     scan_transactions_repo: ScanTransactionsRepository,
-) -> bool:
+    *,
+    raw: bool = False
+) -> Union[bool, List]:
     try:
         barcode_val, data_pass_str = barcode.split(":")
         barcode_str = uuid.UUID(barcode_val)
@@ -39,7 +42,9 @@ async def fn_verify_barcode(
         )
     )
 
-    return customer_id is not None
+    return (
+        [customer_id, barcode_str, data_pass_ident] if raw else customer_id is not None
+    )
 
 
 async def fn_get_scan_transactions_count(
