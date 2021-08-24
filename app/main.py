@@ -1,47 +1,82 @@
-import sentry_sdk
-from fastapi import FastAPI
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-from starlette.middleware.cors import CORSMiddleware
+from __future__ import annotations
 
-from app.core import tasks
-from app.core.global_config import config
-from app.modules import custom_module, users_module
-from app.routes import root_route
+import logging
+import os
+import sys
 
-sentry_sdk.init(dsn=config.SENTRY_DSN)
+import loguru
+from loguru import logger
+from loguru._defaults import LOGURU_FORMAT
 
+from app.application import application
+from app.core.global_config import config as app_config
 
-def init_application():
-    app = FastAPI(
-        title="Data Passport API",
-        version="0.2.6-20210819",
-        docs_url="/api/docs",
-        redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json",
-    )
-
-    app.add_middleware(SentryAsgiMiddleware)
-
-    # Set all CORS enabled origins
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-    app.add_event_handler("startup", tasks.create_start_app_handler(app))
-    app.add_event_handler("shutdown", tasks.create_stop_app_handler(app))
-
-    # Delay FastAPI-Users
-    app.add_event_handler("startup", users_module.mount_users_module(app))
-    app.add_event_handler("startup", custom_module.mount_custom_module(app))
-
-    # Hello World
-    app.include_router(root_route.router)
-
-    return app
+LOG_LEVEL = logging.getLevelName(os.environ.get("LOG_LEVEL", "INFO"))
+JSON_LOGS = True if os.environ.get("JSON_LOGS", "0") == "1" else False
 
 
-app = init_application()
+class InterceptHandler(logging.Handler):
+    def emit(self, record):
+        # Get corresponding Loguru level if it exists
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+
+        # Find caller from where originated the logged message
+        frame, depth = logging.currentframe(), 2
+        while frame.f_code.co_filename == logging.__file__:
+            frame = frame.f_back
+            depth += 1
+
+        print(record.name)
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
+
+
+# [UTCtimestamp][Severity][Method][ReponseCode][ResponseTime][Category][Component][HashedIP]
+# [Request Id][namespace][free-form body as json]
+def format_record(record: dict) -> str:
+    def process_ip(ip_address: str) -> str:
+        ip, *_ = ip_address.split(":")
+        return ip if app_config.IP_LOGGING else ""
+
+    message = "[{time:YYYY-MM-DDTHH:mm:ss.SSS}Z][{level}]------[{name}]"
+    if record["name"] == "uvicorn.lifespan.on":
+        message = "[{time:YYYY-MM-DDTHH:mm:ss.SSS}Z][{level}]in here{message}"
+
+    return message
+
+
+def setup_logging():
+    # intercept everything at the root logger
+    logging.root.handlers = [InterceptHandler()]
+    logging.root.setLevel(LOG_LEVEL)
+
+    # remove every other logger's handlers
+    # and propagate to root logger
+    for name in logging.root.manager.loggerDict.keys():
+        logging.getLogger(name).handlers = []
+        logging.getLogger(name).propagate = True
+
+    # configure loguru
+    # logger.configure(
+    #    handlers=[
+    #        {
+    #            "sink": sys.stdout,
+    #            "serialize": JSON_LOGS,
+    #            "format": format_record
+    #        },
+    #    ],
+    #    extra={
+    #        "request_id": ""
+    #    }
+    # )
+    logger.remove()
+    logger.add(sys.stdout, format=format_record, serialize=JSON_LOGS)
+
+
+setup_logging()
+
+app = application
