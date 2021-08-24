@@ -1,10 +1,11 @@
-from loguru import logger
 import os
 
 from databases import Database
 from fastapi import FastAPI
+from loguru import logger
 
 from app.core.global_config import config
+
 
 async def connect_to_db(app: FastAPI) -> None:
     database_url = (

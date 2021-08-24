@@ -13,4 +13,3 @@ async def fn_create_password(
         send_templated_email(updated_user.email, "datapassport-password-created", {})
 
     return updated_user
-
