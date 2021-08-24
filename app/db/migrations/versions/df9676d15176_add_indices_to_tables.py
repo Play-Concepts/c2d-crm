@@ -30,12 +30,6 @@ def set_indices_on_tables(reverse: bool):
             ["data_pass_id"],
             False,
         ),
-        (
-            "idx_scan_transactions_u_c_p_ids",
-            "scan_transactions",
-            ["user_id", "customer_id", "data_pass_id"],
-            True,
-        ),
     ]:
         if reverse:
             op.drop_index(index)

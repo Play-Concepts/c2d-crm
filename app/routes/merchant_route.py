@@ -24,12 +24,13 @@ merchant_user = global_state.fastapi_users.current_user(
 
 
 @router.post(
-    "/barcode/verify",
+    "/{data_pass_id}/barcode/verify",
     name="merchant:barcode_verify",
     tags=["merchants"],
     response_model=ScanResult,
 )
 async def verify_barcode(
+    data_pass_id: uuid.UUID,
     request: ScanRequest,
     customers_repo: CustomersRepository = Depends(get_repository(CustomersRepository)),
     scan_transactions_repo: ScanTransactionsRepository = Depends(
@@ -38,7 +39,7 @@ async def verify_barcode(
     auth=Depends(merchant_user),
 ) -> ScanResult:
     verified = await fn_verify_barcode(
-        request.barcode, auth.id, customers_repo, scan_transactions_repo
+        request.barcode, data_pass_id, auth.id, customers_repo, scan_transactions_repo
     )
     return ScanResult(verified=verified)
 
