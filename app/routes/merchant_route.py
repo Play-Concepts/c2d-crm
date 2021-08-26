@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from app.apis.dependencies.database import get_repository
 from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
@@ -30,8 +30,9 @@ merchant_user = global_state.fastapi_users.current_user(
     response_model=ScanResult,
 )
 async def verify_barcode(
+    request: Request,
     data_pass_id: uuid.UUID,
-    request: ScanRequest,
+    scan_request: ScanRequest,
     customers_repo: CustomersRepository = Depends(get_repository(CustomersRepository)),
     scan_transactions_repo: ScanTransactionsRepository = Depends(
         get_repository(ScanTransactionsRepository)
@@ -39,7 +40,12 @@ async def verify_barcode(
     auth=Depends(merchant_user),
 ) -> ScanResult:
     verified = await fn_verify_barcode(
-        request.barcode, data_pass_id, auth.id, customers_repo, scan_transactions_repo
+        scan_request.barcode,
+        data_pass_id,
+        auth.id,
+        customers_repo,
+        scan_transactions_repo,
+        request=request,
     )
     return ScanResult(verified=verified)
 

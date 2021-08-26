@@ -1,8 +1,7 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Depends
-from fastapi.responses import Response
+from fastapi import APIRouter, Depends, Request, Response
 
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
@@ -14,6 +13,7 @@ from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.logger import log_instance
 from app.models.core import BooleanResponse, IDModelMixin, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,
@@ -72,6 +72,7 @@ async def search_customers(
 )
 async def claim_data(
     claim_params: CustomerClaim,
+    request: Request,
     response: Response,
     customers_repository: CustomersRepository = Depends(
         get_repository(CustomersRepository)
@@ -79,9 +80,14 @@ async def claim_data(
     auth_tuple=Depends(get_current_pda_user),
 ) -> Union[CustomerClaimResponse, NotFound]:
     auth, token = auth_tuple
-    return await fn_claim_data(
+    result = await fn_claim_data(
         claim_params.id, auth["iss"], token, customers_repository, response
     )
+    log = log_instance(request)
+    if result is not None:
+        log.info("customer:claim:{}:{}".format(claim_params.id, auth["iss"]))
+
+    return result
 
 
 @router.get(
@@ -91,13 +97,22 @@ async def claim_data(
     response_model=BooleanResponse,
 )
 async def check_first_login(
+    request: Request,
     customers_log_repository: CustomersLogRepository = Depends(
         get_repository(CustomersLogRepository)
     ),
     auth_tuple=Depends(get_current_pda_user),
 ) -> BooleanResponse:
     auth, _ = auth_tuple
-    return await fn_check_first_login(auth["iss"], customers_log_repository)
+    is_first_login_response: BooleanResponse = await fn_check_first_login(
+        auth["iss"], customers_log_repository
+    )
+    log = log_instance(request)
+    if is_first_login_response.value:
+        log.info("customer:first-login:{}".format(auth["iss"]))
+    else:
+        log.info("customer:signi:{}".format(auth["iss"]))
+    return is_first_login_response
 
 
 @router.get(

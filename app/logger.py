@@ -8,6 +8,7 @@ from loguru import logger
 
 from app.core.global_config import config as app_config
 
+
 class InterceptHandler(logging.Handler):
     def emit(self, record):
         # Get corresponding Loguru level if it exists
@@ -36,8 +37,8 @@ def format_record(record: dict) -> str:
     ip, component, response_code, method, category = None, None, None, None, "event"
     if record["function"] == "sentry_patched_callhandlers":
         message_tokens = record["message"].split()
-        if len(message_tokens)==6:
-            ip_, _x, method_, component, _y, response_code= record["message"].split()
+        if len(message_tokens) == 6:
+            ip_, _x, method_, component, _y, response_code = record["message"].split()
             ip = ip_.split(":")[0]
             method = method_[1:]
             category = "api"
@@ -47,7 +48,9 @@ def format_record(record: dict) -> str:
     else:
         format_string += "[{}]".format(request_state.request_method)
 
-    format_string += "[no-response-code]" if response_code is None else "[{}]".format(response_code)
+    format_string += (
+        "[no-response-code]" if response_code is None else "[{}]".format(response_code)
+    )
 
     response_time = record["elapsed"].total_seconds()
     format_string += "[{}]".format(response_time)
@@ -69,6 +72,7 @@ def format_record(record: dict) -> str:
 
     if component is not None:
         record["message"] = ""
+        record["name"] = component
 
     format_string += "[{name}][{message}]"
     format_string += "[{exception}]\n"
@@ -96,5 +100,4 @@ def setup_logging():
 
 
 def log_instance(request: Request):
-    log = logger.bind(request_state=request.state)
-    return log
+    return logger if request is None else logger.bind(request_state=request.state)
