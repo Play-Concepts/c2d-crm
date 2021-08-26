@@ -1,13 +1,10 @@
-import logging
 import os
 
 from databases import Database
 from fastapi import FastAPI
+from loguru import logger
 
 from app.core.global_config import config
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 async def connect_to_db(app: FastAPI) -> None:

@@ -33,6 +33,7 @@ class GlobalConfig(BaseSettings):
     DATA_PASSPORT_ISSUER: Optional[str] = os.environ.get(
         "DATA_PASSPORT_ISSUER", "Sample DP Issuer"
     )
+    IP_LOGGING: Optional[str] = os.environ.get("IP_LOGGING", False)
 
 
 config = GlobalConfig()
