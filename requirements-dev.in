@@ -13,3 +13,7 @@ asgi-lifespan
 coverage
 pytest-cov
 faker
+
+# helpers
+qrcode
+pillow

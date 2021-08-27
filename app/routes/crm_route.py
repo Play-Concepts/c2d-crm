@@ -1,8 +1,8 @@
 import uuid
 from typing import List, Optional, Union
 
-from fastapi import (APIRouter, BackgroundTasks, Depends, File, Response,
-                     UploadFile)
+from fastapi import (APIRouter, BackgroundTasks, Depends, File, Request,
+                     Response, UploadFile)
 from starlette.status import HTTP_201_CREATED
 
 from app.apis.crm.mainmod import (fn_customer_upload, fn_get_customer,
@@ -78,9 +78,12 @@ async def upload_customers(
     status_code=HTTP_201_CREATED,
 )
 async def upload_merchants(
+    request: Request,
     background_tasks: BackgroundTasks,
     merchants_file: UploadFile = File(...),
     merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     auth=Depends(crm_user),
 ) -> CreatedCount:
-    return await fn_merchant_upload(merchants_file, merchants_repo, background_tasks)
+    return await fn_merchant_upload(
+        merchants_file, merchants_repo, background_tasks, request
+    )

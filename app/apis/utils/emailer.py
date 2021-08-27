@@ -66,8 +66,12 @@ def send_notification_email_to_marketing(
                       </p>
                     </body>
                     </html>
-            """.format(merchant_email)
-    text_body = "New Merchant with email address {} is now active.".format(merchant_email)
+            """.format(
+        merchant_email
+    )
+    text_body = "New Merchant with email address {} is now active.".format(
+        merchant_email
+    )
     return (
         None
         if is_test

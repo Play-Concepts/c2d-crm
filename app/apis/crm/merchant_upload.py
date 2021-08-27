@@ -1,12 +1,13 @@
 import codecs
 import csv
 
-from fastapi import UploadFile
+from fastapi import Request, UploadFile
 from fastapi_users import FastAPIUsers
 
 from app.apis.utils.random import random_string
 from app.core import global_state
 from app.db.repositories.merchants import MerchantsRepository
+from app.logger import log_instance
 from app.models.core import CreatedCount
 from app.models.merchant import MerchantNew
 from app.models.user import UserCreate
@@ -16,11 +17,13 @@ async def do_merchant_file_upload(
     merchants_file: UploadFile,
     merchants_repo: MerchantsRepository,
     *,
-    send_email: bool = True
+    send_email: bool = True,
+    request: Request = None,
 ) -> CreatedCount:
     created_merchants: int = 0
     lines = csv.reader(codecs.iterdecode(merchants_file.file, "utf-8"), delimiter=",")
     _ = next(lines)
+    log = None if request is None else log_instance(request)
     for line in lines:
         (
             first_name,
@@ -62,6 +65,9 @@ async def do_merchant_file_upload(
                 email=new_merchant.email, fastapi_users=global_state.fastapi_users
             )
             created_merchants += 1
+
+            if log is not None:
+                log.info("merchant:account-created:{}".format(email.split("@")[0]))
 
     return CreatedCount(count=created_merchants)
 

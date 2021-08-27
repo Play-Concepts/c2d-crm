@@ -16,7 +16,9 @@ from httpx import AsyncClient
 # Apply migrations at beginning and end of testing session
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
+from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
+from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.db.repositories.users import UsersRepository
 from app.models.user import UserDB
 
@@ -36,9 +38,9 @@ def apply_migrations():
 # Create a new application for testing
 @pytest.fixture
 def app(apply_migrations: None) -> FastAPI:
-    from app.main import init_application
+    from app.main import app
 
-    return init_application()
+    return app
 
 
 @pytest.fixture
@@ -68,6 +70,18 @@ async def merchants_repository(db: Database) -> MerchantsRepository:
 @pytest.fixture
 async def users_repository(db: Database) -> UsersRepository:
     return UsersRepository(db)
+
+
+# Scan Transactions Repo
+@pytest.fixture
+async def scan_transactions_repository(db: Database) -> ScanTransactionsRepository:
+    return ScanTransactionsRepository(db)
+
+
+# Data Passes Repo
+@pytest.fixture
+async def data_passes_repository(db: Database) -> DataPassesRepository:
+    return DataPassesRepository(db)
 
 
 # Make requests in our tests

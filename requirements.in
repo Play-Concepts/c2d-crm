@@ -10,7 +10,6 @@
 
 bcrypt
 fastapi
-gunicorn
 passlib
 pyjwt
 cryptography
@@ -18,6 +17,7 @@ python-dotenv
 python-multipart
 uvicorn
 requests
+sentry_sdk
 
 # db
 psycopg2-binary
@@ -29,3 +29,6 @@ fastapi-users[sqlalchemy]
 
 # AWS - for emailing with SES
 boto3
+
+# logging
+loguru
