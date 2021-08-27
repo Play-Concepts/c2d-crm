@@ -35,6 +35,10 @@ class GlobalConfig(BaseSettings):
     )
     IP_LOGGING: Optional[str] = os.environ.get("IP_LOGGING", False)
 
+    NOTIFY_MARKETING_EMAIL: Optional[str] = os.environ.get(
+        "NOTIFY_MARKETING_EMAIL", None
+    )
+
 
 config = GlobalConfig()
 # print(config.__repr__())

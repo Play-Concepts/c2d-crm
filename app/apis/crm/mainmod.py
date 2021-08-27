@@ -40,9 +40,10 @@ async def fn_customer_upload(
 async def fn_merchant_upload(
     file: UploadFile,
     merchant_repo: MerchantsRepository,
-    background_tasks: BackgroundTasks,
-    request: Request,
+    background_tasks: BackgroundTasks = None,
+    request: Request = None,
 ) -> CreatedCount:
     created_count = await do_merchant_file_upload(file, merchant_repo, request=request)
-    background_tasks.add_task(send_merchant_welcome_email, merchant_repo)
+    if background_tasks is not None:
+        background_tasks.add_task(send_merchant_welcome_email, merchant_repo)
     return created_count
