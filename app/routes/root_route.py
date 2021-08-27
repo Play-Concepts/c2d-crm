@@ -11,9 +11,3 @@ async def hello(request: Request):
     log = log_instance(request)
     log.info("hello")
     return {}
-
-
-@router.get("/sentry", tags=["hello"], name="root:sentry")
-async def sentry(request: Request):
-    raise ValueError("Raising an error to test sentry - {}")
-    return {}
