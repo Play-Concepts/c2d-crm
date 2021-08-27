@@ -35,7 +35,7 @@ class DataPassCustomerView(
 ):
     activation_status: Optional[StatusType]
     active_label_1: Optional[str] = "Confirmed"
-    active_label_2: Optional[str] = "Active"
+    active_label_2: Optional[str] = ""
     inactive_label_1: Optional[str] = "Not Active"
     inactive_label_2: Optional[str] = ""
 
