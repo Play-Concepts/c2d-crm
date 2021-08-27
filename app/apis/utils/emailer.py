@@ -78,9 +78,7 @@ def send_notification_email_to_marketing(
         else ses.send_templated_email(
             Source=source,
             Destination={
-                "ToAddresses": [
-                    to,
-                ],
+                "ToAddresses": [email.strip() for email in to.split(",")],
             },
             Message={
                 "Body": {
