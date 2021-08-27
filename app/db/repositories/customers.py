@@ -83,12 +83,12 @@ class CustomersRepository(BaseRepository):
         self, *, last_name: str, address: str, email: str
     ) -> List[CustomerView]:
         def param_format(element: str) -> str:
-            return "" if element == "" or element is None else "{}%".format(element)
+            return "" if element == "" or element is None else element.strip()
 
         values = {
-            "last_name": last_name,
-            "address": address,
-            "email": email,
+            "last_name": param_format(last_name),
+            "address": param_format(address),
+            "email": param_format(email),
         }
         customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
         customers_list = [CustomerView(**customer) for customer in customers]
