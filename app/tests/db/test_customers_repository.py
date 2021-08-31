@@ -1,12 +1,11 @@
 import random
-from app.apis.utils.random import random_string
 from typing import List
 
 import pytest
-import json
 from fastapi import FastAPI
 from httpx import AsyncClient
 
+from app.apis.utils.random import random_string
 from app.db.repositories.customers import CustomersRepository
 from app.models.customer import CustomerBasicView, CustomerNew, CustomerView
 from app.tests.helpers.data_generator import create_new_customer
@@ -108,9 +107,9 @@ class TestCustomersRepository:
             return len(list) == 0
 
         test_customer_data = random.choice(new_customers_test_data).data
-        test_last_name = test_customer_data['person']['profile']['last_name']
-        test_email = test_customer_data['person']['contact']['email']
-        test_address = test_customer_data['person']['address']['address_line_1']
+        test_last_name = test_customer_data["person"]["profile"]["last_name"]
+        test_email = test_customer_data["person"]["contact"]["email"]
+        test_address = test_customer_data["person"]["address"]["address_line_1"]
 
         customer = await customers_repository.search_customers(
             last_name=test_last_name,
