@@ -52,7 +52,7 @@ def _customer_data() -> Json:
         "person": {
             "address": {
                 "city": fake.city(),
-                "address_line_1": fake.address(),
+                "address_line_1": fake.street_address(),
             },
             "contact": {
                 "email": fake.email(),
