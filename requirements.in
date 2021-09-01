@@ -25,7 +25,7 @@ databases[postgresql]
 SQLAlchemy
 alembic
 
-fastapi-users[sqlalchemy]
+fastapi-users-db-sqlalchemy
 
 # AWS - for emailing with SES
 boto3

@@ -21,6 +21,9 @@ class CreatedCount(BaseModel):
     count: int
 
 
+Count = CreatedCount
+
+
 class BooleanResponse(BaseModel):
     value: bool
 

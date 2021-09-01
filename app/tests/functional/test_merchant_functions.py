@@ -17,8 +17,9 @@ from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.core import IDModelMixin
 from app.models.customer import CustomerNew
 from app.models.user import UserCreate
-from app.tests.helpers.data_generator import (create_new_customer,
-                                              create_new_merchant)
+from app.tests.helpers.data_generator import (
+    create_new_customer, create_new_data_pass_data, create_new_merchant,
+    create_valid_data_pass_source_verifier_data)
 
 pytestmark = pytest.mark.asyncio
 
@@ -46,28 +47,12 @@ def valid_customer() -> CustomerNew:
 
 @pytest.fixture(scope="class")
 def valid_data_pass_source_verifier_data() -> dict:
-    return {
-        "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
-        "description": fake.sentence(),
-        "logo_url": fake.image_url(),
-        "is_data_source": True,
-        "is_data_verifier": True,
-    }
+    return create_valid_data_pass_source_verifier_data()
 
 
 @pytest.fixture(scope="class")
 def valid_data_pass_data() -> dict:
-    return {
-        "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
-        "title": fake.sentence(),
-        "description_for_merchants": fake.sentence(),
-        "description_for_customers": fake.sentence(),
-        "perks_url_for_merchants": fake.url(),
-        "perks_url_for_customers": fake.url(),
-        "currency_code": "USD",
-        "price": 0,
-        "status": "active",
-    }
+    return create_new_data_pass_data("active", None)
 
 
 class TestMerchantFunctions:
