@@ -17,6 +17,8 @@ from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.core import IDModelMixin
 from app.models.customer import CustomerNew
 from app.models.user import UserCreate
+from app.tests.helpers.data_creator import (create_data_pass,
+                                            create_data_source_and_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data, create_new_merchant,
     create_valid_data_pass_source_verifier_data)
@@ -64,22 +66,6 @@ class TestMerchantFunctions:
 
         return IDModelMixin(**user)
 
-    async def _create_data_source_and_verifier(
-        self, data: dict, data_passes_repo: DataPassesRepository
-    ):
-        return await data_passes_repo.create_data_pass_source_(**data)
-
-    async def _create_data_pass(
-        self,
-        data_pass_source_id: uuid.UUID,
-        data: dict,
-        data_passes_repo: DataPassesRepository,
-    ):
-        data_pass_data = data
-        data_pass_data["data_pass_source_id"] = data_pass_source_id
-        data_pass_data["data_pass_verifier_id"] = data_pass_source_id
-        return await data_passes_repo.create_data_pass_(**data_pass_data)
-
     async def _barcode_tester(
         self,
         barcode: str,
@@ -112,10 +98,10 @@ class TestMerchantFunctions:
     ) -> None:
 
         test_user = await self._get_current_valid_user_id(valid_user, db)
-        _data_source_and_verifier = await self._create_data_source_and_verifier(
+        _data_source_and_verifier = await create_data_source_and_verifier(
             valid_data_pass_source_verifier_data, data_passes_repository
         )
-        test_data_pass = await self._create_data_pass(
+        test_data_pass = await create_data_pass(
             _data_source_and_verifier.id, valid_data_pass_data, data_passes_repository
         )
 
@@ -201,7 +187,7 @@ class TestMerchantFunctions:
             fake.first_name().lower() + "-" + fake.pystr_format("?????").lower()
         )
 
-        test_data_pass_2 = await self._create_data_pass(
+        test_data_pass_2 = await create_data_pass(
             _data_source_and_verifier.id, valid_data_pass_data_2, data_passes_repository
         )
         barcode_with_customer_and_wrong_datapass_must_return_null_customer_id = (

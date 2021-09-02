@@ -41,7 +41,7 @@ ACTIVATE_DATA_PASS_SQL = """
 
 IS_DATA_PASS_VALID_SQL = """
     SELECT COUNT(id) FROM data_passes WHERE id=:data_pass_id AND status='active'
-    AND (expiry_date IS null OR expire_date<now());
+    AND (expiry_date IS null OR expiry_date>now());
 """
 
 
@@ -142,4 +142,15 @@ class DataPassesRepository(BaseRepository):
             "expiry_date": expiry_date,
         }
         data_pass = await self.db.fetch_one(query=sql, values=query_values)
+        return IDModelMixin(**data_pass)
+
+    # TODO: TRANSIENT - not currently used in application, only in test suite
+    async def get_random_data_pass_(
+        self,
+    ):
+        sql = """
+            SELECT id FROM data_passes
+            ORDER BY random() LIMIT 1
+        """
+        data_pass = await self.db.fetch_one(query=sql, values={})
         return IDModelMixin(**data_pass)
