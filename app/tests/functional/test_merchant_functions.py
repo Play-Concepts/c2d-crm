@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timedelta
 from typing import List
 
 import pytest
@@ -57,6 +58,11 @@ def valid_data_pass_data() -> dict:
     return create_new_data_pass_data("active", None)
 
 
+@pytest.fixture(scope="class")
+def expired_data_pass_test_data() -> dict:
+    return create_new_data_pass_data("active", datetime.now() - timedelta(days=1))
+
+
 class TestMerchantFunctions:
     async def _get_current_valid_user_id(self, user, db: Database):
         user = await db.fetch_one(
@@ -73,6 +79,7 @@ class TestMerchantFunctions:
         user_id: uuid.UUID,
         customers_repo: CustomersRepository,
         scan_transactions_repo: ScanTransactionsRepository,
+        data_passes_repo: DataPassesRepository,
     ) -> List:
         return await fn_verify_barcode(
             barcode,
@@ -80,6 +87,7 @@ class TestMerchantFunctions:
             user_id,
             customers_repo,
             scan_transactions_repo,
+            data_passes_repo,
             raw=True,
         )
 
@@ -94,6 +102,7 @@ class TestMerchantFunctions:
         valid_user,
         valid_data_pass_source_verifier_data: dict,
         valid_data_pass_data: dict,
+        expired_data_pass_test_data: dict,
         valid_customer: CustomerNew,
     ) -> None:
 
@@ -112,16 +121,19 @@ class TestMerchantFunctions:
             customer_id,
             barcode_customer_uuid,
             barcode_data_pass_uuid,
+            is_valid_data_pass,
         ) = await xbarcode_with_existing_data_pass_and_user_must_return_null_customer_id(
             random_string(),
             test_data_pass.id,
             test_user.id,
             customers_repository,
             scan_transactions_repository,
+            data_passes_repository,
         )
         assert customer_id is None
         assert barcode_customer_uuid is None
         assert barcode_data_pass_uuid is None
+        assert not is_valid_data_pass
 
         xsplitbarcode_with_existing_data_pass_and_user_must_return_null_customer_id = (
             self._barcode_tester
@@ -130,16 +142,19 @@ class TestMerchantFunctions:
             customer_id,
             barcode_customer_uuid,
             barcode_data_pass_uuid,
+            is_valid_data_pass,
         ) = await xsplitbarcode_with_existing_data_pass_and_user_must_return_null_customer_id(
             random_string(10) + ":" + random_string(10),
             test_data_pass.id,
             test_user.id,
             customers_repository,
             scan_transactions_repository,
+            data_passes_repository,
         )
         assert customer_id is None
         assert barcode_customer_uuid is None
         assert barcode_data_pass_uuid is None
+        assert not is_valid_data_pass
 
         test_customer = await customers_repository.create_customer(
             new_customer=valid_customer
@@ -152,16 +167,19 @@ class TestMerchantFunctions:
             customer_id,
             barcode_customer_uuid,
             barcode_data_pass_uuid,
+            is_valid_data_pass,
         ) = await barcode_with_customer_and_xdatapass_must_return_null_customer_id(
             str(test_customer.id) + ":" + random_string(10),
             test_data_pass.id,
             test_user.id,
             customers_repository,
             scan_transactions_repository,
+            data_passes_repository,
         )
         assert customer_id is None
         assert barcode_customer_uuid is None
         assert barcode_data_pass_uuid is None
+        assert not is_valid_data_pass
 
         fake_data_pass_id = uuid.uuid4()
         barcode_with_customer_and_nondatapass_must_return_null_customer_id = (
@@ -171,16 +189,19 @@ class TestMerchantFunctions:
             customer_id,
             barcode_customer_uuid,
             barcode_data_pass_uuid,
+            is_valid_data_pass,
         ) = await barcode_with_customer_and_nondatapass_must_return_null_customer_id(
             str(test_customer.id) + ":" + str(fake_data_pass_id),
             test_data_pass.id,
             test_user.id,
             customers_repository,
             scan_transactions_repository,
+            data_passes_repository,
         )
         assert customer_id is None
         assert barcode_customer_uuid == test_customer.id
         assert barcode_data_pass_uuid == fake_data_pass_id
+        assert not is_valid_data_pass
 
         valid_data_pass_data_2 = valid_data_pass_data
         valid_data_pass_data_2["name"] = (
@@ -197,16 +218,19 @@ class TestMerchantFunctions:
             customer_id,
             barcode_customer_uuid,
             barcode_data_pass_uuid,
+            is_valid_data_pass,
         ) = await barcode_with_customer_and_wrong_datapass_must_return_null_customer_id(
             str(test_customer.id) + ":" + str(test_data_pass_2.id),
             test_data_pass.id,
             test_user.id,
             customers_repository,
             scan_transactions_repository,
+            data_passes_repository,
         )
         assert customer_id is None
         assert barcode_customer_uuid == test_customer.id
         assert barcode_data_pass_uuid == test_data_pass_2.id
+        assert is_valid_data_pass
 
         barcode_with_correct_customer_and_datapass_must_return_customer_id = (
             self._barcode_tester
@@ -215,16 +239,45 @@ class TestMerchantFunctions:
             customer_id,
             barcode_customer_uuid,
             barcode_data_pass_uuid,
+            is_valid_data_pass,
         ) = await barcode_with_correct_customer_and_datapass_must_return_customer_id(
             str(test_customer.id) + ":" + str(test_data_pass.id),
             test_data_pass.id,
             test_user.id,
             customers_repository,
             scan_transactions_repository,
+            data_passes_repository,
         )
         assert customer_id == test_customer.id
         assert barcode_customer_uuid == test_customer.id
         assert barcode_data_pass_uuid == test_data_pass.id
+        assert is_valid_data_pass
+
+        expired_data_pass = await create_data_pass(
+            _data_source_and_verifier.id,
+            expired_data_pass_test_data,
+            data_passes_repository,
+        )
+        barcode_with_correct_customer_and_expired_datapass_must_return_customer_id = (
+            self._barcode_tester
+        )
+        (
+            customer_id,
+            barcode_customer_uuid,
+            barcode_data_pass_uuid,
+            is_valid_data_pass,
+        ) = await barcode_with_correct_customer_and_expired_datapass_must_return_customer_id(
+            str(test_customer.id) + ":" + str(expired_data_pass.id),
+            expired_data_pass.id,
+            test_user.id,
+            customers_repository,
+            scan_transactions_repository,
+            data_passes_repository,
+        )
+        assert customer_id == test_customer.id
+        assert barcode_customer_uuid == test_customer.id
+        assert barcode_data_pass_uuid == expired_data_pass.id
+        assert not is_valid_data_pass
 
     @pytest.mark.xfail(reason="TODO")
     async def test_fn_get_scan_transactions_count(

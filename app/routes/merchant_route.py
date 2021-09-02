@@ -1,5 +1,5 @@
 import uuid
-from typing import List
+from typing import List, Union
 
 from fastapi import APIRouter, Depends, Request
 
@@ -11,7 +11,7 @@ from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.data_pass import DataPassMerchantView
+from app.models.data_pass import DataPassMerchantView, InvalidDataPass
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
 
@@ -37,17 +37,24 @@ async def verify_barcode(
     scan_transactions_repo: ScanTransactionsRepository = Depends(
         get_repository(ScanTransactionsRepository)
     ),
+    data_passes_repo: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
     auth=Depends(merchant_user),
-) -> ScanResult:
-    verified = await fn_verify_barcode(
+) -> Union[ScanResult, InvalidDataPass]:
+    verified, is_valid_data_pass = await fn_verify_barcode(
         scan_request.barcode,
         data_pass_id,
         auth.id,
         customers_repo,
         scan_transactions_repo,
+        data_passes_repo,
         request=request,
     )
-    return ScanResult(verified=verified)
+    if is_valid_data_pass:
+        return ScanResult(verified=verified)
+    else:
+        return InvalidDataPass()
 
 
 @router.get(

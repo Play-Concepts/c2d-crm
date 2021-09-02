@@ -54,4 +54,5 @@ class DataPassMerchantView(
 
 
 class InvalidDataPass(BaseModel):
+    verified: bool = False
     message: str = "Data Pass is not found or may have expired."

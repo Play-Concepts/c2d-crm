@@ -32,6 +32,7 @@ class ScanRequest(CoreModel):
 
 class ScanResult(CoreModel):
     verified: bool
+    message: str
 
 
 class ScanTransactionCount(CoreModel):
