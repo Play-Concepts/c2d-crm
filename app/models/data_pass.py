@@ -1,5 +1,8 @@
+from datetime import datetime
 from enum import Enum
 from typing import Optional
+
+from pydantic import BaseModel
 
 from app.models.core import CoreModel, IDModelMixin
 
@@ -28,6 +31,8 @@ class DataPassBase(CoreModel):
     description_for_customers: Optional[str]
     perks_url_for_merchants: Optional[str]
     perks_url_for_customers: Optional[str]
+    details_url: Optional[str]
+    expiry_date: Optional[datetime]
 
 
 class DataPassCustomerView(
@@ -46,3 +51,8 @@ class DataPassMerchantView(
     currency_code: str
     price: float
     status: Optional[StatusType]
+
+
+class InvalidDataPass(BaseModel):
+    verified: bool = False
+    message: str = "Data Pass is not found or may have expired."

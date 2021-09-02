@@ -81,3 +81,28 @@ def create_new_customer_log() -> CustomerLogNew:
 
 def fake_hostname() -> str:
     return fake.hostname()
+
+
+def create_valid_data_pass_source_verifier_data() -> dict:
+    return {
+        "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
+        "description": fake.sentence(),
+        "logo_url": fake.image_url(),
+        "is_data_source": True,
+        "is_data_verifier": True,
+    }
+
+
+def create_new_data_pass_data(status: str, expiry_date: datetime) -> dict:
+    return {
+        "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
+        "title": fake.sentence(),
+        "description_for_merchants": fake.sentence(),
+        "description_for_customers": fake.sentence(),
+        "perks_url_for_merchants": fake.url(),
+        "perks_url_for_customers": fake.url(),
+        "currency_code": "USD",
+        "price": 0,
+        "status": status,
+        "expiry_date": expiry_date,
+    }

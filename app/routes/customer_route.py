@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
@@ -18,7 +18,7 @@ from app.models.core import BooleanResponse, IDModelMixin, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,
                                  CustomerView)
-from app.models.data_pass import DataPassCustomerView
+from app.models.data_pass import DataPassCustomerView, InvalidDataPass
 
 router = APIRouter()
 router.prefix = "/api/customer"
@@ -136,15 +136,22 @@ async def get_customer_data_passes(
     name="customer:data-passes",
     tags=["customer"],
     response_model=IDModelMixin,
+    responses={400: {"model": InvalidDataPass}},
 )
 async def activate_data_pass(
+    response: Response,
     data_pass_id: uuid.UUID,
     data_passes_repository: DataPassesRepository = Depends(
         get_repository(DataPassesRepository)
     ),
     auth_tuple=Depends(get_current_pda_user),
-) -> IDModelMixin:
+) -> Union[IDModelMixin, InvalidDataPass]:
     auth, _ = auth_tuple
-    return await fn_customer_activate_data_pass(
+    activation = await fn_customer_activate_data_pass(
         data_pass_id, auth["iss"], data_passes_repository
     )
+
+    if activation is None:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+
+    return activation

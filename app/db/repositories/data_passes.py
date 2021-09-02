@@ -1,14 +1,16 @@
 import uuid
+from datetime import datetime
 from typing import List
 
+from app.models.core import Count, IDModelMixin
 from app.models.data_pass import DataPassCustomerView, DataPassMerchantView
 
-from ...models.core import IDModelMixin
 from .base import BaseRepository
 
 GET_CUSTOMER_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
     data_passes.description_for_customers, data_passes.perks_url_for_merchants, data_passes.perks_url_for_customers,
+    data_passes.details_url, data_passes.expiry_date,
     sources.name source_name, sources.description source_description, sources.logo_url source_logo_url,
     verifiers.name verifier_name, verifiers.description verifier_description, verifiers.logo_url verifier_logo_url,
     (select status from data_pass_activations where pda_url=:pda_url and data_pass_id=data_passes.id)
@@ -21,7 +23,7 @@ GET_CUSTOMER_DATA_PASSES_SQL = """
 GET_MERCHANT_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
     data_passes.description_for_customers, data_passes.perks_url_for_merchants, data_passes.perks_url_for_customers,
-    data_passes.currency_code, data_passes.price,
+    data_passes.currency_code, data_passes.price, data_passes.details_url, data_passes.expiry_date,
     sources.name source_name, sources.description source_description, sources.logo_url source_logo_url,
     verifiers.name verifier_name, verifiers.description verifier_description, verifiers.logo_url verifier_logo_url,
     data_passes.status FROM data_passes
@@ -35,6 +37,11 @@ ACTIVATE_DATA_PASS_SQL = """
     ON CONFLICT (data_pass_id, pda_url)
     DO UPDATE SET status='active', updated_at=now()
     RETURNING id;
+"""
+
+IS_DATA_PASS_VALID_SQL = """
+    SELECT COUNT(id) FROM data_passes WHERE id=:data_pass_id AND status='active'
+    AND (expiry_date IS null OR expiry_date>now());
 """
 
 
@@ -53,6 +60,12 @@ class DataPassesRepository(BaseRepository):
             query=GET_MERCHANT_DATA_PASSES_SQL, values={}
         )
         return [DataPassMerchantView(**data_pass) for data_pass in data_passes]
+
+    async def is_data_pass_valid(self, *, data_pass_id: uuid.UUID) -> bool:
+        count = await self.db.fetch_one(
+            query=IS_DATA_PASS_VALID_SQL, values={"data_pass_id": data_pass_id}
+        )
+        return Count(**count).count == 1
 
     async def activate_data_pass(
         self, *, data_pass_id: uuid.UUID, pda_url: str
@@ -103,14 +116,15 @@ class DataPassesRepository(BaseRepository):
         currency_code: str,
         price: float,
         status: str,
+        expiry_date: datetime,
     ):
         sql = """
             INSERT INTO data_passes(name, title, description_for_merchants, description_for_customers,
             perks_url_for_merchants, perks_url_for_customers, data_pass_source_id,
-            data_pass_verifier_id, currency_code, price, status)
+            data_pass_verifier_id, currency_code, price, status, expiry_date)
             VALUES(:name, :title, :description_for_merchants, :description_for_customers,
             :perks_url_for_merchants, :perks_url_for_customers, :data_pass_source_id,
-            :data_pass_verifier_id, :currency_code, :price, :status)
+            :data_pass_verifier_id, :currency_code, :price, :status, :expiry_date)
             RETURNING id
         """
         query_values = {
@@ -125,6 +139,18 @@ class DataPassesRepository(BaseRepository):
             "currency_code": currency_code,
             "price": price,
             "status": status,
+            "expiry_date": expiry_date,
         }
         data_pass = await self.db.fetch_one(query=sql, values=query_values)
+        return IDModelMixin(**data_pass)
+
+    # TODO: TRANSIENT - not currently used in application, only in test suite
+    async def get_random_data_pass_(
+        self,
+    ):
+        sql = """
+            SELECT id FROM data_passes
+            ORDER BY random() LIMIT 1
+        """
+        data_pass = await self.db.fetch_one(query=sql, values={})
         return IDModelMixin(**data_pass)

@@ -1,10 +1,11 @@
 import uuid
-from typing import List, Union
+from typing import List
 
 from fastapi import Request
 
 from app.apis.merchant import merchant_data_pass
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.scan_transaction import (ScanTransactionCounts,
@@ -17,10 +18,11 @@ async def fn_verify_barcode(
     user_id: uuid.UUID,
     customers_repo: CustomersRepository,
     scan_transactions_repo: ScanTransactionsRepository,
+    data_passes_repo: DataPassesRepository,
     *,
     raw: bool = False,
     request: Request = None,
-) -> Union[bool, List]:
+) -> List:
     log = log_instance(request)
     try:
         barcode_val, data_pass_str = barcode.split(":")
@@ -40,17 +42,29 @@ async def fn_verify_barcode(
     )
     customer_id = None if customer is None else customer.id
 
-    await scan_transactions_repo.create_scan_transaction(
-        scan_transaction=ScanTransactionNew(
-            customer_id=customer_id,
-            user_id=user_id,
-            data_pass_id=data_pass_ident if valid_uuid else None,
-        )
+    is_valid_data_pass = (
+        False
+        if data_pass_ident is None
+        else await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_ident)
     )
+    if is_valid_data_pass:
+        await scan_transactions_repo.create_scan_transaction(
+            scan_transaction=ScanTransactionNew(
+                customer_id=customer_id,
+                user_id=user_id,
+                data_pass_id=data_pass_ident if valid_uuid else None,
+            )
+        )
+    else:
+        log.info("invalid-datapass({})".format(str(data_pass_ident)))
 
     result = customer_id is not None
     log.info("{}:{}:{}:{}".format(barcode, data_pass_id, user_id, result))
-    return [customer_id, barcode_str, data_pass_ident] if raw else result
+    return (
+        [customer_id, barcode_str, data_pass_ident, is_valid_data_pass]
+        if raw
+        else [result, is_valid_data_pass]
+    )
 
 
 async def fn_get_scan_transactions_count(
