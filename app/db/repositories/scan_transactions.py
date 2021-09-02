@@ -10,8 +10,8 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
                                          ScanTransactionView)
 
 NEW_SCAN_TRANSACTION_SQL = """
-    INSERT INTO scan_transactions(customer_id, user_id, data_pass_id)
-    VALUES (:customer_id, :user_id, :data_pass_id) RETURNING id;
+    INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid)
+    VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid) RETURNING id;
 """
 
 GET_SCAN_TRANSACTIONS_SQL = """
