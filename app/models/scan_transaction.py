@@ -12,7 +12,7 @@ class ScanTransactionBase(CoreModel):
 
 
 class ScanTransactionNew(ScanTransactionBase):
-    pass
+    data_pass_verified_valid: bool
 
 
 class ScanTransactionDBModel(IDModelMixin, ScanTransactionBase):

@@ -42,21 +42,30 @@ async def fn_verify_barcode(
     )
     customer_id = None if customer is None else customer.id
 
-    is_valid_data_pass = (
-        False
-        if data_pass_ident is None
-        else await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_ident)
-    )
-    if is_valid_data_pass:
+    is_valid_data_pass = False
+    if data_pass_ident is None:
+        await scan_transactions_repo.create_scan_transaction(
+            scan_transaction=ScanTransactionNew(
+                customer_id=customer_id,
+                user_id=user_id,
+                data_pass_id=None,
+                data_pass_verified_valid=False,
+            )
+        )
+    else:
+        is_valid_data_pass = await data_passes_repo.is_data_pass_valid(
+            data_pass_id=data_pass_ident
+        )
         await scan_transactions_repo.create_scan_transaction(
             scan_transaction=ScanTransactionNew(
                 customer_id=customer_id,
                 user_id=user_id,
                 data_pass_id=data_pass_ident if valid_uuid else None,
+                data_pass_verified_valid=is_valid_data_pass,
             )
         )
-    else:
-        log.info("invalid-datapass({})".format(str(data_pass_ident)))
+        if not is_valid_data_pass:
+            log.info("invalid-or-expired-datapass({})".format(str(data_pass_ident)))
 
     result = customer_id is not None
     log.info("{}:{}:{}:{}".format(barcode, data_pass_id, user_id, result))
