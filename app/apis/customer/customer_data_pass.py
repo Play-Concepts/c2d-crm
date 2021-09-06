@@ -15,7 +15,7 @@ async def fn_get_customer_data_passes(
 async def fn_customer_activate_data_pass(
     data_pass_id: uuid.UUID, pda_url: str, data_passes_repository: DataPassesRepository
 ) -> Optional[IDModelMixin]:
-    is_valid = await data_passes_repository.is_valid(data_pass_id=data_pass_id)
+    is_valid = await data_passes_repository.is_data_pass_valid(data_pass_id=data_pass_id)
     return (
         await data_passes_repository.activate_data_pass(
             pda_url=pda_url, data_pass_id=data_pass_id
