@@ -1,3 +1,4 @@
+from app.db.repositories.data_passes import DataPassesRepository
 import random
 from typing import List
 
@@ -6,14 +7,30 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 
 from app.apis.utils.random import random_string
+from app.models.core import IDModelMixin
+
 from app.db.repositories.customers import CustomersRepository
 from app.models.customer import CustomerBasicView, CustomerNew, CustomerView
 from app.tests.helpers.data_generator import create_new_customer
+
+from app.tests.helpers.data_creator import (create_data_pass,
+                                            create_data_source_and_verifier)
+from app.tests.helpers.data_generator import (
+    create_new_data_pass_data, create_valid_data_pass_source_verifier_data)
 
 pytestmark = pytest.mark.asyncio
 
 
 NUMBER_OF_TEST_RECORDS = 5
+
+@pytest.fixture(scope="class")
+def valid_data_pass_source_verifier_data() -> dict:
+    return create_valid_data_pass_source_verifier_data()
+
+
+@pytest.fixture(scope="class")
+def valid_data_pass_test_data() -> dict:
+    return create_new_data_pass_data("active", None)
 
 
 @pytest.fixture(scope="class")
@@ -30,7 +47,31 @@ def test_customer():
     return TestCustomer()
 
 
+
+class TestDataPass:
+    data_pass_id: IDModelMixin
+
+
+@pytest.fixture(scope="class")
+def test_data_pass():
+    return TestDataPass()
+
+
 class TestCustomersRepository:
+    @pytest.mark.xfail(reason="Must fail due to unreferenced data_pass_id in db", strict=True)
+    async def test_invalid_create_customer(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        customers_repository: CustomersRepository,
+        new_customers_test_data: List[CustomerNew],
+    ):
+        test_new_customer = new_customers_test_data[0]
+        created_customer = await customers_repository.create_customer(
+            new_customer=test_new_customer
+        )
+        assert created_customer is None
+
     async def test_create_customer(
         self,
         app: FastAPI,
@@ -38,8 +79,23 @@ class TestCustomersRepository:
         customers_repository: CustomersRepository,
         new_customers_test_data: List[CustomerNew],
         test_customer: TestCustomer,
+        data_passes_repository: DataPassesRepository,
+        valid_data_pass_source_verifier_data: dict,
+        valid_data_pass_test_data: dict,
+        test_data_pass: TestDataPass,
     ):
+        _data_source_and_verifier = await create_data_source_and_verifier(
+            valid_data_pass_source_verifier_data, data_passes_repository
+        )
+        valid_data_pass = await create_data_pass(
+            _data_source_and_verifier.id,
+            valid_data_pass_test_data,
+            data_passes_repository,
+        )
+        test_data_pass.data_pass_id = valid_data_pass
+
         test_new_customer = new_customers_test_data[0]
+        test_new_customer.data_pass_id = valid_data_pass.id
         created_customer = await customers_repository.create_customer(
             new_customer=test_new_customer
         )
@@ -51,6 +107,7 @@ class TestCustomersRepository:
         test_customer.customer = created_customer
 
         for customer in new_customers_test_data[1:]:
+            customer.data_pass_id = valid_data_pass.id
             await customers_repository.create_customer(new_customer=customer)
         assert True
 
@@ -159,3 +216,18 @@ class TestCustomersRepository:
             address=random_pad(test_address),
         )
         assert not is_empty(trimmed_address_customer)
+
+    async def test_cleanup(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        customers_repository: CustomersRepository,
+        data_passes_repository: DataPassesRepository,
+        test_data_pass: TestDataPass,
+    ):
+        await data_passes_repository.db.execute("TRUNCATE TABLE customers CASCADE;")
+        cleanup_sql = """
+            DELETE FROM data_passes WHERE id = :data_pass_id;
+        """
+        await data_passes_repository.db.fetch_one(query=cleanup_sql, values={ "data_pass_id": test_data_pass.data_pass_id.id})
+        assert True

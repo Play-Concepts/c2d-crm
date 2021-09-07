@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+import uuid
 
 from pydantic.class_validators import validator
 from pydantic.main import BaseModel
@@ -25,6 +26,7 @@ class CustomerBase(CoreModel):
 
 
 class CustomerNew(CustomerBase):
+    data_pass_id: uuid.UUID
     data: Json
 
 

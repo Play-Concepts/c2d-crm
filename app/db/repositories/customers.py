@@ -8,7 +8,7 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
-    INSERT INTO customers(data, pda_url, status) VALUES(:data, :pda_url, :status) RETURNING id;
+    INSERT INTO customers(data, pda_url, status, data_pass_id) VALUES(:data, :pda_url, :status, :data_pass_id) RETURNING id;
 """
 
 VIEW_CUSTOMER_SQL = """

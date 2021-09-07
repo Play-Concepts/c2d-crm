@@ -53,7 +53,7 @@ class TestDataPassesRepository:
         client: AsyncClient,
         data_passes_repository: DataPassesRepository,
         valid_data_pass_source_verifier_data: dict,
-        valid_data_pass_test_data: dict,
+        valid_data_pass_test_data: List[dict],
     ):
         _data_source_and_verifier = await create_data_source_and_verifier(
             valid_data_pass_source_verifier_data, data_passes_repository

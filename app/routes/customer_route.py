@@ -153,5 +153,6 @@ async def activate_data_pass(
 
     if activation is None:
         response.status_code = status.HTTP_400_BAD_REQUEST
+        return InvalidDataPass()
 
     return activation
