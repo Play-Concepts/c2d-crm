@@ -33,13 +33,16 @@ router.prefix = "/api/customer"
 )
 async def get_customer_basic(
     response: Response,
+    data_pass_id: uuid.UUID,
     customers_repository: CustomersRepository = Depends(
         get_repository(CustomersRepository)
     ),
     auth_tuple=Depends(get_current_pda_user),
 ) -> Union[CustomerBasicView, NotFound]:
     auth, _ = auth_tuple
-    return await fn_get_customer_basic(auth["iss"], customers_repository, response)
+    return await fn_get_customer_basic(
+        data_pass_id, auth["iss"], customers_repository, response
+    )
 
 
 @router.post(
@@ -56,8 +59,9 @@ async def search_customers(
     auth=Depends(get_current_pda_user),
 ) -> List[CustomerView]:
     return await fn_search_customers(
+        search_params.data_pass_id,
         search_params.last_name,
-        search_params.house_number,
+        search_params.address,
         search_params.email,
         customers_repository,
     )
@@ -77,11 +81,19 @@ async def claim_data(
     customers_repository: CustomersRepository = Depends(
         get_repository(CustomersRepository)
     ),
+    data_passes_repository: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
     auth_tuple=Depends(get_current_pda_user),
 ) -> Union[CustomerClaimResponse, NotFound]:
     auth, token = auth_tuple
     result = await fn_claim_data(
-        claim_params.id, auth["iss"], token, customers_repository, response
+        claim_params.id,
+        auth["iss"],
+        token,
+        customers_repository,
+        data_passes_repository,
+        response,
     )
     log = log_instance(request)
     if result is not None:

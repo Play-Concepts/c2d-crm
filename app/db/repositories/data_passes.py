@@ -1,11 +1,17 @@
 import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from app.models.core import Count, IDModelMixin
-from app.models.data_pass import DataPassCustomerView, DataPassMerchantView
+from app.models.data_pass import (DataPassBasicView, DataPassCustomerView,
+                                  DataPassMerchantView)
 
 from .base import BaseRepository
+
+GET_DATA_PASS_SQL = """
+    SELECT id, name FROM data_passes
+    WHERE id = :data_pass_id;
+"""
 
 GET_CUSTOMER_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
@@ -46,6 +52,15 @@ IS_DATA_PASS_VALID_SQL = """
 
 
 class DataPassesRepository(BaseRepository):
+    async def get_data_pass(
+        self, *, data_pass_id: uuid.UUID
+    ) -> Optional[DataPassBasicView]:
+        query_values = {"data_pass_id": data_pass_id}
+        data_pass = await self.db.fetch_one(
+            query=GET_DATA_PASS_SQL, values=query_values
+        )
+        return None if data_pass is None else DataPassBasicView(**data_pass)
+
     async def get_customer_data_passes(
         self, *, pda_url: str
     ) -> List[DataPassCustomerView]:

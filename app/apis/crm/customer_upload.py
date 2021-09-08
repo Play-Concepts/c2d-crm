@@ -1,7 +1,7 @@
 import codecs
 import csv
-from typing import Any, Dict, List
 import uuid
+from typing import Any, Dict, List
 
 from fastapi import UploadFile
 
@@ -13,12 +13,15 @@ from app.models.customer import CustomerNew
 
 async def do_customer_file_upload(
     data_pass_id: uuid.UUID,
-    customers_file: UploadFile, customers_repo: CustomersRepository
+    customers_file: UploadFile,
+    customers_repo: CustomersRepository,
 ) -> CreatedCount:
     created_customers: int = 0
     payload = _construct_payload(customers_file)
     for customer in payload:
-        new_customer: CustomerNew = CustomerNew(data=customer, data_pass_id=data_pass_id)
+        new_customer: CustomerNew = CustomerNew(
+            data=customer, data_pass_id=data_pass_id
+        )
         await customers_repo.create_customer(new_customer=new_customer)
         created_customers += 1
 

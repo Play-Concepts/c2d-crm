@@ -39,7 +39,11 @@ async def fn_customer_upload(
     customers_repo: CustomersRepository,
 ) -> CreatedCount:
     is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
-    return await do_customer_file_upload(data_pass_id, file, customers_repo) if is_valid else None
+    return (
+        await do_customer_file_upload(data_pass_id, file, customers_repo)
+        if is_valid
+        else None
+    )
 
 
 async def fn_merchant_upload(

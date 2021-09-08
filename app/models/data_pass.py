@@ -35,6 +35,10 @@ class DataPassBase(CoreModel):
     expiry_date: Optional[datetime]
 
 
+class DataPassBasicView(IDModelMixin):
+    name: str
+
+
 class DataPassCustomerView(
     IDModelMixin, DataPassBase, DataPassSource, DataPassVerifier
 ):

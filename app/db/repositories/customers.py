@@ -8,7 +8,8 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
-    INSERT INTO customers(data, pda_url, status, data_pass_id) VALUES(:data, :pda_url, :status, :data_pass_id) RETURNING id;
+    INSERT INTO customers(data, pda_url, status, data_pass_id)
+    VALUES(:data, :pda_url, :status, :data_pass_id) RETURNING id;
 """
 
 VIEW_CUSTOMER_SQL = """
@@ -27,14 +28,21 @@ GET_CUSTOMERS_SQL = """
 """
 
 VIEW_CUSTOMER_BASIC_SQL = """
-    SELECT id, claimed_timestamp FROM customers WHERE pda_url = :pda_url;
+    SELECT id, claimed_timestamp FROM customers WHERE pda_url = :pda_url
+    AND data_pass_id = :data_pass_id;
 """
 
 SEARCH_CUSTOMER_SQL = """
     SELECT id, data, pda_url, status FROM customers WHERE
+    data_pass_id = :data_pass_id AND
     data->'person'->'profile'->>'last_name' ilike :last_name AND
     data->'person'->'address'->>'address_line_1' ilike :address AND
-    data->'person'->'contact'->>'email' ilike :email AND
+    (data->'person'->'contact'->>'email' ilike :email OR
+    data->'person'->'contact'->>'email_1' ilike :email OR
+    data->'person'->'contact'->>'email_2' ilike :email OR
+    data->'person'->'contact'->>'email_3' ilike :email OR
+    data->'person'->'contact'->>'email_4' ilike :email OR
+    data->'person'->'contact'->>'email_5' ilike :email) AND
     status='new';
 """
 
@@ -44,7 +52,7 @@ CLAIM_DATA_SQL = """
     pda_url=:pda_url,
     updated_at=now()
     WHERE id=:id
-    RETURNING id, data, status, pda_url, claimed_timestamp;
+    RETURNING id, data, status, pda_url, claimed_timestamp, data_pass_id;
 """
 
 
@@ -73,19 +81,23 @@ class CustomersRepository(BaseRepository):
         )
         return None if customer is None else CustomerView(**customer)
 
-    async def get_customer_basic(self, *, pda_url: str) -> Optional[CustomerBasicView]:
+    async def get_customer_basic(
+        self, *, data_pass_id: uuid.UUID, pda_url: str
+    ) -> Optional[CustomerBasicView]:
         customer = await self.db.fetch_one(
-            query=VIEW_CUSTOMER_BASIC_SQL, values={"pda_url": pda_url}
+            query=VIEW_CUSTOMER_BASIC_SQL,
+            values={"pda_url": pda_url, "data_pass_id": data_pass_id},
         )
         return None if customer is None else CustomerBasicView(**customer)
 
     async def search_customers(
-        self, *, last_name: str, address: str, email: str
+        self, *, data_pass_id: uuid.UUID, last_name: str, address: str, email: str
     ) -> List[CustomerView]:
         def param_format(element: str) -> str:
             return "" if element == "" or element is None else element.strip()
 
         values = {
+            "data_pass_id": data_pass_id,
             "last_name": param_format(last_name),
             "address": param_format(address),
             "email": param_format(email),

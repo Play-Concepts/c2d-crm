@@ -6,8 +6,10 @@ from fastapi import Response, status
 
 from app.apis.customer import customer_data_pass
 from app.apis.utils.pda_client import write_pda_data
+from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
+from app.db.repositories.data_passes import DataPassesRepository
 from app.models.core import BooleanResponse, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerView)
@@ -15,9 +17,14 @@ from app.models.customer_log import CustomerLogNew
 
 
 async def fn_get_customer_basic(
-    pda_url: str, customers_repo: CustomersRepository, response: Response
+    data_pass_id: uuid.UUID,
+    pda_url: str,
+    customers_repo: CustomersRepository,
+    response: Response,
 ) -> Union[CustomerBasicView, NotFound]:
-    customer = await customers_repo.get_customer_basic(pda_url=pda_url)
+    customer = await customers_repo.get_customer_basic(
+        pda_url=pda_url, data_pass_id=data_pass_id
+    )
     if customer is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Customer Not Found")
@@ -25,10 +32,14 @@ async def fn_get_customer_basic(
 
 
 async def fn_search_customers(
-    last_name: str, address: str, email: str, customers_repo: CustomersRepository
+    data_pass_id: uuid.UUID,
+    last_name: str,
+    address: str,
+    email: str,
+    customers_repo: CustomersRepository,
 ) -> List[CustomerView]:
     return await customers_repo.search_customers(
-        last_name=last_name, address=address, email=email
+        data_pass_id=data_pass_id, last_name=last_name, address=address, email=email
     )
 
 
@@ -37,6 +48,7 @@ async def fn_claim_data(
     pda_url: str,
     token: str,
     customers_repo: CustomersRepository,
+    data_passes_repo: DataPassesRepository,
     response: Response,
 ) -> Union[CustomerClaimResponse, NotFound]:
     claimed_data = await customers_repo.claim_data(
@@ -50,8 +62,18 @@ async def fn_claim_data(
     data["person"]["claimed_timestamp"] = claimed_data.claimed_timestamp.replace(
         tzinfo=timezone.utc
     ).isoformat()
-    # TODO: remove hardcoding of default pass when multipass is implemented
-    write_pda_data(pda_url, token, "elyria", "elyria-resident", claimed_data.data)
+
+    data_pass = await data_passes_repo.get_data_pass(
+        data_pass_id=claimed_data.data_pass_id
+    )
+    data_pass_name = "" if data_pass is None else data_pass.name
+    write_pda_data(
+        pda_url,
+        token,
+        app_config.APPLICATION_NAMESPACE,
+        data_pass_name,
+        claimed_data.data,
+    )
     return claimed_data
 
 
