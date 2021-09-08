@@ -44,6 +44,7 @@ def create_new_customer() -> CustomerNew:
         pda_url=fake.hostname(),
         status=CustomerStatusType.new,
         data=_customer_data(),
+        data_pass_id=uuid.uuid4(),
     )
 
 

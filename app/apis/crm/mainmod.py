@@ -4,6 +4,7 @@ from typing import List, Union
 from fastapi import BackgroundTasks, Request, Response, UploadFile, status
 
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, NotFound
 from app.models.customer import CustomerView
@@ -32,9 +33,17 @@ async def fn_get_customer(
 
 
 async def fn_customer_upload(
-    file: UploadFile, customers_repo: CustomersRepository
+    data_pass_id: uuid.UUID,
+    data_passes_repo: DataPassesRepository,
+    file: UploadFile,
+    customers_repo: CustomersRepository,
 ) -> CreatedCount:
-    return await do_customer_file_upload(file, customers_repo)
+    is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
+    return (
+        await do_customer_file_upload(data_pass_id, file, customers_repo)
+        if is_valid
+        else None
+    )
 
 
 async def fn_merchant_upload(

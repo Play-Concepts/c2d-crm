@@ -156,6 +156,7 @@ class TestMerchantFunctions:
         assert barcode_data_pass_uuid is None
         assert not is_valid_data_pass
 
+        valid_customer.data_pass_id = test_data_pass.id
         test_customer = await customers_repository.create_customer(
             new_customer=valid_customer
         )

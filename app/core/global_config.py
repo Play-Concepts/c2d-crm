@@ -20,6 +20,7 @@ class GlobalConfig(BaseSettings):
     POSTGRES_PORT: Optional[str] = os.environ.get("POSTGRES_PORT", None)
     POSTGRES_DB: Optional[str] = os.environ.get("POSTGRES_DB", None)
     APPLICATION_ID: Optional[str] = os.environ.get("APPLICATION_ID", "")
+    APPLICATION_NAMESPACE: Optional[str] = os.environ.get("APPLICATION_NAMESPACE", "")
     APPLICATION_ROOT: Optional[str] = os.environ.get(
         "APPLICATION_ROOT", "http://localhost:3000"
     )

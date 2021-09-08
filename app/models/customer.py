@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -25,6 +26,7 @@ class CustomerBase(CoreModel):
 
 
 class CustomerNew(CustomerBase):
+    data_pass_id: uuid.UUID
     data: Json
 
 
@@ -49,8 +51,9 @@ class CustomerBasicView(IDModelMixin):
 
 class CustomerSearch(BaseModel):
     last_name: Optional[str] = ""
-    house_number: Optional[str] = ""
+    address: Optional[str] = ""
     email: Optional[str] = ""
+    data_pass_id: uuid.UUID
 
 
 class CustomerClaim(IDModelMixin):
@@ -62,3 +65,4 @@ class CustomerClaimResponse(IDModelMixin, CustomerBase):
     status: StatusType
     pda_url: str
     claimed_timestamp: datetime
+    data_pass_id: uuid.UUID
