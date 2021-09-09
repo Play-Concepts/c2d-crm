@@ -1,22 +1,22 @@
 import uuid
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional, Union
 
 from app.db.repositories.base import BaseRepository
 from app.models.scan_transaction import (ScanTransactionBasicView,
                                          ScanTransactionCount,
                                          ScanTransactionCounts,
                                          ScanTransactionNew,
-                                         ScanTransactionView)
+                                         ScanTransactionNewTest)
 
 NEW_SCAN_TRANSACTION_SQL = """
     INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid)
     VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid) RETURNING id;
 """
 
-GET_SCAN_TRANSACTIONS_SQL = """
-    SELECT id, customer_id, user_id, created_at FROM scan_transactions
-    WHERE created_at>:from_date AND user_id=:user_id AND data_pass_id=:data_pass_id;
+NEW_SCAN_TRANSACTION_TEST_SQL_ = """
+    INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid, created_at)
+    VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :created_at) RETURNING id;
 """
 
 GET_SCAN_TRANSACTIONS_COUNT_SQL = """
@@ -37,11 +37,16 @@ GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL = """
 
 class ScanTransactionsRepository(BaseRepository):
     async def create_scan_transaction(
-        self, *, scan_transaction: ScanTransactionNew
+        self, *, scan_transaction: Union[ScanTransactionNew, ScanTransactionNewTest]
     ) -> Optional[ScanTransactionBasicView]:
         query_values = scan_transaction.dict()
+        query = (
+            NEW_SCAN_TRANSACTION_SQL
+            if isinstance(scan_transaction, ScanTransactionNew)
+            else NEW_SCAN_TRANSACTION_TEST_SQL_
+        )
         created_scan_transaction = await self.db.fetch_one(
-            query=NEW_SCAN_TRANSACTION_SQL, values=query_values
+            query=query, values=query_values
         )
 
         return (
@@ -50,24 +55,7 @@ class ScanTransactionsRepository(BaseRepository):
             else ScanTransactionBasicView(**created_scan_transaction)
         )
 
-    async def get_scan_transactions_from_last_n_days(
-        self, *, n: int, user_id: uuid.UUID, data_pass_id: uuid.UUID
-    ) -> List[ScanTransactionView]:
-        from_date = (datetime.now() - timedelta(days=n)).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        transactions = await self.db.fetch_all(
-            query=GET_SCAN_TRANSACTIONS_SQL,
-            values={
-                "from_date": from_date,
-                "user_id": user_id,
-                "data_pass_id": data_pass_id,
-            },
-        )
-
-        return [ScanTransactionView(**transaction) for transaction in transactions]
-
-    async def get_scan_transactions_count_with_interval_n_days(
+    async def get_scan_trans_count_with_interval_n_days(
         self, *, interval_days: int, user_id: uuid.UUID, data_pass_id: uuid.UUID
     ) -> ScanTransactionCounts:
         now = datetime.now()
@@ -91,7 +79,7 @@ class ScanTransactionsRepository(BaseRepository):
             query=GET_SCAN_TRANSACTIONS_COUNT_SQL,
             values={
                 "from_date": second_from_date,
-                "to_date": first_from_date,
+                "to_date": first_from_date - timedelta(microseconds=1),
                 "user_id": user_id,
                 "data_pass_id": data_pass_id,
             },
@@ -101,7 +89,7 @@ class ScanTransactionsRepository(BaseRepository):
             query=GET_SCAN_TRANSACTIONS_COUNT_SQL,
             values={
                 "from_date": third_from_date,
-                "to_date": second_from_date,
+                "to_date": second_from_date - timedelta(microseconds=1),
                 "user_id": user_id,
                 "data_pass_id": data_pass_id,
             },
@@ -112,7 +100,7 @@ class ScanTransactionsRepository(BaseRepository):
             interval_3=ScanTransactionCount(**third_transaction).compute(),
         )
 
-    async def get_customer_scan_transactions_count_with_interval_n_days(
+    async def get_customer_scan_trans_count_with_interval_n_days(
         self, *, interval_days: int, pda_url: str, data_pass_id: uuid.UUID
     ) -> ScanTransactionCounts:
         now = datetime.now()
@@ -136,7 +124,7 @@ class ScanTransactionsRepository(BaseRepository):
             query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL,
             values={
                 "from_date": second_from_date,
-                "to_date": first_from_date,
+                "to_date": first_from_date - timedelta(microseconds=1),
                 "pda_url": pda_url,
                 "data_pass_id": data_pass_id,
             },
@@ -146,7 +134,7 @@ class ScanTransactionsRepository(BaseRepository):
             query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL,
             values={
                 "from_date": third_from_date,
-                "to_date": second_from_date,
+                "to_date": second_from_date - timedelta(microseconds=1),
                 "pda_url": pda_url,
                 "data_pass_id": data_pass_id,
             },
