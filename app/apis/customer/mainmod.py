@@ -4,7 +4,7 @@ from typing import List, Union
 
 from fastapi import Response, status
 
-from app.apis.customer import customer_data_pass
+from app.apis.customer import customer_data_pass, customer_transactions
 from app.apis.utils.pda_client import write_pda_data
 from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
@@ -90,3 +90,6 @@ async def fn_check_first_login(
 
 fn_get_customer_data_passes = customer_data_pass.fn_get_customer_data_passes
 fn_customer_activate_data_pass = customer_data_pass.fn_customer_activate_data_pass
+fn_customer_get_scan_transactions_count = (
+    customer_transactions.fn_customer_get_scan_transactions_count
+)
