@@ -52,7 +52,7 @@ async def verify_barcode(
         request=request,
     )
     if is_valid_data_pass:
-        return ScanResult(verified=verified)
+        return ScanResult(verified=verified, str="")
     else:
         return InvalidDataPass()
 
