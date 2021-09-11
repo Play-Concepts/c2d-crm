@@ -2,6 +2,7 @@ import os
 import warnings
 from io import BytesIO
 from pathlib import Path
+from typing import Tuple
 
 import alembic
 import pytest
@@ -11,8 +12,11 @@ from asgi_lifespan import LifespanManager
 from databases import Database
 from fastapi import FastAPI, Response, UploadFile
 from fastapi_users.password import get_password_hash
+from fastapi_users.user import CreateUserProtocol
 from httpx import AsyncClient
 
+from app.apis.utils.random import random_string
+from app.core import global_state
 # Apply migrations at beginning and end of testing session
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
@@ -20,9 +24,16 @@ from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.db.repositories.users import UsersRepository
-from app.models.user import UserDB
+from app.models.merchant import MerchantEmailView, MerchantNew
+from app.models.user import UserCreate, UserDB
+from app.tests.helpers.data_generator import create_new_merchant
 
 viviane_password_hash = get_password_hash("viviane")
+
+
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"
 
 
 @pytest.fixture(scope="session")
@@ -90,8 +101,8 @@ async def client(app: FastAPI) -> AsyncClient:
     async with LifespanManager(app):
         async with AsyncClient(
             app=app,
-            base_url="http://testserver",
-            headers={"Content-Type": "application/json"},
+            base_url="http://localhost",
+            headers={"Accept": "application/json"},
         ) as client:
             yield client
 
@@ -137,12 +148,29 @@ def superuser() -> UserDB:
 
 
 @pytest.fixture
-def merchant() -> UserDB:
-    return UserDB(
-        email="morgana@camelot.bt",
-        hashed_password=viviane_password_hash,
-        is_superuser=False,
+def merchant_data() -> MerchantNew:
+    return create_new_merchant()
+
+
+@pytest.fixture
+async def user_merchant(
+    merchants_repository: MerchantsRepository, merchant_data: MerchantNew
+) -> Tuple[CreateUserProtocol, MerchantEmailView]:
+    # create merchant
+    await merchants_repository.create_merchant(new_merchant=merchant_data)
+    user = await global_state.fastapi_users.create_user(
+        UserCreate(
+            email=merchant_data.email,
+            password=random_string(),
+            is_verified=True,
+        )
     )
+
+    merchant = await merchants_repository.get_merchant_by_email(
+        email=merchant_data.email
+    )
+
+    return (user, merchant)
 
 
 @pytest.fixture(scope="session")

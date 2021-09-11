@@ -55,6 +55,8 @@ class TestDataPassesRepository:
         valid_data_pass_source_verifier_data: dict,
         valid_data_pass_test_data: List[dict],
     ):
+        await data_passes_repository.db.execute("TRUNCATE TABLE data_passes CASCADE;")
+
         _data_source_and_verifier = await create_data_source_and_verifier(
             valid_data_pass_source_verifier_data, data_passes_repository
         )
