@@ -31,6 +31,11 @@ from app.tests.helpers.data_generator import create_new_merchant
 viviane_password_hash = get_password_hash("viviane")
 
 
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"
+
+
 @pytest.fixture(scope="session")
 def apply_migrations():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -96,8 +101,8 @@ async def client(app: FastAPI) -> AsyncClient:
     async with LifespanManager(app):
         async with AsyncClient(
             app=app,
-            base_url="http://testserver",
-            headers={"Content-Type": "application/json"},
+            base_url="http://localhost",
+            headers={"Accept": "application/json"},
         ) as client:
             yield client
 
@@ -157,7 +162,7 @@ async def user_merchant(
         UserCreate(
             email=merchant_data.email,
             password=random_string(),
-            is_verified=False,
+            is_verified=True,
         )
     )
 
