@@ -280,7 +280,7 @@ class TestMerchantFunctions:
         assert barcode_data_pass_uuid == expired_data_pass.id
         assert not is_valid_data_pass
 
-    @pytest.mark.xfail(reason="TODO")
+    @pytest.mark.skip(reason="IGNORING: direct passthrough to db")
     async def test_fn_get_scan_transactions_count(
         self,
         app: FastAPI,

@@ -15,12 +15,18 @@ class ScanTransactionNew(ScanTransactionBase):
     data_pass_verified_valid: bool
 
 
+class ScanTransactionNewTest(ScanTransactionBase):
+    data_pass_verified_valid: bool
+    created_at: datetime
+
+
 class ScanTransactionDBModel(IDModelMixin, ScanTransactionBase):
+    data_pass_verified_valid: bool
     created_at: datetime
 
 
 class ScanTransactionBasicView(IDModelMixin):
-    data_pass_id: Optional[uuid.UUID]
+    pass
 
 
 ScanTransactionView = ScanTransactionDBModel

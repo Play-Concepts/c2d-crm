@@ -6,7 +6,7 @@ pytestmark = pytest.mark.asyncio
 
 
 class TestAuthFunctions:
-    @pytest.mark.xfail(reason="IGNORING: no additional codes in function to test.")
+    @pytest.mark.skip(reason="IGNORING: no additional codes in function to test.")
     async def test_fn_created_password(
         self,
         app: FastAPI,

@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
+                                       fn_customer_get_scan_transactions_count,
                                        fn_get_customer_basic,
                                        fn_get_customer_data_passes,
                                        fn_search_customers)
@@ -13,12 +14,14 @@ from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.core import BooleanResponse, IDModelMixin, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerSearch,
                                  CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
+from app.models.scan_transaction import ScanTransactionCounts
 
 router = APIRouter()
 router.prefix = "/api/customer"
@@ -168,3 +171,23 @@ async def activate_data_pass(
         return InvalidDataPass()
 
     return activation
+
+
+@router.get(
+    "/{data_pass_id}/scan-transactions-count",
+    name="customer:scan-transactions-count",
+    tags=["customer"],
+    response_model=ScanTransactionCounts,
+)
+async def get_scan_transactions_count(
+    data_pass_id: uuid.UUID,
+    interval_days: int,
+    scan_transactions_repo: ScanTransactionsRepository = Depends(
+        get_repository(ScanTransactionsRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> ScanTransactionCounts:
+    auth, _ = auth_tuple
+    return await fn_customer_get_scan_transactions_count(
+        interval_days, auth["iss"], data_pass_id, scan_transactions_repo
+    )
