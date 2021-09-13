@@ -243,7 +243,7 @@ class TestCustomersRepository:
         data_passes_repository: DataPassesRepository,
         test_data_pass: TestDataPass,
     ):
-        await data_passes_repository.db.execute("TRUNCATE TABLE customers CASCADE;")
+        await customers_repository.db.execute("TRUNCATE TABLE customers CASCADE;")
         cleanup_sql = """
             DELETE FROM data_passes WHERE id = :data_pass_id;
         """
