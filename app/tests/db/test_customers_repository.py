@@ -239,6 +239,7 @@ class TestCustomersRepository:
         self,
         app: FastAPI,
         client: AsyncClient,
+        customers_repository: CustomersRepository,
         data_passes_repository: DataPassesRepository,
         test_data_pass: TestDataPass,
     ):
