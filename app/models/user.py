@@ -1,25 +1,27 @@
 #
 # This defines the data model for BOTH Merchant and CRM User.
 #
+from typing import Optional
+
 from fastapi_users import models
 
 from app.models.core import IDModelMixin
 
 
 class User(models.BaseUser):
-    pass
+    is_supplier: bool
 
 
 class UserCreate(models.BaseUserCreate):
-    pass
+    is_supplier: Optional[bool] = False
 
 
 class UserUpdate(User, models.BaseUserUpdate):
-    pass
+    is_supplier: Optional[bool] = False
 
 
 class UserDB(User, models.BaseUserDB):
-    pass
+    is_supplier: Optional[bool] = False
 
 
 class UserView(IDModelMixin):
