@@ -1,5 +1,3 @@
-from app.apis.utils.random import random_string
-from app.models.user import UserCreate
 import uuid
 from typing import List, Optional, Union
 
@@ -11,6 +9,7 @@ from app.apis.crm.mainmod import (fn_create_data_pass_source,
                                   fn_customer_upload, fn_get_customer,
                                   fn_list_customers, fn_merchant_upload)
 from app.apis.dependencies.database import get_repository
+from app.apis.utils.random import random_string
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
@@ -19,7 +18,9 @@ from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, IDModelMixin, NotFound
 from app.models.customer import CustomerView
 from app.models.data_pass import InvalidDataPass
-from app.models.data_pass_source import DataPassSourceNew, DataPassSourceRequest
+from app.models.data_pass_source import (DataPassSourceNew,
+                                         DataPassSourceRequest)
+from app.models.user import UserCreate
 
 router = APIRouter()
 router.prefix = "/api/crm"
@@ -139,7 +140,7 @@ async def create_data_source(
 ) -> IDModelMixin:
     user_id = None
     if email is not None:
-        fastapi_users=global_state.fastapi_users
+        fastapi_users = global_state.fastapi_users
         user = await fastapi_users.create_user(
             UserCreate(
                 email=email,

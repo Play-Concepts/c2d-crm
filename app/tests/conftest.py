@@ -6,7 +6,6 @@ from typing import Tuple
 
 import alembic
 import pytest
-import requests
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from databases import Database
@@ -185,12 +184,3 @@ async def user_merchant(
     )
 
     return (user, merchant)
-
-
-@pytest.fixture(scope="session")
-def pda_user():
-    r = requests.get(
-        "https://testing.hubat.net/users/access_token",
-        headers={"username": "testing", "password": "labai-geras-slaptazodis"},
-    )
-    return r.json()["accessToken"]

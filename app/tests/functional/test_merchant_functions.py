@@ -7,6 +7,7 @@ from databases import Database
 from faker import Faker
 from faker.providers import internet, lorem
 from fastapi import FastAPI
+from fastapi_users.user import CreateUserProtocol
 from httpx import AsyncClient
 
 from app.apis.merchant.mainmod import fn_verify_barcode
@@ -25,7 +26,8 @@ from app.tests.helpers.data_creator import (create_data_pass,
                                             create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data, create_new_merchant,
-    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data)
+    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
+    supplier_email)
 
 pytestmark = pytest.mark.asyncio
 
@@ -51,9 +53,21 @@ def valid_customer() -> CustomerNew:
     return create_new_customer()
 
 
-@pytest.fixture(scope="class")
-def valid_data_pass_source_data() -> dict:
-    return create_valid_data_pass_source_data()
+@pytest.fixture
+async def data_supplier_user() -> CreateUserProtocol:
+    return await global_state.fastapi_users.create_user(
+        UserCreate(
+            email=supplier_email(),
+            password=random_string(),
+            is_verified=True,
+            is_supplier=True,
+        )
+    )
+
+
+@pytest.fixture
+async def valid_data_pass_source_data(data_supplier_user: CreateUserProtocol) -> dict:
+    return create_valid_data_pass_source_data(data_supplier_user.id)
 
 
 @pytest.fixture(scope="class")

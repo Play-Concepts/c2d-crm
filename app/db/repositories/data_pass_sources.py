@@ -8,7 +8,8 @@ NEW_DATA_PASS_SOURCE_SQL = """
     RETURNING id
 """
 
-NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = ["""
+NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = [
+    """
     CREATE TABLE {data_table} (
         id uuid DEFAULT uuid_generate_v4() NOT NULL,
         data json NOT NULL,
@@ -19,12 +20,14 @@ NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = ["""
         updated_at timestamp without time zone
     );
 """,
-"""
+    """
     ALTER TABLE ONLY {data_table} ADD CONSTRAINT {data_table}_pkey PRIMARY KEY (id);
 """,
-"""
+    """
     CREATE UNIQUE INDEX idx_{data_table}_pda_url ON {data_table} USING btree (pda_url);
-"""]
+""",
+]
+
 
 class DataPassSourcesRepository(BaseRepository):
     async def create_data_pass_source(

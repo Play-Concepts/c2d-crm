@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi_users.user import CreateUserProtocol
 from httpx import AsyncClient
 
+from app.apis.utils.random import random_string
+from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
@@ -19,19 +21,36 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
                                          ScanTransactionCounts,
                                          ScanTransactionNew,
                                          ScanTransactionNewTest)
+from app.models.user import UserCreate
 from app.tests.helpers.data_creator import (create_data_pass,
                                             create_data_source,
                                             create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
-    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data)
+    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
+    supplier_email)
 
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.fixture(scope="class")
-def valid_data_pass_source_data() -> dict:
-    return create_valid_data_pass_source_data()
+
+@pytest.fixture
+async def data_supplier_user() -> CreateUserProtocol:
+    return await global_state.fastapi_users.create_user(
+        UserCreate(
+            email=supplier_email(),
+            password=random_string(),
+            is_verified=True,
+            is_supplier=True,
+        )
+    )
+
+
+@pytest.fixture
+async def valid_data_pass_source_data(data_supplier_user: CreateUserProtocol) -> dict:
+    return create_valid_data_pass_source_data(data_supplier_user.id)
+
+
 
 
 @pytest.fixture(scope="class")

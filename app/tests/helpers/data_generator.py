@@ -39,6 +39,10 @@ def create_new_merchant() -> MerchantNew:
     )
 
 
+def supplier_email() -> str:
+    return fake.email()
+
+
 def create_new_customer() -> CustomerNew:
     return CustomerNew(
         pda_url=fake.hostname(),
@@ -84,7 +88,7 @@ def fake_hostname() -> str:
     return fake.hostname()
 
 
-def create_valid_data_pass_source_data() -> dict:
+def create_valid_data_pass_source_data(user_id: str) -> dict:
     return {
         "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
         "description": fake.sentence(),
@@ -92,6 +96,7 @@ def create_valid_data_pass_source_data() -> dict:
         "data_table": "",
         "search_sql": "",
         "search_parameters": "",
+        "user_id": user_id,
     }
 
 
