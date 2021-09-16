@@ -84,13 +84,22 @@ def fake_hostname() -> str:
     return fake.hostname()
 
 
-def create_valid_data_pass_source_verifier_data() -> dict:
+def create_valid_data_pass_source_data() -> dict:
     return {
         "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
         "description": fake.sentence(),
         "logo_url": fake.image_url(),
-        "is_data_source": True,
-        "is_data_verifier": True,
+        "data_table": "",
+        "search_sql": "",
+        "search_parameters": "",
+    }
+
+
+def create_valid_data_pass_verifier_data() -> dict:
+    return {
+        "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
+        "description": fake.sentence(),
+        "logo_url": fake.image_url(),
     }
 
 

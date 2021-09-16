@@ -12,13 +12,10 @@ class StatusType(str, Enum):
     inactive = "inactive"
 
 
-class DataPassSource(CoreModel):
+class DataPassSourceVerifier(CoreModel):
     source_name: str
     source_description: str
     source_logo_url: str
-
-
-class DataPassVerifier(CoreModel):
     verifier_name: str
     verifier_description: str
     verifier_logo_url: str
@@ -39,9 +36,7 @@ class DataPassBasicView(IDModelMixin):
     name: str
 
 
-class DataPassCustomerView(
-    IDModelMixin, DataPassBase, DataPassSource, DataPassVerifier
-):
+class DataPassCustomerView(IDModelMixin, DataPassBase, DataPassSourceVerifier):
     activation_status: Optional[StatusType]
     active_label_1: Optional[str] = "Confirmed"
     active_label_2: Optional[str] = ""
@@ -49,9 +44,7 @@ class DataPassCustomerView(
     inactive_label_2: Optional[str] = ""
 
 
-class DataPassMerchantView(
-    IDModelMixin, DataPassBase, DataPassSource, DataPassVerifier
-):
+class DataPassMerchantView(IDModelMixin, DataPassBase, DataPassSourceVerifier):
     currency_code: str
     price: float
     status: Optional[StatusType]

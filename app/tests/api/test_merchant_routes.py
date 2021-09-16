@@ -13,6 +13,8 @@ from httpx import AsyncClient
 
 from app.apis.utils.random import random_string
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
+from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.core import IDModelMixin
@@ -21,10 +23,11 @@ from app.models.data_pass import InvalidDataPass
 from app.models.merchant import MerchantEmailView
 from app.models.scan_transaction import ScanRequest, ScanResult
 from app.tests.helpers.data_creator import (create_data_pass,
-                                            create_data_source_and_verifier)
+                                            create_data_source,
+                                            create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
-    create_valid_data_pass_source_verifier_data)
+    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data)
 
 pytestmark = pytest.mark.asyncio
 
@@ -35,8 +38,13 @@ def valid_customer() -> CustomerNew:
 
 
 @pytest.fixture(scope="class")
-def valid_data_pass_source_verifier_data() -> dict:
-    return create_valid_data_pass_source_verifier_data()
+def valid_data_pass_source_data() -> dict:
+    return create_valid_data_pass_source_data()
+
+
+@pytest.fixture(scope="class")
+def valid_data_pass_verifier_data() -> dict:
+    return create_valid_data_pass_verifier_data()
 
 
 @pytest.fixture(scope="class")
@@ -70,7 +78,7 @@ class TestMerchantRoutes:
             ),
         ],
     )
-    async def xtest_merchant_routes_exists(
+    async def test_merchant_routes_exists(
         self,
         app: FastAPI,
         client: AsyncClient,
@@ -86,23 +94,32 @@ class TestMerchantRoutes:
         else:
             assert app.url_path_for(route_name) == route_path
 
-    async def xtest_merchant_barcode_verify_route(
+    async def test_merchant_barcode_verify_route(
         self,
         app: FastAPI,
         client: AsyncClient,
         customers_repository: CustomersRepository,
         data_passes_repository: DataPassesRepository,
+        data_pass_sources_repository: DataPassSourcesRepository,
+        data_pass_verifiers_repository: DataPassVerifiersRepository,
         user_session_token: str,
-        valid_data_pass_source_verifier_data: dict,
+        valid_data_pass_source_data: dict,
+        valid_data_pass_verifier_data: dict,
         valid_data_pass_data: dict,
         valid_customer: CustomerNew,
     ) -> None:
         # Setup
-        _data_source_and_verifier = await create_data_source_and_verifier(
-            valid_data_pass_source_verifier_data, data_passes_repository
+        _data_source = await create_data_source(
+            valid_data_pass_source_data, data_pass_sources_repository
+        )
+        _data_verifier = await create_data_verifier(
+            valid_data_pass_verifier_data, data_pass_verifiers_repository
         )
         valid_data_pass = await create_data_pass(
-            _data_source_and_verifier.id, valid_data_pass_data, data_passes_repository
+            _data_source.id,
+            _data_verifier.id,
+            valid_data_pass_data,
+            data_passes_repository,
         )
 
         valid_customer.data_pass_id = valid_data_pass.id
@@ -163,9 +180,12 @@ class TestMerchantRoutes:
         client: AsyncClient,
         customers_repository: CustomersRepository,
         data_passes_repository: DataPassesRepository,
+        data_pass_sources_repository: DataPassSourcesRepository,
+        data_pass_verifiers_repository: DataPassVerifiersRepository,
         scan_transactions_repository: ScanTransactionsRepository,
         user_merchant: Tuple[CreateUserProtocol, MerchantEmailView],
-        valid_data_pass_source_verifier_data: dict,
+        valid_data_pass_source_data: dict,
+        valid_data_pass_verifier_data: dict,
         valid_data_pass_data: dict,
         valid_customer: CustomerNew,
         test_data_pass: TestDataPass,
@@ -173,11 +193,17 @@ class TestMerchantRoutes:
         from app.routes.merchant_route import verify_barcode
 
         # Setup
-        _data_source_and_verifier = await create_data_source_and_verifier(
-            valid_data_pass_source_verifier_data, data_passes_repository
+        _data_source = await create_data_source(
+            valid_data_pass_source_data, data_pass_sources_repository
+        )
+        _data_verifier = await create_data_verifier(
+            valid_data_pass_verifier_data, data_pass_verifiers_repository
         )
         valid_data_pass = await create_data_pass(
-            _data_source_and_verifier.id, valid_data_pass_data, data_passes_repository
+            _data_source.id,
+            _data_verifier.id,
+            valid_data_pass_data,
+            data_passes_repository,
         )
         test_data_pass.data_pass_id = valid_data_pass
 

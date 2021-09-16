@@ -7,6 +7,8 @@ from fastapi_users.user import CreateUserProtocol
 from httpx import AsyncClient
 
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
+from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.core import IDModelMixin
@@ -18,17 +20,23 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
                                          ScanTransactionNew,
                                          ScanTransactionNewTest)
 from app.tests.helpers.data_creator import (create_data_pass,
-                                            create_data_source_and_verifier)
+                                            create_data_source,
+                                            create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
-    create_valid_data_pass_source_verifier_data)
+    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data)
 
 pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture(scope="class")
-def valid_data_pass_source_verifier_data() -> dict:
-    return create_valid_data_pass_source_verifier_data()
+def valid_data_pass_source_data() -> dict:
+    return create_valid_data_pass_source_data()
+
+
+@pytest.fixture(scope="class")
+def valid_data_pass_verifier_data() -> dict:
+    return create_valid_data_pass_verifier_data()
 
 
 @pytest.fixture(scope="class")
@@ -73,18 +81,25 @@ class TestScanTransactionsRepository:
         customer_test_data: CustomerNew,
         test_customer: TestCustomer,
         data_passes_repository: DataPassesRepository,
-        valid_data_pass_source_verifier_data: dict,
+        data_pass_sources_repository: DataPassSourcesRepository,
+        data_pass_verifiers_repository: DataPassVerifiersRepository,
+        valid_data_pass_source_data: dict,
+        valid_data_pass_verifier_data: dict,
         valid_data_pass_test_data: dict,
         test_data_pass: TestDataPass,
         test_pda_url: str,
         scan_transactions_repository: ScanTransactionsRepository,
         user_merchant: Tuple[CreateUserProtocol, MerchantEmailView],
     ):
-        _data_source_and_verifier = await create_data_source_and_verifier(
-            valid_data_pass_source_verifier_data, data_passes_repository
+        _data_source = await create_data_source(
+            valid_data_pass_source_data, data_pass_sources_repository
+        )
+        _data_verifier = await create_data_verifier(
+            valid_data_pass_verifier_data, data_pass_verifiers_repository
         )
         valid_data_pass = await create_data_pass(
-            _data_source_and_verifier.id,
+            _data_source.id,
+            _data_verifier.id,
             valid_data_pass_test_data,
             data_passes_repository,
         )

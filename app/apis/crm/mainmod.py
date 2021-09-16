@@ -9,6 +9,7 @@ from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, NotFound
 from app.models.customer import CustomerView
 
+from . import data_pass_mod
 from .customer_upload import do_customer_file_upload
 from .merchant_email import send_merchant_welcome_email
 from .merchant_upload import do_merchant_file_upload
@@ -56,3 +57,6 @@ async def fn_merchant_upload(
     if background_tasks is not None:
         background_tasks.add_task(send_merchant_welcome_email, merchant_repo)
     return created_count
+
+
+fn_create_data_pass_source = data_pass_mod.fn_create_data_pass_source

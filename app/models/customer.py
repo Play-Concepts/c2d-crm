@@ -4,7 +4,6 @@ from enum import Enum
 from typing import Optional
 
 from pydantic.class_validators import validator
-from pydantic.main import BaseModel
 from pydantic.types import Json
 
 from app.models.core import CoreModel, IDModelMixin, decode_json
@@ -49,7 +48,7 @@ class CustomerBasicView(IDModelMixin):
     claimed_timestamp: Optional[datetime]
 
 
-class CustomerSearch(BaseModel):
+class CustomerSearch(CoreModel):
     last_name: Optional[str] = ""
     address: Optional[str] = ""
     email: Optional[str] = ""

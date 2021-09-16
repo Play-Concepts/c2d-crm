@@ -8,14 +8,17 @@ from httpx import AsyncClient
 
 from app.apis.utils.random import random_string
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
+from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.models.core import IDModelMixin
 from app.models.customer import CustomerBasicView, CustomerNew, CustomerView
 from app.tests.helpers.data_creator import (create_data_pass,
-                                            create_data_source_and_verifier)
+                                            create_data_source,
+                                            create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
-    create_valid_data_pass_source_verifier_data)
+    create_valid_data_pass_source_data, create_valid_data_pass_verifier_data)
 
 pytestmark = pytest.mark.asyncio
 
@@ -24,12 +27,17 @@ NUMBER_OF_TEST_RECORDS = 5
 
 
 @pytest.fixture(scope="class")
-def valid_data_pass_source_verifier_data() -> dict:
-    return create_valid_data_pass_source_verifier_data()
+def valid_data_pass_source_data() -> dict:
+    return create_valid_data_pass_source_data()
 
 
 @pytest.fixture(scope="class")
-def valid_data_pass_test_data() -> dict:
+def valid_data_pass_verifier_data() -> dict:
+    return create_valid_data_pass_verifier_data()
+
+
+@pytest.fixture(scope="class")
+def valid_data_pass_data() -> dict:
     return create_new_data_pass_data("active", None)
 
 
@@ -81,16 +89,25 @@ class TestCustomersRepository:
         new_customers_test_data: List[CustomerNew],
         test_customer: TestCustomer,
         data_passes_repository: DataPassesRepository,
-        valid_data_pass_source_verifier_data: dict,
-        valid_data_pass_test_data: dict,
+        data_pass_sources_repository: DataPassSourcesRepository,
+        data_pass_verifiers_repository: DataPassVerifiersRepository,
+        valid_data_pass_source_data: dict,
+        valid_data_pass_verifier_data: dict,
+        valid_data_pass_data: dict,
         test_data_pass: TestDataPass,
     ):
-        _data_source_and_verifier = await create_data_source_and_verifier(
-            valid_data_pass_source_verifier_data, data_passes_repository
+
+        # Setup
+        _data_source = await create_data_source(
+            valid_data_pass_source_data, data_pass_sources_repository
+        )
+        _data_verifier = await create_data_verifier(
+            valid_data_pass_verifier_data, data_pass_verifiers_repository
         )
         valid_data_pass = await create_data_pass(
-            _data_source_and_verifier.id,
-            valid_data_pass_test_data,
+            _data_source.id,
+            _data_verifier.id,
+            valid_data_pass_data,
             data_passes_repository,
         )
         test_data_pass.data_pass_id = valid_data_pass

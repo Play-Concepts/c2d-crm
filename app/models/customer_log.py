@@ -9,8 +9,7 @@ class CustomerLogBase(CoreModel):
     event: Optional[str]
 
 
-class CustomerLogNew(CustomerLogBase):
-    pass
+CustomerLogNew = CustomerLogBase
 
 
 class CustomerLog(IDModelMixin, CustomerLogBase):

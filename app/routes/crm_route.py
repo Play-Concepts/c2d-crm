@@ -5,16 +5,19 @@ from fastapi import (APIRouter, BackgroundTasks, Depends, File, Request,
                      Response, UploadFile, status)
 from starlette.status import HTTP_201_CREATED
 
-from app.apis.crm.mainmod import (fn_customer_upload, fn_get_customer,
+from app.apis.crm.mainmod import (fn_create_data_pass_source,
+                                  fn_customer_upload, fn_get_customer,
                                   fn_list_customers, fn_merchant_upload)
 from app.apis.dependencies.database import get_repository
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
-from app.models.core import CreatedCount, NotFound
+from app.models.core import CreatedCount, IDModelMixin, NotFound
 from app.models.customer import CustomerView
 from app.models.data_pass import InvalidDataPass
+from app.models.data_pass_source import DataPassSourceNew
 
 router = APIRouter()
 router.prefix = "/api/crm"
@@ -29,6 +32,7 @@ crm_user = global_state.fastapi_users.current_user(
     name="crm:list_customers",
     tags=["crm"],
     response_model=List[CustomerView],
+    deprecated=True,
 )
 async def list_customers(
     page: Optional[int] = 1,
@@ -47,6 +51,7 @@ async def list_customers(
     tags=["crm"],
     response_model=CustomerView,
     responses={404: {"model": NotFound}},
+    deprecated=True,
 )
 async def get_customer(
     customer_id: uuid.UUID,
@@ -63,6 +68,7 @@ async def get_customer(
     tags=["crm"],
     status_code=HTTP_201_CREATED,
     responses={201: {"model": CreatedCount}, 400: {"model": InvalidDataPass}},
+    deprecated=True,
 )
 async def upload_customers(
     response: Response,
@@ -101,3 +107,45 @@ async def upload_merchants(
     return await fn_merchant_upload(
         merchants_file, merchants_repo, background_tasks, request
     )
+
+
+@router.get(
+    "/data-sources",
+    name="crm:list_data_sources",
+    tags=["crm"],
+    response_model=List[CustomerView],
+)
+async def list_data_sources(
+    auth=Depends(crm_user),
+):
+    return True
+
+
+@router.post(
+    "/data-sources",
+    name="crm:create_data_source",
+    tags=["crm"],
+    response_model=IDModelMixin,
+)
+async def create_data_source(
+    data_pass_source_new: DataPassSourceNew,
+    data_pass_sources_repo: DataPassSourcesRepository = Depends(
+        get_repository(DataPassSourcesRepository)
+    ),
+    auth=Depends(crm_user),
+) -> IDModelMixin:
+    return await fn_create_data_pass_source(
+        data_pass_source_new, data_pass_sources_repo
+    )
+
+
+@router.get(
+    "/data-sources/{data_source_id}",
+    name="crm:get_data_source",
+    tags=["crm"],
+    response_model=List[CustomerView],
+)
+async def get_data_source(
+    auth=Depends(crm_user),
+):
+    return True
