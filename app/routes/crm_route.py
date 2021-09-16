@@ -1,3 +1,5 @@
+from app.apis.utils.random import random_string
+from app.models.user import UserCreate
 import uuid
 from typing import List, Optional, Union
 
@@ -17,7 +19,7 @@ from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import CreatedCount, IDModelMixin, NotFound
 from app.models.customer import CustomerView
 from app.models.data_pass import InvalidDataPass
-from app.models.data_pass_source import DataPassSourceNew
+from app.models.data_pass_source import DataPassSourceNew, DataPassSourceRequest
 
 router = APIRouter()
 router.prefix = "/api/crm"
@@ -128,14 +130,30 @@ async def list_data_sources(
     response_model=IDModelMixin,
 )
 async def create_data_source(
-    data_pass_source_new: DataPassSourceNew,
+    email: Optional[str],
+    data_pass_source_request: DataPassSourceRequest,
     data_pass_sources_repo: DataPassSourcesRepository = Depends(
         get_repository(DataPassSourcesRepository)
     ),
     auth=Depends(crm_user),
 ) -> IDModelMixin:
+    user_id = None
+    if email is not None:
+        fastapi_users=global_state.fastapi_users
+        user = await fastapi_users.create_user(
+            UserCreate(
+                email=email,
+                password=random_string(),
+                is_verified=True,
+                is_supplier=True,
+            )
+        )
+        user_id = user.id
+
+    data = data_pass_source_request.dict()
+    data["user_id"] = user_id
     return await fn_create_data_pass_source(
-        data_pass_source_new, data_pass_sources_repo
+        DataPassSourceNew(**data), data_pass_sources_repo
     )
 
 

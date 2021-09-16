@@ -5,6 +5,7 @@ Create Date: 2021-09-16 07:35:42.910433
 """
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects.postgresql import UUID
 
 # revision identifiers, used by Alembic
 revision = "cc807764cf1e"
@@ -61,10 +62,19 @@ def add_sqlers_to_data_pass_sources(reverse: bool = False) -> None:
                 server_default=sa.text("''"),
             ),
         )
+        op.add_column(
+            "data_pass_sources",
+            sa.Column(
+                "user_id",
+                UUID(as_uuid=True),
+                nullable=True,
+            ),
+        )
     else:
         op.drop_column("data_pass_sources", "data_table")
         op.drop_column("data_pass_sources", "search_sql")
         op.drop_column("data_pass_sources", "search_parameters")
+        op.drop_column("data_pass_sources", "user_id")
 
 
 def upgrade() -> None:

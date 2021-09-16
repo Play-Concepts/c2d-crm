@@ -1,3 +1,4 @@
+import uuid
 from app.models.core import CoreModel, IDModelMixin
 
 
@@ -14,4 +15,7 @@ class DataPassSourceDB(IDModelMixin, DataPassSourceBase):
     pass
 
 
-DataPassSourceNew = DataPassSourceBase
+class DataPassSourceNew(DataPassSourceBase):
+    user_id: uuid.UUID
+
+DataPassSourceRequest = DataPassSourceBase

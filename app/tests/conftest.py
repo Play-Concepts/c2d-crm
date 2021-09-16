@@ -20,8 +20,8 @@ from app.core import global_state
 # Apply migrations at beginning and end of testing session
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
-from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
+from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
@@ -107,6 +107,7 @@ async def data_pass_sources_repository(db: Database) -> DataPassSourcesRepositor
 @pytest.fixture
 async def data_pass_verifiers_repository(db: Database) -> DataPassVerifiersRepository:
     return DataPassVerifiersRepository(db)
+
 
 # Make requests in our tests
 @pytest.fixture

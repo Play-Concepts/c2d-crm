@@ -22,6 +22,7 @@ pytestmark = pytest.mark.asyncio
 
 NUMBER_OF_TEST_RECORDS = 5
 
+
 class TestDataPassVerifier:
     data_pass_verifier: IDModelMixin
 
