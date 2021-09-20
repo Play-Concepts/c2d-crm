@@ -1,6 +1,10 @@
 import uuid
+from typing import Optional
 
-from app.models.core import CoreModel, IDModelMixin
+from pydantic.class_validators import validator
+from pydantic.types import Json
+
+from app.models.core import CoreModel, IDModelMixin, decode_json
 
 
 class DataPassSourceBase(CoreModel):
@@ -9,7 +13,11 @@ class DataPassSourceBase(CoreModel):
     logo_url: str
     data_table: str
     search_sql: str
-    search_parameters: str
+    data_descriptors: Json
+
+    @validator("data_descriptors", pre=True)
+    def decode_json(cls, v):
+        return decode_json(cls, v)
 
 
 class DataPassSourceDB(IDModelMixin, DataPassSourceBase):
@@ -21,3 +29,9 @@ class DataPassSourceNew(DataPassSourceBase):
 
 
 DataPassSourceRequest = DataPassSourceBase
+
+
+class DataPassSourceDescriptor(CoreModel):
+    data_table: str
+    search_sql: Optional[str]
+    data_descriptors: Optional[Json]

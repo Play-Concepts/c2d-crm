@@ -25,7 +25,6 @@ class CustomerBase(CoreModel):
 
 
 class CustomerNew(CustomerBase):
-    data_pass_id: uuid.UUID
     data: Json
 
 
@@ -64,4 +63,5 @@ class CustomerClaimResponse(IDModelMixin, CustomerBase):
     status: StatusType
     pda_url: str
     claimed_timestamp: datetime
-    data_pass_id: uuid.UUID
+
+    data_table: Optional[str]

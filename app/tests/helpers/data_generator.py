@@ -89,11 +89,12 @@ def fake_hostname() -> str:
 
 
 def create_valid_data_pass_source_data(user_id: str) -> dict:
+    table_name = fake.first_name().lower()
     return {
-        "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
+        "name": table_name + "-" + fake.pystr_format("?????").lower(),
         "description": fake.sentence(),
         "logo_url": fake.image_url(),
-        "data_table": "",
+        "data_table": table_name,
         "search_sql": "",
         "search_parameters": "",
         "user_id": user_id,

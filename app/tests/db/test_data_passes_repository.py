@@ -48,19 +48,6 @@ async def data_supplier_user() -> CreateUserProtocol:
     )
 
 
-
-@pytest.fixture
-async def data_supplier_user() -> CreateUserProtocol:
-    return await global_state.fastapi_users.create_user(
-        UserCreate(
-            email=supplier_email(),
-            password=random_string(),
-            is_verified=True,
-            is_supplier=True,
-        )
-    )
-
-
 @pytest.fixture
 async def valid_data_pass_source_data(data_supplier_user: CreateUserProtocol) -> dict:
     return create_valid_data_pass_source_data(data_supplier_user.id)
@@ -79,7 +66,9 @@ def valid_data_pass_test_data() -> List[dict]:
 
 
 @pytest.fixture
-def valid_data_pass_source_data_for_expiry_test(data_supplier_user: CreateUserProtocol) -> dict:
+def valid_data_pass_source_data_for_expiry_test(
+    data_supplier_user: CreateUserProtocol,
+) -> dict:
     return create_valid_data_pass_source_data(data_supplier_user.id)
 
 

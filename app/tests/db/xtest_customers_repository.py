@@ -30,7 +30,6 @@ pytestmark = pytest.mark.asyncio
 NUMBER_OF_TEST_RECORDS = 5
 
 
-
 @pytest.fixture
 async def data_supplier_user() -> CreateUserProtocol:
     return await global_state.fastapi_users.create_user(

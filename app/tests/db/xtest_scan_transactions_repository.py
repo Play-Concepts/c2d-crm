@@ -33,7 +33,6 @@ from app.tests.helpers.data_generator import (
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.fixture
 async def data_supplier_user() -> CreateUserProtocol:
     return await global_state.fastapi_users.create_user(
@@ -49,8 +48,6 @@ async def data_supplier_user() -> CreateUserProtocol:
 @pytest.fixture
 async def valid_data_pass_source_data(data_supplier_user: CreateUserProtocol) -> dict:
     return create_valid_data_pass_source_data(data_supplier_user.id)
-
-
 
 
 @pytest.fixture(scope="class")
