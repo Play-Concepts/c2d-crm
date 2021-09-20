@@ -19,7 +19,6 @@ class TestCrmRoutes:
         "route_name, route_path",
         [
             ("crm:list_customers", "/api/crm/customers"),
-            ("crm:upload_customers", "/api/crm/customers/upload"),
             ("crm:upload_merchants", "/api/crm/merchants/upload"),
         ],
     )
@@ -32,7 +31,6 @@ class TestCrmRoutes:
         "route_name",
         [
             "crm:upload_merchants",
-            "crm:upload_customers",
         ],
     )
     @pytest.mark.xfail(reason="TODO: CRM Authenticated Route")

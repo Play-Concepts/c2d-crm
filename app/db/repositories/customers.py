@@ -2,18 +2,20 @@ import json
 import uuid
 from typing import List, Optional
 
+from pydantic.types import Json
+
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerNew, CustomerView)
 
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
-    INSERT INTO customers(data, pda_url, status, data_pass_id)
-    VALUES(:data, :pda_url, :status, :data_pass_id) RETURNING id;
+    INSERT INTO {data_table}(data, pda_url, status)
+    VALUES(:data, :pda_url, :status) RETURNING id;
 """
 
 VIEW_CUSTOMER_SQL = """
-    SELECT id, data, pda_url, status FROM customers WHERE id = :id;
+    SELECT id, data, pda_url, status FROM {data_table} WHERE id = :id;
 """
 
 GET_CUSTOMERS_SQL = """
@@ -47,22 +49,24 @@ SEARCH_CUSTOMER_SQL = """
 """
 
 CLAIM_DATA_SQL = """
-    UPDATE customers SET status='claimed',
+    UPDATE {data_table} SET status='claimed',
     claimed_timestamp=now(),
     pda_url=:pda_url,
     updated_at=now()
     WHERE id=:id
-    RETURNING id, data, status, pda_url, claimed_timestamp, data_pass_id;
+    RETURNING id, data, status, pda_url, claimed_timestamp;
 """
 
 
 class CustomersRepository(BaseRepository):
-    async def create_customer(self, *, new_customer: CustomerNew) -> CustomerView:
+    async def create_customer(
+        self, *, new_customer: CustomerNew, data_table: str
+    ) -> CustomerView:
         query_values = new_customer.dict()
         query_values["data"] = json.dumps(new_customer.data)
 
         created_customer = await self.db.fetch_one(
-            query=NEW_CUSTOMER_SQL, values=query_values
+            query=NEW_CUSTOMER_SQL.format(data_table=data_table), values=query_values
         )
         return CustomerView(**created_customer)
 
@@ -75,9 +79,12 @@ class CustomersRepository(BaseRepository):
             return []
         return customers_list
 
-    async def get_customer(self, *, customer_id: uuid.UUID) -> Optional[CustomerView]:
+    async def get_customer(
+        self, *, customer_id: uuid.UUID, data_table: str
+    ) -> Optional[CustomerView]:
         customer = await self.db.fetch_one(
-            query=VIEW_CUSTOMER_SQL, values={"id": customer_id}
+            query=VIEW_CUSTOMER_SQL.format(data_table=data_table),
+            values={"id": customer_id},
         )
         return None if customer is None else CustomerView(**customer)
 
@@ -91,28 +98,19 @@ class CustomersRepository(BaseRepository):
         return None if customer is None else CustomerBasicView(**customer)
 
     async def search_customers(
-        self, *, data_pass_id: uuid.UUID, last_name: str, address: str, email: str
+        self, *, data_table: str, search_sql: str, search_params: Json
     ) -> List[CustomerView]:
-        def param_format(element: str) -> str:
-            return "" if element == "" or element is None else element.strip()
-
-        values = {
-            "data_pass_id": data_pass_id,
-            "last_name": param_format(last_name),
-            "address": param_format(address),
-            "email": param_format(email),
-        }
-        customers = await self.db.fetch_all(query=SEARCH_CUSTOMER_SQL, values=values)
-        customers_list = [CustomerView(**customer) for customer in customers]
-        if len(customers_list) == 1 and customers_list[0].total_count == 0:
-            return []
-        return customers_list
+        values = search_params
+        customers = await self.db.fetch_all(
+            query=search_sql.format(data_table=data_table), values=values
+        )
+        return [CustomerView(**customer) for customer in customers]
 
     async def claim_data(
-        self, *, identifier: uuid.UUID, pda_url: str
+        self, *, data_table: str, identifier: uuid.UUID, pda_url: str
     ) -> Optional[CustomerClaimResponse]:
         customer = await self.db.fetch_one(
-            query=CLAIM_DATA_SQL,
+            query=CLAIM_DATA_SQL.format(data_table=data_table),
             values={
                 "id": identifier,
                 "pda_url": pda_url,

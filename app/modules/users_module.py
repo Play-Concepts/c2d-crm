@@ -1,5 +1,6 @@
 from typing import Callable
 
+import sqlalchemy as sa
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import JWTAuthentication
@@ -29,6 +30,9 @@ def mount_users_module(app: FastAPI) -> Callable:
 
         class UsersTable(Base, SQLAlchemyBaseUserTable):
             __tablename__ = "users"
+            is_supplier = sa.Column(
+                sa.Boolean, nullable=False, server_default=sa.text("false")
+            )
 
         users = UsersTable.__table__
         user_db = SQLAlchemyUserDatabase(UserDB, app.state.db, users)

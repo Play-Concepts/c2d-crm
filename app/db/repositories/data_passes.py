@@ -22,7 +22,7 @@ GET_CUSTOMER_DATA_PASSES_SQL = """
     (select status from data_pass_activations where pda_url=:pda_url and data_pass_id=data_passes.id)
     AS activation_status FROM data_passes
     JOIN data_pass_sources sources ON (data_passes.data_pass_source_id=sources.id)
-    JOIN data_pass_sources verifiers ON (data_passes.data_pass_verifier_id=verifiers.id)
+    JOIN data_pass_verifiers verifiers ON (data_passes.data_pass_verifier_id=verifiers.id)
     ORDER BY data_passes.title;
 """
 
@@ -34,7 +34,7 @@ GET_MERCHANT_DATA_PASSES_SQL = """
     verifiers.name verifier_name, verifiers.description verifier_description, verifiers.logo_url verifier_logo_url,
     data_passes.status FROM data_passes
     JOIN data_pass_sources sources ON (data_passes.data_pass_source_id=sources.id)
-    JOIN data_pass_sources verifiers ON (data_passes.data_pass_verifier_id=verifiers.id)
+    JOIN data_pass_verifiers verifiers ON (data_passes.data_pass_verifier_id=verifiers.id)
     ORDER BY data_passes.title;
 """
 
@@ -90,31 +90,6 @@ class DataPassesRepository(BaseRepository):
             query=ACTIVATE_DATA_PASS_SQL, values=query_values
         )
         return IDModelMixin(**data_activation)
-
-    # TODO: TRANSIENT - not currently used in application, only in test suite
-    async def create_data_pass_source_(
-        self,
-        *,
-        name: str,
-        description: str,
-        logo_url: str,
-        is_data_source: bool,
-        is_data_verifier: bool,
-    ) -> IDModelMixin:
-        sql = """
-            INSERT INTO data_pass_sources(name, description, logo_url, is_data_source, is_data_verifier)
-            VALUES(:name, :description, :logo_url, :is_data_source, :is_data_verifier)
-            RETURNING id
-            """
-        query_values = {
-            "name": name,
-            "description": description,
-            "logo_url": logo_url,
-            "is_data_source": is_data_source,
-            "is_data_verifier": is_data_verifier,
-        }
-        data_pass_source = await self.db.fetch_one(query=sql, values=query_values)
-        return IDModelMixin(**data_pass_source)
 
     # TODO: TRANSIENT - not currently used in application, only in test suite
     async def create_data_pass_(

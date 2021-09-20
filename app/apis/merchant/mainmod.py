@@ -5,6 +5,7 @@ from fastapi import Request
 
 from app.apis.merchant import merchant_data_pass
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
@@ -19,6 +20,7 @@ async def fn_verify_barcode(
     customers_repo: CustomersRepository,
     scan_transactions_repo: ScanTransactionsRepository,
     data_passes_repo: DataPassesRepository,
+    data_pass_sources_repo: DataPassSourcesRepository,
     *,
     raw: bool = False,
     request: Request = None,
@@ -35,10 +37,19 @@ async def fn_verify_barcode(
 
     valid_uuid = barcode_str is not None and data_pass_id == data_pass_ident
 
+    data_pass_source = data_pass_sources_repo.get_basic_data_pass_source_descriptors(
+        data_pass_id=data_pass_id
+    )
     customer = (
-        await customers_repo.get_customer(customer_id=barcode_str)
-        if valid_uuid
-        else None
+        None
+        if data_pass_source is None
+        else (
+            await customers_repo.get_customer(
+                customer_id=barcode_str, data_table=data_pass_source.data_table
+            )
+            if valid_uuid
+            else None
+        )
     )
     customer_id = None if customer is None else customer.id
 
