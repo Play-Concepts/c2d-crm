@@ -10,8 +10,10 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from .base import BaseRepository
 
 NEW_CUSTOMER_SQL = """
-    INSERT INTO {data_table}(data, pda_url, status)
-    VALUES(:data, :pda_url, :status) RETURNING id;
+    INSERT INTO {data_table}(data, data_hash, pda_url, status)
+    VALUES(:data, :data_hash, :pda_url, :status)
+    ON CONFLICT(data_hash) DO NOTHING
+    RETURNING id;
 """
 
 VIEW_CUSTOMER_SQL = """
@@ -68,7 +70,7 @@ class CustomersRepository(BaseRepository):
         created_customer = await self.db.fetch_one(
             query=NEW_CUSTOMER_SQL.format(data_table=data_table), values=query_values
         )
-        return CustomerView(**created_customer)
+        return None if created_customer is None else CustomerView(**created_customer)
 
     async def get_customers(self, *, offset: int, limit: int) -> List[CustomerView]:
         customers = await self.db.fetch_all(

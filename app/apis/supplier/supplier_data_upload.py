@@ -14,6 +14,7 @@ from app.models.customer import CustomerNew
 async def do_data_file_upload(
     data_pass_id: uuid.UUID,
     data_table: str,
+    data_keys: List[str],
     customers_file: UploadFile,
     customers_repo: CustomersRepository,
 ) -> CreatedCount:
@@ -23,10 +24,11 @@ async def do_data_file_upload(
         new_customer: CustomerNew = CustomerNew(
             data=customer, data_pass_id=data_pass_id
         )
-        await customers_repo.create_customer(
+        new_customer.before_save(keys=data_keys)
+        customer = await customers_repo.create_customer(
             new_customer=new_customer, data_table=data_table
         )
-        created_customers += 1
+        created_customers += 1 if customer is not None else 0
 
     return CreatedCount(count=created_customers)
 
