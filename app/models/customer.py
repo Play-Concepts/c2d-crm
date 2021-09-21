@@ -1,7 +1,7 @@
 import uuid
-from hashlib import md5
 from datetime import datetime
 from enum import Enum
+from hashlib import md5
 from typing import List, Optional
 
 from pydantic.class_validators import validator
@@ -30,20 +30,20 @@ class CustomerNew(CustomerBase):
     data_hash: Optional[str]
 
     def dot_to_key(self, dot) -> str:
-        keys = ['["{}"]'.format(item) for item in dot.split('.')]
-        return ''.join(keys)
+        keys = ['["{}"]'.format(item) for item in dot.split(".")]
+        return "".join(keys)
 
-    def generate_hash(self, *, keys:List[str]):
-        hash_data = ''
+    def generate_hash(self, *, keys: List[str]):
+        hash_data = ""
         for key in keys:
-            hash_data += str(eval('self.data' + self.dot_to_key(key)))
+            hash_data += str(eval("self.data" + self.dot_to_key(key)))
 
-        hash_target = hash_data.replace(' ', '').lower().encode('utf-8')
+        hash_target = hash_data.replace(" ", "").lower().encode("utf-8")
         self.data_hash = md5(hash_target).hexdigest()
 
     before_save = generate_hash
-    
-        
+
+
 class CustomerUpdate(CustomerBase):
     status: Optional[StatusType]
 

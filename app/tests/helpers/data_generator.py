@@ -109,7 +109,7 @@ def create_valid_data_pass_verifier_data() -> dict:
     }
 
 
-def create_new_data_pass_data(status: str, expiry_date: datetime) -> dict:
+def create_new_data_pass_data(status: str) -> dict:
     return {
         "name": fake.first_name().lower() + "-" + fake.pystr_format("?????").lower(),
         "title": fake.sentence(),
@@ -120,5 +120,5 @@ def create_new_data_pass_data(status: str, expiry_date: datetime) -> dict:
         "currency_code": "USD",
         "price": 0,
         "status": status,
-        "expiry_date": expiry_date,
+        "expiry_days": 365,
     }

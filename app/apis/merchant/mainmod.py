@@ -37,8 +37,10 @@ async def fn_verify_barcode(
 
     valid_uuid = barcode_str is not None and data_pass_id == data_pass_ident
 
-    data_pass_source = data_pass_sources_repo.get_basic_data_pass_source_descriptors(
-        data_pass_id=data_pass_id
+    data_pass_source = (
+        await data_pass_sources_repo.get_basic_data_pass_source_descriptors(
+            data_pass_id=data_pass_id
+        )
     )
     customer = (
         None
@@ -52,38 +54,58 @@ async def fn_verify_barcode(
         )
     )
     customer_id = None if customer is None else customer.id
+    customer_pda_url = None if customer is None else customer.pda_url
 
     is_valid_data_pass = False
-    if data_pass_ident is None:
+    is_data_pass_expired = False
+    if data_pass_ident is None or customer_pda_url is None:
         await scan_transactions_repo.create_scan_transaction(
             scan_transaction=ScanTransactionNew(
                 customer_id=customer_id,
                 user_id=user_id,
                 data_pass_id=None,
                 data_pass_verified_valid=False,
+                data_pass_expired=False,
             )
         )
     else:
-        is_valid_data_pass = await data_passes_repo.is_data_pass_valid(
-            data_pass_id=data_pass_ident
+        is_data_pass_expired = await data_passes_repo.is_data_pass_expired(
+            data_pass_id=data_pass_ident, pda_url=customer_pda_url
         )
+        is_valid_data_pass = (
+            False
+            if is_data_pass_expired
+            else await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_ident)
+        )
+
         await scan_transactions_repo.create_scan_transaction(
             scan_transaction=ScanTransactionNew(
                 customer_id=customer_id,
                 user_id=user_id,
                 data_pass_id=data_pass_ident if valid_uuid else None,
                 data_pass_verified_valid=is_valid_data_pass,
+                data_pass_expired=is_data_pass_expired,
             )
         )
         if not is_valid_data_pass:
-            log.info("invalid-or-expired-datapass({})".format(str(data_pass_ident)))
+            log.info("invalid-datapass({})".format(str(data_pass_ident)))
+        if is_data_pass_expired:
+            log.info(
+                "expired-datapass({}):{}".format(str(data_pass_ident), customer_pda_url)
+            )
 
     result = customer_id is not None
     log.info("{}:{}:{}:{}".format(barcode, data_pass_id, user_id, result))
     return (
-        [customer_id, barcode_str, data_pass_ident, is_valid_data_pass]
+        [
+            customer_id,
+            barcode_str,
+            data_pass_ident,
+            is_valid_data_pass,
+            is_data_pass_expired,
+        ]
         if raw
-        else [result, is_valid_data_pass]
+        else [result, is_valid_data_pass, is_data_pass_expired]
     )
 
 

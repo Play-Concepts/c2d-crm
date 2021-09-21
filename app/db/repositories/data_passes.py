@@ -1,8 +1,7 @@
 import uuid
-from datetime import datetime
 from typing import List, Optional
 
-from app.models.core import Count, IDModelMixin
+from app.models.core import BooleanResponse, Count, IDModelMixin
 from app.models.data_pass import (DataPassBasicView, DataPassCustomerView,
                                   DataPassMerchantView)
 
@@ -16,7 +15,8 @@ GET_DATA_PASS_SQL = """
 GET_CUSTOMER_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
     data_passes.description_for_customers, data_passes.perks_url_for_merchants, data_passes.perks_url_for_customers,
-    data_passes.details_url, data_passes.expiry_date,
+    data_passes.details_url, (select updated_at from data_pass_activations where pda_url=:pda_url and
+    data_pass_id=data_passes.id) + data_passes.expiry_days * INTERVAL '1 day' AS expiry_date, data_passes.expiry_days,
     sources.name source_name, sources.description source_description, sources.logo_url source_logo_url,
     verifiers.name verifier_name, verifiers.description verifier_description, verifiers.logo_url verifier_logo_url,
     (select status from data_pass_activations where pda_url=:pda_url and data_pass_id=data_passes.id)
@@ -29,7 +29,7 @@ GET_CUSTOMER_DATA_PASSES_SQL = """
 GET_MERCHANT_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
     data_passes.description_for_customers, data_passes.perks_url_for_merchants, data_passes.perks_url_for_customers,
-    data_passes.currency_code, data_passes.price, data_passes.details_url, data_passes.expiry_date,
+    data_passes.currency_code, data_passes.price, data_passes.details_url, data_passes.expiry_days,
     sources.name source_name, sources.description source_description, sources.logo_url source_logo_url,
     verifiers.name verifier_name, verifiers.description verifier_description, verifiers.logo_url verifier_logo_url,
     data_passes.status FROM data_passes
@@ -39,15 +39,22 @@ GET_MERCHANT_DATA_PASSES_SQL = """
 """
 
 ACTIVATE_DATA_PASS_SQL = """
-    INSERT INTO data_pass_activations(data_pass_id, pda_url) VALUES(:data_pass_id, :pda_url)
+    INSERT INTO data_pass_activations(data_pass_id, pda_url, updated_at) VALUES(:data_pass_id, :pda_url, now())
     ON CONFLICT (data_pass_id, pda_url)
     DO UPDATE SET status='active', updated_at=now()
     RETURNING id;
 """
 
 IS_DATA_PASS_VALID_SQL = """
-    SELECT COUNT(id) FROM data_passes WHERE id=:data_pass_id AND status='active'
-    AND (expiry_date IS null OR expiry_date>now());
+    SELECT COUNT(id) FROM data_passes WHERE id=:data_pass_id AND status='active';
+"""
+
+
+IS_DATA_PASS_EXPIRED_SQL = """
+    SELECT data_pass_activations.updated_at + data_passes.expiry_days * INTERVAL '1 day' < now() AS value
+    FROM data_pass_activations JOIN data_passes
+    ON (data_pass_activations.data_pass_id=data_passes.id)
+    WHERE data_pass_activations.data_pass_id=:data_pass_id AND pda_url=:pda_url;
 """
 
 
@@ -82,6 +89,18 @@ class DataPassesRepository(BaseRepository):
         )
         return Count(**count).count == 1
 
+    async def is_data_pass_expired(
+        self, *, pda_url: Optional[str], data_pass_id: Optional[uuid.UUID]
+    ) -> bool:
+        if pda_url is None or data_pass_id is None:
+            return False
+
+        is_expired = await self.db.fetch_one(
+            query=IS_DATA_PASS_EXPIRED_SQL,
+            values={"pda_url": pda_url, "data_pass_id": data_pass_id},
+        )
+        return False if is_expired is None else BooleanResponse(**is_expired).value
+
     async def activate_data_pass(
         self, *, data_pass_id: uuid.UUID, pda_url: str
     ) -> IDModelMixin:
@@ -106,15 +125,15 @@ class DataPassesRepository(BaseRepository):
         currency_code: str,
         price: float,
         status: str,
-        expiry_date: datetime,
+        expiry_days: int,
     ):
         sql = """
             INSERT INTO data_passes(name, title, description_for_merchants, description_for_customers,
             perks_url_for_merchants, perks_url_for_customers, data_pass_source_id,
-            data_pass_verifier_id, currency_code, price, status, expiry_date)
+            data_pass_verifier_id, currency_code, price, status, expiry_days)
             VALUES(:name, :title, :description_for_merchants, :description_for_customers,
             :perks_url_for_merchants, :perks_url_for_customers, :data_pass_source_id,
-            :data_pass_verifier_id, :currency_code, :price, :status, :expiry_date)
+            :data_pass_verifier_id, :currency_code, :price, :status, :expiry_days)
             RETURNING id
         """
         query_values = {
@@ -129,7 +148,7 @@ class DataPassesRepository(BaseRepository):
             "currency_code": currency_code,
             "price": price,
             "status": status,
-            "expiry_date": expiry_date,
+            "expiry_days": expiry_days,
         }
         data_pass = await self.db.fetch_one(query=sql, values=query_values)
         return IDModelMixin(**data_pass)

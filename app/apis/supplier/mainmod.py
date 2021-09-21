@@ -48,10 +48,18 @@ async def fn_data_upload(
             )
         )
 
-        data_keys = [] if (data_descriptors.data_descriptors is None or data_descriptors.data_descriptors["data_keys"] is None) else data_descriptors.data_descriptors["data_keys"]
+        data_keys = (
+            []
+            if (
+                data_descriptors.data_descriptors is None
+                or data_descriptors.data_descriptors["data_keys"] is None
+            )
+            else data_descriptors.data_descriptors["data_keys"]
+        )
         return await do_data_file_upload(
             data_pass_id, data_descriptors.data_table, data_keys, file, customers_repo
         )
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
+
         return InvalidDataPass()

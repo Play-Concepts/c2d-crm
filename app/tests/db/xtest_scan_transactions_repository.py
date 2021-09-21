@@ -57,7 +57,7 @@ def valid_data_pass_verifier_data() -> dict:
 
 @pytest.fixture(scope="class")
 def valid_data_pass_test_data() -> dict:
-    return create_new_data_pass_data("active", None)
+    return create_new_data_pass_data("active")
 
 
 @pytest.fixture(scope="class")

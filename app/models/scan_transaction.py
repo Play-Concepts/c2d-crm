@@ -13,10 +13,12 @@ class ScanTransactionBase(CoreModel):
 
 class ScanTransactionNew(ScanTransactionBase):
     data_pass_verified_valid: bool
+    data_pass_expired: bool
 
 
 class ScanTransactionNewTest(ScanTransactionBase):
     data_pass_verified_valid: bool
+    data_pass_expired: bool
     created_at: datetime
 
 
@@ -38,6 +40,7 @@ class ScanRequest(CoreModel):
 
 class ScanResult(CoreModel):
     verified: bool
+    expired: bool = False
     message: str
 
 

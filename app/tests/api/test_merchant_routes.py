@@ -64,7 +64,7 @@ def valid_data_pass_verifier_data() -> dict:
 
 @pytest.fixture(scope="class")
 def valid_data_pass_data() -> dict:
-    return create_new_data_pass_data("active", None)
+    return create_new_data_pass_data("active")
 
 
 @pytest.fixture
@@ -144,7 +144,8 @@ class TestMerchantRoutes:
         test_data_pass.data_pass_id = valid_data_pass
 
         test_customer = await customers_repository.create_customer(
-            new_customer=valid_customer, data_table=valid_data_pass_source_data["data_table"]
+            new_customer=valid_customer,
+            data_table=valid_data_pass_source_data["data_table"],
         )
 
         user, _ = user_merchant
