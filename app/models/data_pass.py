@@ -29,6 +29,7 @@ class DataPassBase(CoreModel):
     perks_url_for_merchants: Optional[str]
     perks_url_for_customers: Optional[str]
     details_url: Optional[str]
+    expiry_days: Optional[int]
     expiry_date: Optional[datetime]
 
 
@@ -52,4 +53,5 @@ class DataPassMerchantView(IDModelMixin, DataPassBase, DataPassSourceVerifier):
 
 class InvalidDataPass(BaseModel):
     verified: bool = False
+    expired: bool = False
     message: str = "Data Pass is not found or may have expired."

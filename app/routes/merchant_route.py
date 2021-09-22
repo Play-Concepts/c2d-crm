@@ -9,6 +9,7 @@ from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
                                        fn_verify_barcode)
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.data_pass import DataPassMerchantView, InvalidDataPass
@@ -27,7 +28,7 @@ merchant_user = global_state.fastapi_users.current_user(
     "/{data_pass_id}/barcode/verify",
     name="merchant:barcode_verify",
     tags=["merchants"],
-    response_model=ScanResult,
+    response_model=Union[ScanResult, InvalidDataPass],
 )
 async def verify_barcode(
     request: Request,
@@ -40,21 +41,26 @@ async def verify_barcode(
     data_passes_repo: DataPassesRepository = Depends(
         get_repository(DataPassesRepository)
     ),
+    data_pass_sources_repo: DataPassSourcesRepository = Depends(
+        get_repository(DataPassSourcesRepository)
+    ),
     auth=Depends(merchant_user),
 ) -> Union[ScanResult, InvalidDataPass]:
-    verified, is_valid_data_pass = await fn_verify_barcode(
+    verified, is_valid_data_pass, is_data_pass_expired = await fn_verify_barcode(
         scan_request.barcode,
         data_pass_id,
         auth.id,
         customers_repo,
         scan_transactions_repo,
         data_passes_repo,
+        data_pass_sources_repo,
         request=request,
     )
-    if is_valid_data_pass:
-        return ScanResult(verified=verified, message="")
-    else:
-        return InvalidDataPass()
+    return (
+        ScanResult(verified=verified, message="")
+        if is_valid_data_pass
+        else InvalidDataPass(expired=is_data_pass_expired)
+    )
 
 
 @router.get(

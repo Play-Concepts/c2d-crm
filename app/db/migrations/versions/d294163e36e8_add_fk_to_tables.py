@@ -43,13 +43,6 @@ def set_foreign_keys_on_tables(reverse: bool):
             ["id"],
         ),
         (
-            "fk_scan_transactions_customers",
-            "scan_transactions",
-            "customers",
-            ["customer_id"],
-            ["id"],
-        ),
-        (
             "fk_scan_transactions_data_passes",
             "scan_transactions",
             "data_passes",

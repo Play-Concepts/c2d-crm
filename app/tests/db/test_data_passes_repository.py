@@ -61,7 +61,7 @@ def valid_data_pass_verifier_data() -> dict:
 @pytest.fixture(scope="class")
 def valid_data_pass_test_data() -> List[dict]:
     return [
-        create_new_data_pass_data("active", None) for _ in range(NUMBER_OF_TEST_RECORDS)
+        create_new_data_pass_data("active") for _ in range(NUMBER_OF_TEST_RECORDS)
     ]
 
 
@@ -142,46 +142,6 @@ class TestDataPassesRepository:
             data_pass_id=uuid.uuid4()
         )
         assert not not_valid_test
-
-    async def test_is_data_pass_expiry_date(
-        self,
-        app: FastAPI,
-        client: AsyncClient,
-        data_passes_repository: DataPassesRepository,
-        data_pass_sources_repository: DataPassSourcesRepository,
-        valid_data_pass_source_data_for_expiry_test: dict,
-        non_expired_data_pass_test_data: dict,
-        expired_data_pass_test_data: dict,
-        test_data_pass_verifier: TestDataPassVerifier,
-    ):
-        _data_source = await create_data_source(
-            valid_data_pass_source_data_for_expiry_test,
-            data_pass_sources_repository,
-        )
-
-        _data_verifier = test_data_pass_verifier.data_pass_verifier
-
-        non_expired = await create_data_pass(
-            _data_source.id,
-            _data_verifier.id,
-            non_expired_data_pass_test_data,
-            data_passes_repository,
-        )
-        not_expired_test = await data_passes_repository.is_data_pass_valid(
-            data_pass_id=non_expired.id
-        )
-        assert not_expired_test
-
-        expired = await create_data_pass(
-            _data_source.id,
-            _data_verifier.id,
-            expired_data_pass_test_data,
-            data_passes_repository,
-        )
-        expired_test = await data_passes_repository.is_data_pass_valid(
-            data_pass_id=expired.id
-        )
-        assert not expired_test
 
     async def test_activate_data_pass(
         self,

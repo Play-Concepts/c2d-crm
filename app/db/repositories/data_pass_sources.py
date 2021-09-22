@@ -18,6 +18,7 @@ NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = [
     CREATE TABLE {data_table} (
         id uuid DEFAULT uuid_generate_v4() NOT NULL,
         data json NOT NULL,
+        data_hash character varying NOT NULL,
         status claim_status_type DEFAULT 'new'::claim_status_type NOT NULL,
         pda_url character varying(255),
         claimed_timestamp timestamp without time zone,
@@ -27,6 +28,9 @@ NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = [
 """,
     """
     ALTER TABLE ONLY {data_table} ADD CONSTRAINT {data_table}_pkey PRIMARY KEY (id);
+""",
+    """
+    CREATE UNIQUE INDEX idx_{data_table}_data_hash ON {data_table} USING btree (data_hash);
 """,
     """
     CREATE UNIQUE INDEX idx_{data_table}_pda_url ON {data_table} USING btree (pda_url);

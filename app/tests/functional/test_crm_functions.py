@@ -50,7 +50,7 @@ def valid_data_pass_verifier_data() -> dict:
 
 @pytest.fixture(scope="class")
 def valid_data_pass_test_data() -> dict:
-    return create_new_data_pass_data("active", None)
+    return create_new_data_pass_data("active")
 
 
 @pytest.fixture(scope="class")
@@ -79,9 +79,7 @@ class TestCrmFunctions:
     ) -> None:
         assert False
 
-    @pytest.mark.xfail(
-        reason="TODO: TO-FIX We no longer have CUSTOMERS"
-    )
+    @pytest.mark.xfail(reason="TODO: TO-FIX We no longer have CUSTOMERS")
     async def test_fn_get_customer(
         self,
         app: FastAPI,
@@ -131,9 +129,7 @@ class TestCrmFunctions:
         assert isinstance(customer, NotFound)
         assert test_response.status_code == status.HTTP_404_NOT_FOUND
 
-    @pytest.mark.xfail(
-        reason="TODO: TO-FIX We no longer have CUSTOMERS"
-    )
+    @pytest.mark.xfail(reason="TODO: TO-FIX We no longer have CUSTOMERS")
     async def test_fn_customer_upload(
         self,
         app: FastAPI,
