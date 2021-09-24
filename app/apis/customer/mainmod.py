@@ -29,7 +29,9 @@ async def fn_get_customer_basic(
     response: Response,
 ) -> Union[CustomerBasicView, NotFound]:
     customer = await customers_repo.get_customer_basic(
-        pda_url=pda_url, data_pass_id=data_pass_id
+        pda_url=pda_url, 
+        data_pass_id=data_pass_id,
+        data_table=data_descriptors.data_table,
     )
     if customer is None:
         response.status_code = status.HTTP_404_NOT_FOUND
