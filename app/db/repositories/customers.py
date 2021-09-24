@@ -21,7 +21,7 @@ VIEW_CUSTOMER_SQL = """
 """
 
 GET_CUSTOMERS_SQL = """
-    WITH cte AS (SELECT id, data, pda_url, status FROM customers
+    WITH cte AS (SELECT id, data, pda_url, status FROM {data_table}
     ORDER BY data->'person'->'profile'->>'last_name', data->'person'->'profile'->>'first_name')
     SELECT * FROM (
         TABLE cte
@@ -32,12 +32,12 @@ GET_CUSTOMERS_SQL = """
 """
 
 VIEW_CUSTOMER_BASIC_SQL = """
-    SELECT id, claimed_timestamp FROM customers WHERE pda_url = :pda_url
+    SELECT id, claimed_timestamp FROM {data_table} WHERE pda_url = :pda_url
     AND data_pass_id = :data_pass_id;
 """
 
 SEARCH_CUSTOMER_SQL = """
-    SELECT id, data, pda_url, status FROM customers WHERE
+    SELECT id, data, pda_url, status FROM {data_table} WHERE
     data_pass_id = :data_pass_id AND
     data->'person'->'profile'->>'last_name' ilike :last_name AND
     data->'person'->'address'->>'address_line_1' ilike :address AND
@@ -72,9 +72,10 @@ class CustomersRepository(BaseRepository):
         )
         return None if created_customer is None else CustomerView(**created_customer)
 
-    async def get_customers(self, *, offset: int, limit: int) -> List[CustomerView]:
+    async def get_customers(self, *, offset: int, limit: int, data_table: str) -> List[CustomerView]:
         customers = await self.db.fetch_all(
-            query=GET_CUSTOMERS_SQL, values={"offset": offset, "limit": limit}
+            query=GET_CUSTOMERS_SQL.format(data_table=data_table), 
+            values={"offset": offset, "limit": limit}
         )
         customers_list = [CustomerView(**customer) for customer in customers]
         if len(customers_list) == 1 and customers_list[0].total_count == 0:
@@ -91,10 +92,10 @@ class CustomersRepository(BaseRepository):
         return None if customer is None else CustomerView(**customer)
 
     async def get_customer_basic(
-        self, *, data_pass_id: uuid.UUID, pda_url: str
+        self, *, data_pass_id: uuid.UUID, pda_url: str, data_table: str
     ) -> Optional[CustomerBasicView]:
         customer = await self.db.fetch_one(
-            query=VIEW_CUSTOMER_BASIC_SQL,
+            query=VIEW_CUSTOMER_BASIC_SQL(data_table=data_table),
             values={"pda_url": pda_url, "data_pass_id": data_pass_id},
         )
         return None if customer is None else CustomerBasicView(**customer)
