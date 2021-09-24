@@ -27,16 +27,25 @@ async def fn_get_customer_basic(
     data_pass_sources_repo: DataPassSourcesRepository,
     customers_repo: CustomersRepository,
     response: Response,
-) -> Union[CustomerBasicView, NotFound]:
-    customer = await customers_repo.get_customer_basic(
-        pda_url=pda_url, 
-        data_pass_id=data_pass_id,
-        data_table=data_descriptors.data_table,
-    )
-    if customer is None:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return NotFound(message="Customer Not Found")
-    return customer
+) -> Union[CustomerBasicView, NotFound, InvalidDataPass]:
+    is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
+    if is_valid:
+        data_descriptors: DataPassSourceDescriptor = (
+            await data_pass_sources_repo.get_basic_data_pass_source_search_sql(
+                data_pass_id=data_pass_id
+            )
+        )
+        customer = await customers_repo.get_customer_basic(
+            pda_url=pda_url,
+            data_table=data_descriptors.data_table,
+        )
+        if customer is None:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return NotFound(message="Customer Not Found")
+        return customer
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return InvalidDataPass()
 
 
 async def fn_search_customers(
