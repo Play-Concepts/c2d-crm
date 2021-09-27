@@ -10,7 +10,7 @@ asgi-lifespan==1.0.1
     # via -r requirements-dev.in
 attrs==21.2.0
     # via pytest
-black==21.8b0
+black==21.9b0
     # via -r requirements-dev.in
 certifi==2021.5.30
     # via httpx
@@ -54,7 +54,7 @@ pep517==0.11.0
     # via pip-tools
 pillow==8.3.2
     # via -r requirements-dev.in
-pip-tools==6.2.0
+pip-tools==6.3.0
     # via -r requirements-dev.in
 platformdirs==2.3.0
     # via black

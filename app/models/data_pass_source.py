@@ -35,3 +35,4 @@ class DataPassSourceDescriptor(CoreModel):
     data_table: str
     search_sql: Optional[str]
     data_descriptors: Optional[Json]
+    user_id: Optional[uuid.UUID]

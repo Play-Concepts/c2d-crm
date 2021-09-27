@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Body, Depends, Request, Response, status
+from fastapi import APIRouter, Body, Depends, Request, Response
 
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
@@ -17,7 +17,7 @@ from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
-from app.models.core import BooleanResponse, IDModelMixin, NotFound
+from app.models.core import BooleanResponse, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
@@ -131,6 +131,9 @@ async def claim_data(
                 claim_params.id, result.data_table, auth["iss"]
             )
         )
+        await fn_customer_activate_data_pass(
+            data_pass_id, auth["iss"], data_passes_repository
+        )
 
     return result
 
@@ -174,33 +177,6 @@ async def get_customer_data_passes(
 ) -> List[DataPassCustomerView]:
     auth, _ = auth_tuple
     return await fn_get_customer_data_passes(auth["iss"], data_passes_repository)
-
-
-@router.get(
-    "/data-passes/{data_pass_id}/enable",
-    name="customer:data-passes",
-    tags=["customer"],
-    response_model=IDModelMixin,
-    responses={400: {"model": InvalidDataPass}},
-)
-async def activate_data_pass(
-    response: Response,
-    data_pass_id: uuid.UUID,
-    data_passes_repository: DataPassesRepository = Depends(
-        get_repository(DataPassesRepository)
-    ),
-    auth_tuple=Depends(get_current_pda_user),
-) -> Union[IDModelMixin, InvalidDataPass]:
-    auth, _ = auth_tuple
-    activation = await fn_customer_activate_data_pass(
-        data_pass_id, auth["iss"], data_passes_repository
-    )
-
-    if activation is None:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return InvalidDataPass()
-
-    return activation
 
 
 @router.get(

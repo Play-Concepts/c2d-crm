@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.models.core import CoreModel, IDModelMixin
+from app.models.core import CoreModel, IDModelMixin, NotPermitted
 
 
 class StatusType(str, Enum):
@@ -55,3 +55,7 @@ class InvalidDataPass(BaseModel):
     verified: bool = False
     expired: bool = False
     message: str = "Data Pass is not found or may have expired."
+
+
+class ForbiddenDataPass(NotPermitted):
+    message: str = "You do not have permission to access this Data Pass."

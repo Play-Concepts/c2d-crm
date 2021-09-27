@@ -11,7 +11,7 @@ from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.models.core import CreatedCount
-from app.models.data_pass import InvalidDataPass
+from app.models.data_pass import ForbiddenDataPass, InvalidDataPass
 
 router = APIRouter()
 router.prefix = "/api/supplier"
@@ -22,7 +22,11 @@ router.prefix = "/api/supplier"
     name="supplier:upload_data",
     tags=["suppliers"],
     status_code=HTTP_201_CREATED,
-    responses={201: {"model": CreatedCount}, 400: {"model": InvalidDataPass}},
+    responses={
+        201: {"model": CreatedCount},
+        400: {"model": InvalidDataPass},
+        403: {"model": ForbiddenDataPass},
+    },
 )
 async def upload_data(
     response: Response,
@@ -36,8 +40,9 @@ async def upload_data(
     customers_file: UploadFile = File(...),
     customers_repo: CustomersRepository = Depends(get_repository(CustomersRepository)),
     auth=Depends(current_supplier),
-) -> Union[CreatedCount, InvalidDataPass]:
+) -> Union[CreatedCount, InvalidDataPass, ForbiddenDataPass]:
     return await fn_data_upload(
+        auth.id,
         data_pass_id,
         data_passes_repo,
         data_pass_sources_repo,
