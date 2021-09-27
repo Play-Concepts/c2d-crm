@@ -60,9 +60,7 @@ def valid_data_pass_verifier_data() -> dict:
 
 @pytest.fixture(scope="class")
 def valid_data_pass_test_data() -> List[dict]:
-    return [
-        create_new_data_pass_data("active") for _ in range(NUMBER_OF_TEST_RECORDS)
-    ]
+    return [create_new_data_pass_data("active") for _ in range(NUMBER_OF_TEST_RECORDS)]
 
 
 @pytest.fixture

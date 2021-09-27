@@ -28,19 +28,11 @@ router.prefix = "/api/customer"
 
 
 @router.get(
-    "/basic",
-    name="customer:basic",
-    tags=["customer"],
-    response_model=CustomerBasicView,
-    responses={404: {"model": NotFound}},
-    deprecated=True,
-)
-@router.get(
     "/data/{data_pass_id}/basic",
     name="customer:basic",
     tags=["customer"],
     response_model=CustomerBasicView,
-    responses={404: {"model": NotFound}},
+    responses={404: {"model": NotFound}, 400: {"model": InvalidDataPass}},
 )
 async def get_customer_basic(
     response: Response,
@@ -55,7 +47,7 @@ async def get_customer_basic(
         get_repository(CustomersRepository)
     ),
     auth_tuple=Depends(get_current_pda_user),
-) -> Union[CustomerBasicView, NotFound]:
+) -> Union[CustomerBasicView, NotFound, InvalidDataPass]:
     auth, _ = auth_tuple
     return await fn_get_customer_basic(
         data_pass_id,
