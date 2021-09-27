@@ -100,8 +100,8 @@ async def fn_claim_data(
             return NotFound(message="Could not find the data to claim")
 
         data = claimed_data.data
-        data["person"]["identifier"] = str(identifier)
-        data["person"]["claimed_timestamp"] = claimed_data.claimed_timestamp.replace(
+        data["identifier"] = str(identifier)
+        data["claimed_timestamp"] = claimed_data.claimed_timestamp.replace(
             tzinfo=timezone.utc
         ).isoformat()
 
