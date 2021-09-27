@@ -38,12 +38,12 @@ NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = [
 ]
 
 GET_DATA_PASS_SOURCE_DESCRIPTORS_SQL = """
-    SELECT data_table, null as search_sql, data_descriptors FROM data_pass_sources
+    SELECT data_table, null as search_sql, data_descriptors, user_id FROM data_pass_sources
     WHERE id in (SELECT data_pass_source_id FROM data_passes WHERE id = :data_pass_id)
 """
 
 GET_DATA_PASS_SOURCE_SEARCH_SQL = """
-    SELECT data_table, search_sql, null AS data_descriptors FROM data_pass_sources
+    SELECT data_table, search_sql, null AS data_descriptors, null as user_id FROM data_pass_sources
     WHERE id in (SELECT data_pass_source_id FROM data_passes WHERE id = :data_pass_id)
 """
 

@@ -1,7 +1,7 @@
 import codecs
 import csv
 import uuid
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from fastapi import UploadFile
 
@@ -15,11 +15,15 @@ async def do_data_file_upload(
     data_pass_id: uuid.UUID,
     data_table: str,
     data_keys: List[str],
+    data_headers: List[str],
     customers_file: UploadFile,
     customers_repo: CustomersRepository,
-) -> CreatedCount:
+) -> Optional[CreatedCount]:
     created_customers: int = 0
-    payload = _construct_payload(customers_file)
+    payload = _construct_payload(customers_file, data_headers)
+    if payload is None:
+        return None
+
     for customer in payload:
         new_customer: CustomerNew = CustomerNew(
             data=customer, data_pass_id=data_pass_id
@@ -33,11 +37,26 @@ async def do_data_file_upload(
     return CreatedCount(count=created_customers)
 
 
-def _construct_payload(customers_file: UploadFile) -> List[Dict[str, Any]]:
+def _construct_payload(
+    customers_file: UploadFile, data_headers: List[str]
+) -> Optional[List[Dict[str, Any]]]:
     data = []
     lines = csv.reader(codecs.iterdecode(customers_file.file, "utf-8"), delimiter=",")
-    header = next(lines)
+    headers = next(lines)
+    if len(data_headers) != 0:
+        is_headers_match = _match_headers(headers, data_headers)
+        if is_headers_match is False:
+            return None
+
     for log_line in lines:
-        data.append(dot_to_dict(dict(zip(header, log_line))))
+        data.append(dot_to_dict(dict(zip(headers, log_line))))
 
     return data
+
+
+def _match_headers(headers: List[str], data_headers: List[str]) -> bool:
+    headers_cp = headers.copy()
+    data_headers_cp = data_headers.copy()
+    headers_cp.sort()
+    data_headers_cp.sort()
+    return headers_cp == data_headers_cp

@@ -36,6 +36,14 @@ class InvalidToken(BaseModel):
     message: str
 
 
+class NotPermitted(BaseModel):
+    message: str
+
+
+class FileMismatchError(BaseModel):
+    message: str = "The file is not in the expected file format."
+
+
 def decode_json(cls, v):
     if not isinstance(v, str):
         try:
