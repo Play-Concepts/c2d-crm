@@ -13,6 +13,8 @@ from app.models.data_pass_source import DataPassSourceDescriptor
 
 from .supplier_data_upload import do_data_file_upload
 
+from loguru import logger
+
 
 async def fn_list_customers(
     page: int, page_count: int, customers_repo: CustomersRepository
@@ -40,9 +42,16 @@ async def fn_data_upload(
     file: UploadFile,
     customers_repo: CustomersRepository,
     response: Response,
-) -> Union[CreatedCount, InvalidDataPass, ForbiddenDataPass]:
+) -> Union[CreatedCount, InvalidDataPass, ForbiddenDataPass, FileMismatchError]:
     is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
     if is_valid:
+        logger.info(file)        
+        logger.info(data_pass_id)
+
+        if file.filename.lower() != "{}.csv".format(str(data_pass_id).lower()):
+            response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+            return FileMismatchError(message="Wrong file name.")
+
         data_descriptors: DataPassSourceDescriptor = (
             await data_pass_sources_repo.get_basic_data_pass_source_descriptors(
                 data_pass_id=data_pass_id
