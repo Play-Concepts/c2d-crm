@@ -163,3 +163,15 @@ class DataPassesRepository(BaseRepository):
         """
         data_pass = await self.db.fetch_one(query=sql, values={})
         return IDModelMixin(**data_pass)
+
+    # TODO: TRANSIENT - not currently used in application, only in test suite
+    async def expire_data_pass_(
+        self, *, data_pass_id: uuid.UUID, pda_url: str
+    ) -> IDModelMixin:
+        sql = """
+            UPDATE data_pass_activations SET updated_at = updated_at - interval '2 years'
+            WHERE data_pass_id=:data_pass_id AND pda_url=:pda_url RETURNING id;
+        """
+        query_values = {"data_pass_id": data_pass_id, "pda_url": pda_url}
+        data_activation = await self.db.fetch_one(query=sql, values=query_values)
+        return IDModelMixin(**data_activation)

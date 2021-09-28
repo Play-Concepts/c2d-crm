@@ -49,7 +49,7 @@ class TestMerchantsRepository:
         merchants_repository: MerchantsRepository,
     ):
         merchants_email_list = await merchants_repository.get_merchants_email_list()
-        assert len(merchants_email_list) > 0
+        assert len(merchants_email_list) == 5
         assert isinstance(random.choice(merchants_email_list), MerchantEmailView)
 
     async def test_update_welcome_email_sent(

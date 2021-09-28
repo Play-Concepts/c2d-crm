@@ -25,6 +25,16 @@ pytestmark = pytest.mark.asyncio
 
 
 NUMBER_OF_TEST_RECORDS = 5
+PDA_URL = "testing.hubat.net"
+
+
+class TestActivatedDataPass:
+    activated_data_pass: IDModelMixin
+
+
+@pytest.fixture(scope="class")
+def test_activated_data_pass():
+    return TestActivatedDataPass()
 
 
 class TestDataPassVerifier:
@@ -146,14 +156,51 @@ class TestDataPassesRepository:
         app: FastAPI,
         client: AsyncClient,
         data_passes_repository: DataPassesRepository,
+        test_activated_data_pass: TestActivatedDataPass,
     ):
         valid_data_pass = await data_passes_repository.get_random_data_pass_()
 
         activation = await data_passes_repository.activate_data_pass(
-            data_pass_id=valid_data_pass.id, pda_url="pda_url"
+            data_pass_id=valid_data_pass.id, pda_url=PDA_URL
         )
+
+        test_activated_data_pass.activated_data_pass = valid_data_pass
+
         assert activation is not None
         assert isinstance(activation, IDModelMixin)
+
+    async def test_is_data_pass_expired(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        data_passes_repository: DataPassesRepository,
+        test_activated_data_pass: TestActivatedDataPass,
+    ):
+        activated_data_pass_id = test_activated_data_pass.activated_data_pass.id
+
+        no_pda_url = await data_passes_repository.is_data_pass_expired(
+            pda_url=None, data_pass_id=activated_data_pass_id
+        )
+        assert not no_pda_url
+
+        no_data_pass_id = await data_passes_repository.is_data_pass_expired(
+            pda_url=PDA_URL, data_pass_id=None
+        )
+        assert not no_data_pass_id
+
+        valid_data_pass_not_expired = await data_passes_repository.is_data_pass_expired(
+            pda_url=PDA_URL, data_pass_id=activated_data_pass_id
+        )
+        assert not valid_data_pass_not_expired
+
+        # expire the data pass and then test expired
+        await data_passes_repository.expire_data_pass_(
+            pda_url=PDA_URL, data_pass_id=activated_data_pass_id
+        )
+        valid_data_pass_expired = await data_passes_repository.is_data_pass_expired(
+            pda_url=PDA_URL, data_pass_id=activated_data_pass_id
+        )
+        assert valid_data_pass_expired
 
     @pytest.mark.xfail(reason="Expected to fail due to db constraints", strict=True)
     async def test_invalid_activate_data_pass(
@@ -163,5 +210,5 @@ class TestDataPassesRepository:
         data_passes_repository: DataPassesRepository,
     ):
         await data_passes_repository.activate_data_pass(
-            data_pass_id=uuid.uuid4(), pda_url="pda_url"
+            data_pass_id=uuid.uuid4(), pda_url=PDA_URL
         )

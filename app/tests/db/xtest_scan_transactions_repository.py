@@ -24,6 +24,7 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
 from app.models.user import UserCreate
 from app.tests.helpers.data_creator import (create_data_pass,
                                             create_data_source,
+                                            create_data_source_data_table,
                                             create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
@@ -110,6 +111,11 @@ class TestScanTransactionsRepository:
         _data_source = await create_data_source(
             valid_data_pass_source_data, data_pass_sources_repository
         )
+        _data_table = valid_data_pass_source_data["data_table"]
+        await create_data_source_data_table(
+            _data_table, data_pass_sources_repository
+        )
+
         _data_verifier = await create_data_verifier(
             valid_data_pass_verifier_data, data_pass_verifiers_repository
         )

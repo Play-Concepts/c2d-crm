@@ -15,6 +15,14 @@ async def create_data_source(
     )
 
 
+async def create_data_source_data_table(
+    data_table: str, data_pass_sources_repo: DataPassSourcesRepository
+):
+    return await data_pass_sources_repo.create_data_pass_source_table(
+        data_table=data_table
+    )
+
+
 async def create_data_verifier(
     data: dict, data_pass_verifiers_repo: DataPassVerifiersRepository
 ):
