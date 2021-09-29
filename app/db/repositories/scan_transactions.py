@@ -9,6 +9,7 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
                                          ScanTransactionNew,
                                          ScanTransactionNewTest)
 
+from loguru import logger
 NEW_SCAN_TRANSACTION_SQL = """
     INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid, data_pass_expired)
     VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :data_pass_expired) RETURNING id;
@@ -112,6 +113,15 @@ class ScanTransactionsRepository(BaseRepository):
         second_from_date = first_from_date - timedelta(days=interval_days)
         third_from_date = second_from_date - timedelta(days=interval_days)
 
+        logger.info(GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table))
+        logger.info({
+                "from_date": first_from_date,
+                "to_date": now,
+                "pda_url": pda_url,
+                "data_pass_id": data_pass_id,
+            })
+
+   
         first_transaction = await self.db.fetch_one(
             query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
             values={
