@@ -18,7 +18,6 @@ class TestCrmRoutes:
     @pytest.mark.parametrize(
         "route_name, route_path",
         [
-            ("crm:list_customers", "/api/crm/customers"),
             ("crm:upload_merchants", "/api/crm/merchants/upload"),
         ],
     )
