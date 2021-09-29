@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Tuple
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from fastapi import FastAPI
 from fastapi_users.user import CreateUserProtocol
 from httpx import AsyncClient
@@ -24,6 +25,7 @@ from app.models.scan_transaction import (ScanTransactionBasicView,
 from app.models.user import UserCreate
 from app.tests.helpers.data_creator import (create_data_pass,
                                             create_data_source,
+                                            create_data_source_data_table,
                                             create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
@@ -83,6 +85,15 @@ def test_data_pass():
     return TestDataPass()
 
 
+class TestDataTable:
+    data_table: str
+
+
+@pytest.fixture(scope="class")
+def test_data_table():
+    return TestDataTable()
+
+
 @pytest.fixture(scope="class")
 def test_pda_url():
     return "test.hubat.net"
@@ -104,12 +115,17 @@ class TestScanTransactionsRepository:
         valid_data_pass_test_data: dict,
         test_data_pass: TestDataPass,
         test_pda_url: str,
+        test_data_table: TestDataTable,
         scan_transactions_repository: ScanTransactionsRepository,
         user_merchant: Tuple[CreateUserProtocol, MerchantEmailView],
     ):
         _data_source = await create_data_source(
             valid_data_pass_source_data, data_pass_sources_repository
         )
+        _data_table = valid_data_pass_source_data["data_table"]
+        await create_data_source_data_table(_data_table, data_pass_sources_repository)
+        test_data_table.data_table = _data_table
+
         _data_verifier = await create_data_verifier(
             valid_data_pass_verifier_data, data_pass_verifiers_repository
         )
@@ -121,11 +137,10 @@ class TestScanTransactionsRepository:
         )
         test_data_pass.data_pass_id = valid_data_pass
 
-        customer_test_data.data_pass_id = valid_data_pass.id
         customer_test_data.pda_url = test_pda_url
         customer_test_data.status = CustomerStatusType.claimed
         created_customer = await customers_repository.create_customer(
-            new_customer=customer_test_data
+            new_customer=customer_test_data, data_table=_data_table
         )
 
         test_customer.customer = created_customer
@@ -137,6 +152,7 @@ class TestScanTransactionsRepository:
             user_id=user.id,
             data_pass_id=valid_data_pass.id,
             data_pass_verified_valid=True,
+            data_pass_expired=False,
         )
         created_scan_transaction = (
             await scan_transactions_repository.create_scan_transaction(
@@ -170,7 +186,8 @@ class TestScanTransactionsRepository:
                 user_id=user.id,
                 data_pass_id=test_data_pass.data_pass_id.id,
                 data_pass_verified_valid=True,
-                created_at=(datetime.now() - timedelta(days=i)).replace(
+                data_pass_expired=False,
+                created_at=(datetime.now() - relativedelta(days=i)).replace(
                     hour=0, minute=0, second=0, microsecond=0
                 ),
             )
@@ -199,11 +216,11 @@ class TestScanTransactionsRepository:
         self,
         app: FastAPI,
         client: AsyncClient,
-        test_customer: TestCustomer,
         test_data_pass: TestDataPass,
         scan_transactions_repository: ScanTransactionsRepository,
         user_merchant: Tuple[CreateUserProtocol, MerchantEmailView],
         test_pda_url: str,
+        test_data_table: TestDataTable,
     ):
         user, _ = user_merchant
 
@@ -213,7 +230,8 @@ class TestScanTransactionsRepository:
                 user_id=user.id,
                 data_pass_id=test_data_pass.data_pass_id.id,
                 data_pass_verified_valid=False,
-                created_at=datetime.now() - timedelta(days=i),
+                data_pass_expired=False,
+                created_at=datetime.now() - relativedelta(days=i),
             )
             await scan_transactions_repository.create_scan_transaction(
                 scan_transaction=invalid_scan_transaction_new,
@@ -223,6 +241,7 @@ class TestScanTransactionsRepository:
             interval_days=3,
             pda_url=test_pda_url,
             data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=test_data_table.data_table,
         )
         assert scan_transactions_count is not None
         assert isinstance(scan_transactions_count, ScanTransactionCounts)
@@ -242,11 +261,12 @@ class TestScanTransactionsRepository:
         client: AsyncClient,
         data_passes_repository: DataPassesRepository,
         test_data_pass: TestDataPass,
+        test_data_table: TestDataTable,
     ):
         await data_passes_repository.db.execute(
             "TRUNCATE TABLE scan_transactions CASCADE;"
         )
-        await data_passes_repository.db.execute("TRUNCATE TABLE customers CASCADE;")
+        await data_passes_repository.db.execute("TRUNCATE TABLE {data_table} CASCADE;".format(data_table=test_data_table.data_table))
         cleanup_sql = """
             DELETE FROM data_passes WHERE id = :data_pass_id;
         """

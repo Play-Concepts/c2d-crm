@@ -15,8 +15,10 @@ NEW_SCAN_TRANSACTION_SQL = """
 """
 
 NEW_SCAN_TRANSACTION_TEST_SQL_ = """
-    INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid, created_at)
-    VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :created_at) RETURNING id;
+    INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid,
+    data_pass_expired, created_at)
+    VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :data_pass_expired,
+    :created_at) RETURNING id;
 """
 
 GET_SCAN_TRANSACTIONS_COUNT_SQL = """
@@ -31,7 +33,7 @@ GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL = """
     CAST(:from_date AS timestamp) as from_date, CAST(:to_date AS timestamp) as to_date
     FROM scan_transactions
     WHERE created_at BETWEEN :from_date AND :to_date AND data_pass_id=:data_pass_id
-    AND customer_id IN (SELECT id FROM customers WHERE pda_url = :pda_url AND data_pass_id=:data_pass_id);
+    AND customer_id IN (SELECT id FROM {data_table} WHERE pda_url = :pda_url);
 """
 
 
@@ -101,7 +103,7 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
     async def get_customer_scan_trans_count_with_interval_n_days(
-        self, *, interval_days: int, pda_url: str, data_pass_id: uuid.UUID
+        self, *, interval_days: int, pda_url: str, data_pass_id: uuid.UUID, data_table: str,
     ) -> ScanTransactionCounts:
         now = datetime.now()
         first_from_date = (now - timedelta(days=interval_days)).replace(
@@ -111,7 +113,7 @@ class ScanTransactionsRepository(BaseRepository):
         third_from_date = second_from_date - timedelta(days=interval_days)
 
         first_transaction = await self.db.fetch_one(
-            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL,
+            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
             values={
                 "from_date": first_from_date,
                 "to_date": now,
@@ -121,7 +123,7 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
         second_transaction = await self.db.fetch_one(
-            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL,
+            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
             values={
                 "from_date": second_from_date,
                 "to_date": first_from_date - timedelta(microseconds=1),
@@ -131,7 +133,7 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
         third_transaction = await self.db.fetch_one(
-            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL,
+            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
             values={
                 "from_date": third_from_date,
                 "to_date": second_from_date - timedelta(microseconds=1),

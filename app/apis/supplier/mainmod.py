@@ -2,6 +2,7 @@ import uuid
 from typing import List, Union
 
 from fastapi import Response, UploadFile, status
+from loguru import logger
 
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
@@ -12,8 +13,6 @@ from app.models.data_pass import ForbiddenDataPass, InvalidDataPass
 from app.models.data_pass_source import DataPassSourceDescriptor
 
 from .supplier_data_upload import do_data_file_upload
-
-from loguru import logger
 
 
 async def fn_list_customers(
@@ -45,7 +44,7 @@ async def fn_data_upload(
 ) -> Union[CreatedCount, InvalidDataPass, ForbiddenDataPass, FileMismatchError]:
     is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
     if is_valid:
-        logger.info(file)        
+        logger.info(file)
         logger.info(data_pass_id)
 
         if file.filename.lower() != "{}.csv".format(str(data_pass_id).lower()):

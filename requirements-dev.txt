@@ -24,7 +24,7 @@ coverage==5.5
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-faker==8.12.1
+faker==8.14.0
     # via -r requirements-dev.in
 flake8==3.9.2
     # via -r requirements-dev.in

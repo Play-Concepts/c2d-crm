@@ -7,6 +7,7 @@ from faker import Faker
 from faker.providers import address, company, internet, misc
 from pydantic.types import Json
 
+from app.apis.utils.random import random_hash
 from app.models.customer import CustomerNew
 from app.models.customer import StatusType as CustomerStatusType
 from app.models.customer_log import CustomerLogNew
@@ -49,6 +50,7 @@ def create_new_customer() -> CustomerNew:
         status=CustomerStatusType.new,
         data=_customer_data(),
         data_pass_id=uuid.uuid4(),
+        data_hash=random_hash(),
     )
 
 

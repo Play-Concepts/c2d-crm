@@ -20,33 +20,8 @@ VIEW_CUSTOMER_SQL = """
     SELECT id, data, pda_url, status FROM {data_table} WHERE id = :id;
 """
 
-GET_CUSTOMERS_SQL = """
-    WITH cte AS (SELECT id, data, pda_url, status FROM {data_table}
-    ORDER BY data->'person'->'profile'->>'last_name', data->'person'->'profile'->>'first_name')
-    SELECT * FROM (
-        TABLE cte
-        LIMIT :limit
-        OFFSET :offset
-    ) sub
-    RIGHT  JOIN (SELECT count(*) FROM cte) c(total_count) ON true;
-"""
-
 VIEW_CUSTOMER_BASIC_SQL = """
     SELECT id, claimed_timestamp FROM {data_table} WHERE pda_url = :pda_url
-"""
-
-SEARCH_CUSTOMER_SQL = """
-    SELECT id, data, pda_url, status FROM {data_table} WHERE
-    data_pass_id = :data_pass_id AND
-    data->'person'->'profile'->>'last_name' ilike :last_name AND
-    data->'person'->'address'->>'address_line_1' ilike :address AND
-    (data->'person'->'contact'->>'email' ilike :email OR
-    data->'person'->'contact'->>'email_1' ilike :email OR
-    data->'person'->'contact'->>'email_2' ilike :email OR
-    data->'person'->'contact'->>'email_3' ilike :email OR
-    data->'person'->'contact'->>'email_4' ilike :email OR
-    data->'person'->'contact'->>'email_5' ilike :email) AND
-    status='new';
 """
 
 CLAIM_DATA_SQL = """
@@ -70,18 +45,6 @@ class CustomersRepository(BaseRepository):
             query=NEW_CUSTOMER_SQL.format(data_table=data_table), values=query_values
         )
         return None if created_customer is None else CustomerView(**created_customer)
-
-    async def get_customers(
-        self, *, offset: int, limit: int, data_table: str
-    ) -> List[CustomerView]:
-        customers = await self.db.fetch_all(
-            query=GET_CUSTOMERS_SQL.format(data_table=data_table),
-            values={"offset": offset, "limit": limit},
-        )
-        customers_list = [CustomerView(**customer) for customer in customers]
-        if len(customers_list) == 1 and customers_list[0].total_count == 0:
-            return []
-        return customers_list
 
     async def get_customer(
         self, *, customer_id: uuid.UUID, data_table: str

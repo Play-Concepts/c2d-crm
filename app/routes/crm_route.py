@@ -1,19 +1,16 @@
-import uuid
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from fastapi import (APIRouter, BackgroundTasks, Depends, File, Request,
-                     Response, UploadFile)
+                     UploadFile)
 from starlette.status import HTTP_201_CREATED
 
-from app.apis.crm.mainmod import (fn_create_data_pass_source, fn_get_customer,
-                                  fn_list_customers, fn_merchant_upload)
+from app.apis.crm.mainmod import fn_create_data_pass_source, fn_merchant_upload
 from app.apis.dependencies.database import get_repository
 from app.apis.utils.random import random_string
 from app.core import global_state
-from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.merchants import MerchantsRepository
-from app.models.core import CreatedCount, IDModelMixin, NotFound
+from app.models.core import CreatedCount, IDModelMixin
 from app.models.customer import CustomerView
 from app.models.data_pass_source import (DataPassSourceNew,
                                          DataPassSourceRequest)
@@ -25,41 +22,6 @@ router.prefix = "/api/crm"
 crm_user = global_state.fastapi_users.current_user(
     active=True, verified=True, superuser=True
 )
-
-
-@router.get(
-    "/customers",
-    name="crm:list_customers",
-    tags=["crm"],
-    response_model=List[CustomerView],
-    deprecated=True,
-)
-async def list_customers(
-    page: Optional[int] = 1,
-    page_count: Optional[int] = 20,
-    customers_repository: CustomersRepository = Depends(
-        get_repository(CustomersRepository)
-    ),
-    auth=Depends(crm_user),
-) -> List[CustomerView]:
-    return await fn_list_customers(page, page_count, customers_repository)
-
-
-@router.get(
-    "/customers/{customer_id}",
-    name="crm:get_customer",
-    tags=["crm"],
-    response_model=CustomerView,
-    responses={404: {"model": NotFound}},
-    deprecated=True,
-)
-async def get_customer(
-    customer_id: uuid.UUID,
-    response: Response,
-    customers_repo: CustomersRepository = Depends(get_repository(CustomersRepository)),
-    auth=Depends(crm_user),
-) -> Union[CustomerView, NotFound]:
-    return await fn_get_customer(customer_id, customers_repo, response)
 
 
 @router.post(
