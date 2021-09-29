@@ -188,6 +188,9 @@ async def get_customer_data_passes(
 async def get_scan_transactions_count(
     data_pass_id: uuid.UUID,
     interval_days: int,
+    data_pass_sources_repo: DataPassSourcesRepository = Depends(
+        get_repository(DataPassSourcesRepository)
+    ),
     scan_transactions_repo: ScanTransactionsRepository = Depends(
         get_repository(ScanTransactionsRepository)
     ),
@@ -195,5 +198,5 @@ async def get_scan_transactions_count(
 ) -> ScanTransactionCounts:
     auth, _ = auth_tuple
     return await fn_customer_get_scan_transactions_count(
-        interval_days, auth["iss"], data_pass_id, scan_transactions_repo
+        interval_days, auth["iss"], data_pass_id, data_pass_sources_repo, scan_transactions_repo
     )
