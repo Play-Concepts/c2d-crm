@@ -39,7 +39,6 @@ class GlobalConfig(BaseSettings):
     NOTIFY_MARKETING_EMAIL: Optional[str] = os.environ.get(
         "NOTIFY_MARKETING_EMAIL", None
     )
-    DATA_ROOT_NODE: Optional[str] = os.environ.get("DATA_ROOT_NODE", "")
 
 config = GlobalConfig()
 # print(config.__repr__())

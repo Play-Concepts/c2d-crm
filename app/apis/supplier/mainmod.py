@@ -79,11 +79,30 @@ async def fn_data_upload(
             else data_descriptors.data_descriptors["data_headers"]
         )
 
+        data_headers = (
+            []
+            if (
+                data_descriptors.data_descriptors is None
+                or "data_headers" not in data_descriptors.data_descriptors
+            )
+            else data_descriptors.data_descriptors["data_headers"]
+        )
+
+        data_root_node = (
+            ''
+            if (
+                data_descriptors.data_descriptors is None
+                or "data_root_node" not in data_descriptors.data_descriptors
+            )
+            else data_descriptors.data_descriptors["data_root_node"]
+        )
+
         file_upload = await do_data_file_upload(
             data_pass_id,
             data_descriptors.data_table,
             data_keys,
             data_headers,
+            data_root_node,
             file,
             customers_repo,
         )
