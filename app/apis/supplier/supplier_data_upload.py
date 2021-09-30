@@ -10,18 +10,17 @@ from app.db.repositories.customers import CustomersRepository
 from app.models.core import CreatedCount
 from app.models.customer import CustomerNew
 
-from app.core.global_config import config
-
 async def do_data_file_upload(
     data_pass_id: uuid.UUID,
     data_table: str,
     data_keys: List[str],
     data_headers: List[str],
+    data_root_node: str,
     customers_file: UploadFile,
     customers_repo: CustomersRepository,
 ) -> Optional[CreatedCount]:
     created_customers: int = 0
-    payload = _construct_payload(customers_file, data_headers)
+    payload = _construct_payload(customers_file, data_headers, data_root_node)
     if payload is None:
         return None
 
@@ -39,7 +38,7 @@ async def do_data_file_upload(
 
 
 def _construct_payload(
-    customers_file: UploadFile, data_headers: List[str], root_node: Optional[str] = config.DATA_ROOT_NODE,
+    customers_file: UploadFile, data_headers: List[str], root_node: str,
 ) -> Optional[List[Dict[str, Any]]]:
     data = []
     lines = csv.reader(codecs.iterdecode(customers_file.file, "utf-8"), delimiter=",")
