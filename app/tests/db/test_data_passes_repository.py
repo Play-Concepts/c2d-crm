@@ -20,6 +20,7 @@ from app.tests.helpers.data_creator import (create_data_pass,
 from app.tests.helpers.data_generator import (
     create_new_data_pass_data, create_valid_data_pass_source_data,
     create_valid_data_pass_verifier_data, supplier_email)
+from app.tests.test_models import TestActivatedDataPass, TestDataPassVerifier
 
 pytestmark = pytest.mark.asyncio
 
@@ -28,17 +29,9 @@ NUMBER_OF_TEST_RECORDS = 5
 PDA_URL = "testing.hubat.net"
 
 
-class TestActivatedDataPass:
-    activated_data_pass: IDModelMixin
-
-
 @pytest.fixture(scope="class")
 def test_activated_data_pass():
     return TestActivatedDataPass()
-
-
-class TestDataPassVerifier:
-    data_pass_verifier: IDModelMixin
 
 
 @pytest.fixture(scope="class")

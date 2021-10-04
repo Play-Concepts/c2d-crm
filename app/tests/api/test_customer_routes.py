@@ -33,7 +33,6 @@ class TestCustomerRoutes:
     @pytest.mark.parametrize(
         "route_name, route_path",
         [
-            ("customer:basic", "/api/customer/data/{}/basic"),
             ("customer:search", "/api/customer/data/{}/search"),
             ("customer:claim", "/api/customer/data/{}/claim"),
         ],

@@ -14,8 +14,7 @@ from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.core import IDModelMixin
-from app.models.customer import CustomerNew, CustomerView
+from app.models.customer import CustomerNew
 from app.models.customer import StatusType as CustomerStatusType
 from app.models.merchant import MerchantEmailView
 from app.models.scan_transaction import (ScanTransactionBasicView,
@@ -31,6 +30,7 @@ from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
     create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
     supplier_email)
+from app.tests.test_models import TestCustomer, TestDataPass, TestDataTable
 
 pytestmark = pytest.mark.asyncio
 
@@ -67,26 +67,14 @@ def customer_test_data() -> CustomerNew:
     return create_new_customer()
 
 
-class TestCustomer:
-    customer: CustomerView
-
-
 @pytest.fixture(scope="class")
 def test_customer():
     return TestCustomer()
 
 
-class TestDataPass:
-    data_pass_id: IDModelMixin
-
-
 @pytest.fixture(scope="class")
 def test_data_pass():
     return TestDataPass()
-
-
-class TestDataTable:
-    data_table: str
 
 
 @pytest.fixture(scope="class")
@@ -266,7 +254,11 @@ class TestScanTransactionsRepository:
         await data_passes_repository.db.execute(
             "TRUNCATE TABLE scan_transactions CASCADE;"
         )
-        await data_passes_repository.db.execute("TRUNCATE TABLE {data_table} CASCADE;".format(data_table=test_data_table.data_table))
+        await data_passes_repository.db.execute(
+            "TRUNCATE TABLE {data_table} CASCADE;".format(
+                data_table=test_data_table.data_table
+            )
+        )
         cleanup_sql = """
             DELETE FROM data_passes WHERE id = :data_pass_id;
         """

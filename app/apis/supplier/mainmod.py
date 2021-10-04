@@ -89,10 +89,10 @@ async def fn_data_upload(
         )
 
         data_root_node = (
-            ''
+            ""
             if (
                 data_descriptors.data_descriptors is None
-                or "data_root_node" not in data_descriptors.data_descriptors
+                or ("data_root_node" not in data_descriptors.data_descriptors)
             )
             else data_descriptors.data_descriptors["data_root_node"]
         )

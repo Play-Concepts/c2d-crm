@@ -1,5 +1,4 @@
 import random
-import uuid
 from typing import List
 
 import pytest
@@ -13,16 +12,17 @@ from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
-from app.models.core import IDModelMixin
-from app.models.customer import CustomerBasicView, CustomerNew, CustomerView
+from app.models.customer import CustomerNew, CustomerView
 from app.models.user import UserCreate
 from app.tests.helpers.data_creator import (create_data_pass,
                                             create_data_source,
+                                            create_data_source_data_table,
                                             create_data_verifier)
 from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
     create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
     supplier_email)
+from app.tests.test_models import TestCustomer, TestDataPass, TestDataTable
 
 pytestmark = pytest.mark.asyncio
 
@@ -62,17 +62,9 @@ def new_customers_test_data() -> List[CustomerNew]:
     return [create_new_customer() for _ in range(NUMBER_OF_TEST_RECORDS)]
 
 
-class TestCustomer:
-    customer: CustomerView
-
-
 @pytest.fixture(scope="class")
 def test_customer():
     return TestCustomer()
-
-
-class TestDataPass:
-    data_pass_id: IDModelMixin
 
 
 @pytest.fixture(scope="class")
@@ -80,23 +72,12 @@ def test_data_pass():
     return TestDataPass()
 
 
-class TestCustomersRepository:
-    @pytest.mark.xfail(
-        reason="Must fail due to unreferenced data_pass_id in db", strict=True
-    )
-    async def test_invalid_create_customer(
-        self,
-        app: FastAPI,
-        client: AsyncClient,
-        customers_repository: CustomersRepository,
-        new_customers_test_data: List[CustomerNew],
-    ):
-        test_new_customer = new_customers_test_data[0]
-        created_customer = await customers_repository.create_customer(
-            new_customer=test_new_customer
-        )
-        assert created_customer is None
+@pytest.fixture(scope="class")
+def test_data_table():
+    return TestDataTable()
 
+
+class TestCustomersRepository:
     async def test_create_customer(
         self,
         app: FastAPI,
@@ -111,12 +92,17 @@ class TestCustomersRepository:
         valid_data_pass_verifier_data: dict,
         valid_data_pass_data: dict,
         test_data_pass: TestDataPass,
+        test_data_table: TestDataTable,
     ):
-
         # Setup
         _data_source = await create_data_source(
             valid_data_pass_source_data, data_pass_sources_repository
         )
+        _data_table = valid_data_pass_source_data["data_table"]
+        await create_data_source_data_table(_data_table, data_pass_sources_repository)
+        test_data_table.data_table = _data_table
+        test_data_table.search_sql = valid_data_pass_source_data["search_sql"]
+
         _data_verifier = await create_data_verifier(
             valid_data_pass_verifier_data, data_pass_verifiers_repository
         )
@@ -129,9 +115,9 @@ class TestCustomersRepository:
         test_data_pass.data_pass_id = valid_data_pass
 
         test_new_customer = new_customers_test_data[0]
-        test_new_customer.data_pass_id = valid_data_pass.id
         created_customer = await customers_repository.create_customer(
-            new_customer=test_new_customer
+            new_customer=test_new_customer,
+            data_table=_data_table,
         )
         assert created_customer is not None
         assert isinstance(created_customer, CustomerView)
@@ -141,20 +127,11 @@ class TestCustomersRepository:
         test_customer.customer = created_customer
 
         for customer in new_customers_test_data[1:]:
-            customer.data_pass_id = valid_data_pass.id
-            await customers_repository.create_customer(new_customer=customer)
+            await customers_repository.create_customer(
+                new_customer=customer,
+                data_table=_data_table,
+            )
         assert True
-
-    async def test_get_customers(
-        self,
-        app: FastAPI,
-        client: AsyncClient,
-        customers_repository: CustomersRepository,
-    ):
-        offset, limit = 3, 2
-        customers = await customers_repository.get_customers(offset=offset, limit=limit)
-        assert len(customers) == 2
-        assert isinstance(random.choice(customers), CustomerView)
 
     async def test_get_customer(
         self,
@@ -162,28 +139,16 @@ class TestCustomersRepository:
         client: AsyncClient,
         customers_repository: CustomersRepository,
         test_customer: TestCustomer,
+        test_data_table: TestDataTable,
     ):
         test_target = test_customer.customer
-        customer = await customers_repository.get_customer(customer_id=test_target.id)
+        _data_table = test_data_table.data_table
+        customer = await customers_repository.get_customer(
+            customer_id=test_target.id, data_table=_data_table
+        )
         assert customer is not None
         assert isinstance(customer, CustomerView)
         assert customer.id == test_target.id
-
-    async def test_get_customer_basic(
-        self,
-        app: FastAPI,
-        client: AsyncClient,
-        customers_repository: CustomersRepository,
-        new_customers_test_data: List[CustomerNew],
-        test_data_pass: TestDataPass,
-    ):
-        test_customer = random.choice(new_customers_test_data)
-        customer = await customers_repository.get_customer_basic(
-            pda_url=test_customer.pda_url, data_pass_id=test_data_pass.data_pass_id.id
-        )
-        assert customer is not None
-        assert isinstance(customer, CustomerBasicView)
-        assert customer.id is not None
 
     async def test_search_customers(
         self,
@@ -191,7 +156,7 @@ class TestCustomersRepository:
         client: AsyncClient,
         customers_repository: CustomersRepository,
         new_customers_test_data: List[CustomerNew],
-        test_data_pass: TestDataPass,
+        test_data_table: TestDataTable,
     ):
         def random_pad(value: str) -> str:
             return value.rjust(random.randint(0, 10)).ljust(random.randint(0, 10))
@@ -199,72 +164,87 @@ class TestCustomersRepository:
         def is_empty(list) -> bool:
             return len(list) == 0
 
+        _data_table = test_data_table.data_table
+        _search_sql = test_data_table.search_sql
         test_customer_data = random.choice(new_customers_test_data).data
         test_last_name = test_customer_data["person"]["profile"]["last_name"]
         test_email = test_customer_data["person"]["contact"]["email"]
         test_address = test_customer_data["person"]["address"]["address_line_1"]
 
         customer = await customers_repository.search_customers(
-            last_name=test_last_name,
-            email=test_email,
-            address=test_address,
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": test_last_name,
+                "email": test_email,
+                "address": test_address,
+            },
         )
         assert not is_empty(customer)
 
         invalid_last_name_customer = await customers_repository.search_customers(
-            last_name=random.choice([random_string(), ""]),
-            email=test_email,
-            address=test_address,
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": random.choice([random_string(), ""]),
+                "email": test_email,
+                "address": test_address,
+            },
         )
         assert is_empty(invalid_last_name_customer)
 
         invalid_email_customer = await customers_repository.search_customers(
-            last_name=test_last_name,
-            email=random.choice([random_string(), ""]),
-            address=test_address,
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": test_last_name,
+                "email": random.choice([random_string(), ""]),
+                "address": test_address,
+            },
         )
         assert is_empty(invalid_email_customer)
 
         invalid_address_customer = await customers_repository.search_customers(
-            last_name=test_last_name,
-            email=test_email,
-            address=random.choice([random_string(), ""]),
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": test_last_name,
+                "email": test_email,
+                "address": random.choice([random_string(), ""]),
+            },
         )
         assert is_empty(invalid_address_customer)
 
-        invalid_data_pass_customer = await customers_repository.search_customers(
-            last_name=test_last_name,
-            email=test_email,
-            address=test_address,
-            data_pass_id=uuid.uuid4(),
-        )
-        assert is_empty(invalid_data_pass_customer)
-
         trimmed_last_name_customer = await customers_repository.search_customers(
-            last_name=random_pad(test_last_name),
-            email=test_email,
-            address=test_address,
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": random_pad(test_last_name),
+                "email": test_email,
+                "address": test_address,
+            },
         )
         assert not is_empty(trimmed_last_name_customer)
 
         trimmed_email_customer = await customers_repository.search_customers(
-            last_name=test_last_name,
-            email=random_pad(test_email),
-            address=test_address,
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": test_last_name,
+                "email": random_pad(test_email),
+                "address": test_address,
+            },
         )
         assert not is_empty(trimmed_email_customer)
 
         trimmed_address_customer = await customers_repository.search_customers(
-            last_name=test_last_name,
-            email=test_email,
-            address=random_pad(test_address),
-            data_pass_id=test_data_pass.data_pass_id.id,
+            data_table=_data_table,
+            search_sql=_search_sql,
+            search_params={
+                "last_name": test_last_name,
+                "email": test_email,
+                "address": random_pad(test_address),
+            },
         )
         assert not is_empty(trimmed_address_customer)
 
@@ -275,8 +255,10 @@ class TestCustomersRepository:
         customers_repository: CustomersRepository,
         data_passes_repository: DataPassesRepository,
         test_data_pass: TestDataPass,
+        test_data_table: TestDataTable,
     ):
-        await customers_repository.db.execute("TRUNCATE TABLE customers CASCADE;")
+        _data_table = test_data_table.data_table
+        await customers_repository.db.execute("DROP TABLE {};".format(_data_table))
         cleanup_sql = """
             DELETE FROM data_passes WHERE id = :data_pass_id;
         """

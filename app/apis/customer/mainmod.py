@@ -1,12 +1,12 @@
 import uuid
-from datetime import timezone
+from datetime import datetime, timezone
 from typing import List, Union
 
 from fastapi import Response, status
 from pydantic.types import Json
 
 from app.apis.customer import customer_data_pass, customer_transactions
-from app.apis.utils.pda_client import write_pda_data
+from app.apis.utils.pda_client import delete_pda_record, write_pda_data
 from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
@@ -90,32 +90,55 @@ async def fn_claim_data(
                 data_pass_id=data_pass_id
             )
         )
-        claimed_data = await customers_repo.claim_data(
+        data_to_claim = await customers_repo.data_to_claim(
             data_table=data_descriptors.data_table,
             identifier=identifier,
-            pda_url=pda_url,
         )
-        if claimed_data is None:
+        if data_to_claim is None:
             response.status_code = status.HTTP_404_NOT_FOUND
             return NotFound(message="Could not find the data to claim")
 
-        data = claimed_data.data
-        data["identifier"] = str(identifier)
-        data["claimed_timestamp"] = claimed_data.claimed_timestamp.replace(
-            tzinfo=timezone.utc
-        ).isoformat()
+        claimed_timestamp = datetime.now()
 
-        data_pass = await data_passes_repo.get_data_pass(data_pass_id=data_pass_id)
-        data_pass_name = "" if data_pass is None else data_pass.name
-        write_pda_data(
+        payload = {
+            "data": data_to_claim.data,
+            "identifier": str(identifier),
+            "claimed_timestamp": claimed_timestamp.replace(
+                tzinfo=timezone.utc
+            ).isoformat(),
+        }
+
+        status_code, pda_response = write_pda_data(
             pda_url,
             token,
             app_config.APPLICATION_NAMESPACE,
-            data_pass_name,
-            claimed_data.data,
+            str(data_pass_id),
+            payload,
         )
-        claimed_data.data_table = data_descriptors.data_table
-        return claimed_data
+        if status_code == status.HTTP_201_CREATED:
+            claimed_data = await customers_repo.claim_data(
+                data_table=data_descriptors.data_table,
+                identifier=identifier,
+                pda_url=pda_url,
+                claimed_timestamp=claimed_timestamp,
+            )
+            if claimed_data is None:
+                # remove data from PDA
+                delete_pda_record(
+                    pda_url,
+                    token,
+                    pda_response["recordId"],
+                )
+                response.status_code = status.HTTP_400_BAD_REQUEST
+                return InvalidDataPass(message="Unable to commit Claim request.")
+            else:
+                claimed_data.data_table = data_descriptors.data_table
+                return claimed_data
+        else:
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            return InvalidDataPass(
+                message="Unable to write data to PDA. {}".format(pda_response["cause"])
+            )
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return InvalidDataPass()

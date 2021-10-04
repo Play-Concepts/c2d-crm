@@ -1,5 +1,6 @@
 import json
 import uuid
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic.types import Json
@@ -24,9 +25,15 @@ VIEW_CUSTOMER_BASIC_SQL = """
     SELECT id, claimed_timestamp FROM {data_table} WHERE pda_url = :pda_url
 """
 
+DATA_TO_CLAIM = """
+    SELECT id, data, status, pda_url, claimed_timestamp FROM {data_table}
+    WHERE id=:id AND status='new'
+"""
+
 CLAIM_DATA_SQL = """
     UPDATE {data_table} SET status='claimed',
-    claimed_timestamp=now(),
+    claimed_timestamp=:claimed_timestamp,
+    data={data},
     pda_url=:pda_url,
     updated_at=now()
     WHERE id=:id
@@ -67,20 +74,37 @@ class CustomersRepository(BaseRepository):
     async def search_customers(
         self, *, data_table: str, search_sql: str, search_params: Json
     ) -> List[CustomerView]:
-        values = search_params
+        values = {key:value.strip() for (key,value) in search_params.items()}
         customers = await self.db.fetch_all(
             query=search_sql.format(data_table=data_table), values=values
         )
         return [CustomerView(**customer) for customer in customers]
 
     async def claim_data(
-        self, *, data_table: str, identifier: uuid.UUID, pda_url: str
+        self,
+        *,
+        data_table: str,
+        identifier: uuid.UUID,
+        pda_url: str,
+        claimed_timestamp: datetime,
     ) -> Optional[CustomerClaimResponse]:
         customer = await self.db.fetch_one(
-            query=CLAIM_DATA_SQL.format(data_table=data_table),
+            query=CLAIM_DATA_SQL.format(data_table=data_table, data="'{}'"),
             values={
                 "id": identifier,
                 "pda_url": pda_url,
+                "claimed_timestamp": claimed_timestamp,
+            },
+        )
+        return None if customer is None else CustomerClaimResponse(**customer)
+
+    async def data_to_claim(
+        self, *, data_table: str, identifier: uuid.UUID
+    ) -> Optional[CustomerClaimResponse]:
+        customer = await self.db.fetch_one(
+            query=DATA_TO_CLAIM.format(data_table=data_table),
+            values={
+                "id": identifier,
             },
         )
         return None if customer is None else CustomerClaimResponse(**customer)

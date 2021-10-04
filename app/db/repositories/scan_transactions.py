@@ -103,7 +103,12 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
     async def get_customer_scan_trans_count_with_interval_n_days(
-        self, *, interval_days: int, pda_url: str, data_pass_id: uuid.UUID, data_table: str,
+        self,
+        *,
+        interval_days: int,
+        pda_url: str,
+        data_pass_id: uuid.UUID,
+        data_table: str,
     ) -> ScanTransactionCounts:
         now = datetime.now()
         first_from_date = (now - timedelta(days=interval_days)).replace(
@@ -111,9 +116,11 @@ class ScanTransactionsRepository(BaseRepository):
         )
         second_from_date = first_from_date - timedelta(days=interval_days)
         third_from_date = second_from_date - timedelta(days=interval_days)
-   
+
         first_transaction = await self.db.fetch_one(
-            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
+            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(
+                data_table=data_table
+            ),
             values={
                 "from_date": first_from_date,
                 "to_date": now,
@@ -123,7 +130,9 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
         second_transaction = await self.db.fetch_one(
-            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
+            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(
+                data_table=data_table
+            ),
             values={
                 "from_date": second_from_date,
                 "to_date": first_from_date - timedelta(microseconds=1),
@@ -133,7 +142,9 @@ class ScanTransactionsRepository(BaseRepository):
         )
 
         third_transaction = await self.db.fetch_one(
-            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(data_table=data_table),
+            query=GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL.format(
+                data_table=data_table
+            ),
             values={
                 "from_date": third_from_date,
                 "to_date": second_from_date - timedelta(microseconds=1),

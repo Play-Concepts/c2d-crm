@@ -18,7 +18,6 @@ from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
-from app.models.core import IDModelMixin
 from app.models.customer import CustomerNew
 from app.models.data_pass import InvalidDataPass
 from app.models.merchant import MerchantEmailView
@@ -31,6 +30,7 @@ from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
     create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
     supplier_email)
+from app.tests.test_models import TestDataPass
 
 pytestmark = pytest.mark.asyncio
 
@@ -70,10 +70,6 @@ def valid_data_pass_data() -> dict:
 @pytest.fixture
 def test_data_pass_id() -> uuid.UUID:
     return uuid.uuid4()
-
-
-class TestDataPass:
-    data_pass_id: IDModelMixin
 
 
 @pytest.fixture(scope="class")

@@ -10,6 +10,7 @@ from app.db.repositories.customers import CustomersRepository
 from app.models.core import CreatedCount
 from app.models.customer import CustomerNew
 
+
 async def do_data_file_upload(
     data_pass_id: uuid.UUID,
     data_table: str,
@@ -38,7 +39,9 @@ async def do_data_file_upload(
 
 
 def _construct_payload(
-    customers_file: UploadFile, data_headers: List[str], root_node: str,
+    customers_file: UploadFile,
+    data_headers: List[str],
+    root_node: str,
 ) -> Optional[List[Dict[str, Any]]]:
     data = []
     lines = csv.reader(codecs.iterdecode(customers_file.file, "utf-8"), delimiter=",")
@@ -48,7 +51,7 @@ def _construct_payload(
         if is_headers_match is False:
             return None
 
-    node_headers = [ "{}{}".format(root_node, header) for header in headers]
+    node_headers = ["{}{}".format(root_node, header) for header in headers]
     for log_line in lines:
         data.append(dot_to_dict(dict(zip(node_headers, log_line))))
 
