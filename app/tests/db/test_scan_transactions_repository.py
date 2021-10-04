@@ -266,7 +266,11 @@ class TestScanTransactionsRepository:
         await data_passes_repository.db.execute(
             "TRUNCATE TABLE scan_transactions CASCADE;"
         )
-        await data_passes_repository.db.execute("TRUNCATE TABLE {data_table} CASCADE;".format(data_table=test_data_table.data_table))
+        await data_passes_repository.db.execute(
+            "TRUNCATE TABLE {data_table} CASCADE;".format(
+                data_table=test_data_table.data_table
+            )
+        )
         cleanup_sql = """
             DELETE FROM data_passes WHERE id = :data_pass_id;
         """

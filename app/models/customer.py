@@ -76,8 +76,8 @@ class CustomerClaim(IDModelMixin):
 
 class CustomerClaimResponse(IDModelMixin, CustomerBase):
     data: Json
-    status: StatusType
-    pda_url: str
-    claimed_timestamp: datetime
+    status: Optional[StatusType]
+    pda_url: Optional[str]
+    claimed_timestamp: Optional[datetime]
 
     data_table: Optional[str]

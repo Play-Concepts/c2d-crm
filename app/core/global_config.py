@@ -40,5 +40,6 @@ class GlobalConfig(BaseSettings):
         "NOTIFY_MARKETING_EMAIL", None
     )
 
+
 config = GlobalConfig()
 # print(config.__repr__())

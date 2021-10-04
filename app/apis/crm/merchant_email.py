@@ -15,7 +15,7 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
     merchants = await merchants_repo.get_merchants_email_list()
 
     for i in (0, len(merchants), BATCH_SIZE):
-        merchants_to_email = merchants[i : i + BATCH_SIZE]
+        merchants_to_email = merchants[i : i + BATCH_SIZE]  # noqa: E203
         if len(merchants_to_email) > 0:
             do_send_merchant_welcome_email(merchants_to_email)
             await _flag_merchant_welcome_email_sent(merchants_to_email, merchants_repo)

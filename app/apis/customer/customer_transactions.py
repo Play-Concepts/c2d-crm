@@ -1,8 +1,8 @@
-from app.models.data_pass_source import DataPassSourceDescriptor
-from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 import uuid
 
+from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
+from app.models.data_pass_source import DataPassSourceDescriptor
 from app.models.scan_transaction import ScanTransactionCounts
 
 
@@ -20,6 +20,9 @@ async def fn_customer_get_scan_transactions_count(
     )
     return (
         await scan_transactions_repo.get_customer_scan_trans_count_with_interval_n_days(
-            interval_days=interval_days, pda_url=pda_url, data_pass_id=data_pass_id, data_table=data_descriptors.data_table
+            interval_days=interval_days,
+            pda_url=pda_url,
+            data_pass_id=data_pass_id,
+            data_table=data_descriptors.data_table,
         )
     )
