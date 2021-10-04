@@ -33,6 +33,7 @@ router.prefix = "/api/customer"
     tags=["customer"],
     response_model=CustomerBasicView,
     responses={404: {"model": NotFound}, 400: {"model": InvalidDataPass}},
+    deprecated=True,
 )
 async def get_customer_basic(
     response: Response,
