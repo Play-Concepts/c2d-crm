@@ -12,7 +12,7 @@ from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
-from app.models.core import CreatedCount, IDModelMixin, NotFound
+from app.models.core import CreatedCount, NotFound
 from app.models.customer import CustomerNew, CustomerView
 from app.models.user import UserCreate
 from app.tests.helpers.data_creator import (create_data_pass,
@@ -22,6 +22,7 @@ from app.tests.helpers.data_generator import (
     create_new_customer, create_new_data_pass_data,
     create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
     supplier_email)
+from app.tests.test_models import TestDataPass
 
 pytestmark = pytest.mark.asyncio
 
@@ -56,10 +57,6 @@ def valid_data_pass_test_data() -> dict:
 @pytest.fixture(scope="class")
 def test_customer():
     return create_new_customer()
-
-
-class TestDataPass:
-    data_pass_id: IDModelMixin
 
 
 @pytest.fixture(scope="class")

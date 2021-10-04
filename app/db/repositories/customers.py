@@ -74,7 +74,7 @@ class CustomersRepository(BaseRepository):
     async def search_customers(
         self, *, data_table: str, search_sql: str, search_params: Json
     ) -> List[CustomerView]:
-        values = search_params
+        values = {key:value.strip() for (key,value) in search_params.items()}
         customers = await self.db.fetch_all(
             query=search_sql.format(data_table=data_table), values=values
         )

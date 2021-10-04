@@ -92,13 +92,18 @@ def fake_hostname() -> str:
 
 def create_valid_data_pass_source_data(user_id: str) -> dict:
     table_name = fake.first_name().lower()
+    search_sql = """SELECT id, data, pda_url, status FROM {data_table}
+        WHERE data->'person'->'profile'->>'last_name' ilike :last_name
+        AND data->'person'->'address'->>'address_line_1' ilike :address
+        AND data->'person'->'contact'->>'email' ilike :email AND status='new';
+    """
     return {
         "name": table_name + "-" + fake.pystr_format("?????").lower(),
         "description": fake.sentence(),
         "logo_url": fake.image_url(),
         "data_table": table_name,
-        "search_sql": "",
-        "search_parameters": "",
+        "search_sql": search_sql,
+        "data_descriptors": {},
         "user_id": user_id,
     }
 
