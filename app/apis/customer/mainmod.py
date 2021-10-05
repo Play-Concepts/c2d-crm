@@ -116,6 +116,14 @@ async def fn_claim_data(
             payload,
         )
         if status_code == status.HTTP_201_CREATED:
+            del payload["data"]
+            summary_status_code, summary_pda_response = write_pda_data(
+                pda_url,
+                token,
+                app_config.APPLICATION_NAMESPACE,
+                "{}/claim-summary".format(str(data_pass_id)),
+                payload,
+            )
             claimed_data = await customers_repo.claim_data(
                 data_table=data_descriptors.data_table,
                 identifier=identifier,
@@ -129,6 +137,12 @@ async def fn_claim_data(
                     token,
                     pda_response["recordId"],
                 )
+                if summary_status_code == status.HTTP_201_CREATED:
+                    delete_pda_record(
+                        pda_url,
+                        token,
+                        summary_pda_response["recordId"],
+                    )
                 response.status_code = status.HTTP_400_BAD_REQUEST
                 return InvalidDataPass(message="Unable to commit Claim request.")
             else:
