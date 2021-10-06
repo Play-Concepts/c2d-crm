@@ -8,6 +8,7 @@ from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_get_scan_transactions_count,
                                        fn_get_customer_basic,
                                        fn_get_customer_data_passes,
+                                       fn_get_customer_perks,
                                        fn_search_customers)
 from app.apis.dependencies.database import get_repository
 from app.core.pda_auth import get_current_pda_user
@@ -15,12 +16,14 @@ from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.merchant_perks import MerchantPerksRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.core import BooleanResponse, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
+from app.models.merchant_perk import MerchantPerkCustomerView
 from app.models.scan_transaction import ScanTransactionCounts
 
 router = APIRouter()
@@ -204,4 +207,31 @@ async def get_scan_transactions_count(
         data_pass_id,
         data_pass_sources_repo,
         scan_transactions_repo,
+    )
+
+@router.get(
+    "/{data_pass_id}/perks",
+    name="customer:perks",
+    tags=["customer"],
+    response_model=List[MerchantPerkCustomerView],
+    responses={400: {"model": InvalidDataPass}},
+)
+async def get_scan_transactions_count(
+    response: Response,
+    data_pass_id: uuid.UUID,
+    data_passes_repo: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
+    merchant_perks_repo: MerchantPerksRepository = Depends(
+        get_repository(MerchantPerksRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> Union[InvalidDataPass, List[MerchantPerkCustomerView]]:
+    auth, _ = auth_tuple
+    return await fn_get_customer_perks(
+        auth["iss"],
+        data_pass_id,
+        data_passes_repo,
+        merchant_perks_repo,
+        response,
     )

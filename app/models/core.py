@@ -1,5 +1,6 @@
 import json
 import uuid
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -19,6 +20,14 @@ class IDModelMixin(BaseModel):
 
 class CreatedCount(BaseModel):
     count: int
+
+
+class CreatedAtMixin(BaseModel):
+    created_at: datetime
+
+
+class TimestampsMixin(CreatedAtMixin):
+    updated_at: datetime
 
 
 Count = CreatedCount

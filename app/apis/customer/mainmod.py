@@ -5,7 +5,7 @@ from typing import List, Union
 from fastapi import Response, status
 from pydantic.types import Json
 
-from app.apis.customer import customer_data_pass, customer_transactions
+from app.apis.customer import customer_data_pass, customer_transaction, customer_merchant_perk
 from app.apis.utils.pda_client import delete_pda_record, write_pda_data
 from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
@@ -172,5 +172,7 @@ async def fn_check_first_login(
 fn_get_customer_data_passes = customer_data_pass.fn_get_customer_data_passes
 fn_customer_activate_data_pass = customer_data_pass.fn_customer_activate_data_pass
 fn_customer_get_scan_transactions_count = (
-    customer_transactions.fn_customer_get_scan_transactions_count
+    customer_transaction.fn_customer_get_scan_transactions_count
 )
+
+fn_get_customer_perks = customer_merchant_perk.fn_get_customer_perks
