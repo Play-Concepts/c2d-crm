@@ -209,6 +209,7 @@ async def get_scan_transactions_count(
         scan_transactions_repo,
     )
 
+
 @router.get(
     "/{data_pass_id}/perks",
     name="customer:perks",
@@ -216,7 +217,7 @@ async def get_scan_transactions_count(
     response_model=List[MerchantPerkCustomerView],
     responses={400: {"model": InvalidDataPass}},
 )
-async def get_scan_transactions_count(
+async def get_customer_perks(
     response: Response,
     data_pass_id: uuid.UUID,
     data_passes_repo: DataPassesRepository = Depends(

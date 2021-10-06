@@ -1,10 +1,9 @@
 import uuid
-from typing import List, Optional
+from typing import List
 
 from app.models.merchant_perk import MerchantPerkCustomerView
 
 from .base import BaseRepository
-
 
 GET_CUSTOMER_PERKS_SQL = """
     SELECT merchant_perks.id, merchant_perks.title, merchant_perks.details, merchant_perks.start_date,
@@ -15,6 +14,7 @@ GET_CUSTOMER_PERKS_SQL = """
     ON (mpf.merchant_perk_id=merchant_perks_data_passes.merchant_perk_id)
     WHERE merchant_perks_data_passes.data_pass_id=:data_pass_id;
 """
+
 
 class MerchantPerksRepository(BaseRepository):
     async def get_customer_perks(

@@ -2,8 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from app.models.core import (CoreModel, CreatedAtMixin, IDModelMixin,
-                             TimestampsMixin)
+from app.models.core import CoreModel, IDModelMixin, TimestampsMixin
 
 
 class MerchantPerkBase(CoreModel):

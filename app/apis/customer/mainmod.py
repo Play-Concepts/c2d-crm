@@ -5,7 +5,8 @@ from typing import List, Union
 from fastapi import Response, status
 from pydantic.types import Json
 
-from app.apis.customer import customer_data_pass, customer_transaction, customer_merchant_perk
+from app.apis.customer import (customer_data_pass, customer_merchant_perk,
+                               customer_transaction)
 from app.apis.utils.pda_client import delete_pda_record, write_pda_data
 from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
