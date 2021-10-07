@@ -1,7 +1,7 @@
 import base64
 import binascii
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 import jwt
 import requests
@@ -36,7 +36,7 @@ async def get_current_pda_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
 
-def validate(token: str) -> [Dict[str, Any], str]:
+def validate(token: str) -> Tuple[Dict[str, Any], str]:
     pda_url = _get_pda_url(token)
     pda_public_key = _get_pda_public_key(pda_url)
     try:

@@ -8,8 +8,11 @@ from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_get_scan_transactions_count,
                                        fn_get_customer_basic,
                                        fn_get_customer_data_passes,
+                                       fn_get_customer_favourited_perks,
                                        fn_get_customer_perks,
-                                       fn_search_customers)
+                                       fn_like_merchant_perk,
+                                       fn_search_customers,
+                                       fn_unlike_merchant_perk)
 from app.apis.dependencies.database import get_repository
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.customers import CustomersRepository
@@ -19,7 +22,7 @@ from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchant_perks import MerchantPerksRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
-from app.models.core import BooleanResponse, NotFound
+from app.models.core import BooleanResponse, IDModelMixin, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
@@ -235,4 +238,65 @@ async def get_customer_perks(
         data_passes_repo,
         merchant_perks_repo,
         response,
+    )
+
+
+@router.put(
+    "/perks/{merchant_perk_id}/like",
+    name="customer:perks:like",
+    tags=["customer"],
+    response_model=IDModelMixin,
+)
+async def like_merchant_perk(
+    merchant_perk_id: uuid.UUID,
+    merchant_perks_repo: MerchantPerksRepository = Depends(
+        get_repository(MerchantPerksRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> IDModelMixin:
+    auth, _ = auth_tuple
+    return await fn_like_merchant_perk(
+        auth["iss"],
+        merchant_perk_id,
+        merchant_perks_repo,
+    )
+
+
+@router.put(
+    "/perks/{merchant_perk_id}/unlike",
+    name="customer:perks:unlike",
+    tags=["customer"],
+    response_model=IDModelMixin,
+)
+async def unlike_merchant_perk(
+    merchant_perk_id: uuid.UUID,
+    merchant_perks_repo: MerchantPerksRepository = Depends(
+        get_repository(MerchantPerksRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> IDModelMixin:
+    auth, _ = auth_tuple
+    return await fn_unlike_merchant_perk(
+        auth["iss"],
+        merchant_perk_id,
+        merchant_perks_repo,
+    )
+
+
+@router.get(
+    "/perks/favourites",
+    name="customer:perks:favourites",
+    tags=["customer"],
+    response_model=List[MerchantPerkCustomerView],
+)
+async def get_customer_favourited_perks(
+    merchant_perks_repo: MerchantPerksRepository = Depends(
+        get_repository(MerchantPerksRepository)
+    ),
+    auth_tuple=Depends(get_current_pda_user),
+) -> List[MerchantPerkCustomerView]:
+    auth, _ = auth_tuple
+    return await fn_get_customer_favourited_perks(
+        auth["iss"],
+        merchant_perks_repo,
     )
