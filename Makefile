@@ -21,7 +21,7 @@ flake-test:
 	flake8 --ignore=W503 ./app/tests
 
 stop:
-	docker-compose down
+	docker-compose down --remove-orphans
 
 start: stop
 	docker-compose up --build
