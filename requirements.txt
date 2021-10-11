@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-alembic==1.7.3
+alembic==1.7.4
     # via -r requirements.in
 asgiref==3.4.1
     # via uvicorn
@@ -14,9 +14,9 @@ bcrypt==3.2.0
     # via
     #   -r requirements.in
     #   passlib
-boto3==1.18.55
+boto3==1.18.57
     # via -r requirements.in
-botocore==1.21.55
+botocore==1.21.57
     # via
     #   boto3
     #   s3transfer

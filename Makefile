@@ -7,7 +7,7 @@ black-src:
 	black ./app
 
 flake-src:
-	flake8 --ignore=W503 ./app
+	flake8 ./app
 
 lint-test: black-test isort-test flake-test
 
@@ -18,7 +18,7 @@ black-test:
 	black ./app/tests
 
 flake-test:
-	flake8 --ignore=W503 ./app/tests
+	flake8 ./app/tests
 
 stop:
 	docker-compose down --remove-orphans

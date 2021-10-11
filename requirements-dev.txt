@@ -24,7 +24,7 @@ coverage[toml]==6.0
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-faker==8.14.1
+faker==9.2.0
     # via -r requirements-dev.in
 flake8==3.9.2
     # via -r requirements-dev.in
