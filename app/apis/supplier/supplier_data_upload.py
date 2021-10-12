@@ -4,6 +4,7 @@ import uuid
 from typing import Any, Dict, List, Optional
 
 from fastapi import UploadFile
+from loguru import logger
 
 from app.apis.utils.pda_client import dot_to_dict
 from app.db.repositories.customers import CustomersRepository
@@ -26,6 +27,7 @@ async def do_data_file_upload(
         return None
 
     for customer in payload:
+        logger.info(customer)
         new_customer: CustomerNew = CustomerNew(
             data=customer, data_pass_id=data_pass_id
         )
@@ -53,7 +55,11 @@ def _construct_payload(
 
     node_headers = ["{}{}".format(root_node, header) for header in headers]
     for log_line in lines:
-        data.append(dot_to_dict(dict(zip(node_headers, log_line))))
+        data.append(
+            dot_to_dict(
+                dict(zip(node_headers, log_line)),
+            )
+        )
 
     return data
 

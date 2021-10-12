@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from pydantic.types import Json
 
+from app.apis.utils.transformer import transform
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerNew, CustomerView)
 
@@ -72,13 +73,31 @@ class CustomersRepository(BaseRepository):
         return None if customer is None else CustomerBasicView(**customer)
 
     async def search_customers(
-        self, *, data_table: str, search_sql: str, search_params: Json
+        self,
+        *,
+        data_table: str,
+        search_sql: str,
+        data_descriptors: Json,
+        search_params: Json,
     ) -> List[CustomerView]:
         values = {key: value.strip() for (key, value) in search_params.items()}
         customers = await self.db.fetch_all(
             query=search_sql.format(data_table=data_table), values=values
         )
-        return [CustomerView(**customer) for customer in customers]
+
+        def transform_view(customer_view: CustomerView):
+            data_transformer = (
+                ""
+                if (
+                    data_descriptors is None
+                    or ("data_transformer" not in data_descriptors)
+                )
+                else data_descriptors["data_transformer"]
+            )
+            transform(data_transformer, customer_view.data, search_params=search_params)
+            return customer_view
+
+        return [transform_view(CustomerView(**customer)) for customer in customers]
 
     async def claim_data(
         self,

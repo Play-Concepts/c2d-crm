@@ -60,13 +60,12 @@ async def fn_search_customers(
     is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
     if is_valid:
         data_descriptors: DataPassSourceDescriptor = (
-            await data_pass_sources_repo.get_basic_data_pass_source_search_sql(
-                data_pass_id=data_pass_id
-            )
+            await data_pass_sources_repo.get_data_pass_source(data_pass_id=data_pass_id)
         )
         return await customers_repo.search_customers(
             data_table=data_descriptors.data_table,
             search_sql=data_descriptors.search_sql,
+            data_descriptors=data_descriptors.data_descriptors,
             search_params=search_params,
         )
     else:
