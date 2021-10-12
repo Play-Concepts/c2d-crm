@@ -1,11 +1,10 @@
 import json
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 from pydantic.types import Json
 
-from app.apis.utils.transformer import transform
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerNew, CustomerView)
 
@@ -77,27 +76,14 @@ class CustomersRepository(BaseRepository):
         *,
         data_table: str,
         search_sql: str,
-        data_descriptors: Json,
+        transformer: Callable,
         search_params: Json,
     ) -> List[CustomerView]:
         values = {key: value.strip() for (key, value) in search_params.items()}
         customers = await self.db.fetch_all(
             query=search_sql.format(data_table=data_table), values=values
         )
-
-        def transform_view(customer_view: CustomerView):
-            data_transformer = (
-                ""
-                if (
-                    data_descriptors is None
-                    or ("data_transformer" not in data_descriptors)
-                )
-                else data_descriptors["data_transformer"]
-            )
-            transform(data_transformer, customer_view.data, search_params=search_params)
-            return customer_view
-
-        return [transform_view(CustomerView(**customer)) for customer in customers]
+        return [transformer(CustomerView(**customer)) for customer in customers]
 
     async def claim_data(
         self,

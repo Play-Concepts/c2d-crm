@@ -8,6 +8,7 @@ from pydantic.types import Json
 from app.apis.customer import (customer_data_pass, customer_merchant_perk,
                                customer_transaction)
 from app.apis.utils.pda_client import delete_pda_record, write_pda_data
+from app.apis.utils.transformer import transform
 from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
@@ -62,10 +63,27 @@ async def fn_search_customers(
         data_descriptors: DataPassSourceDescriptor = (
             await data_pass_sources_repo.get_data_pass_source(data_pass_id=data_pass_id)
         )
+
+        def transform_view(customer_view: CustomerView):
+            from loguru import logger
+            logger.info(data_descriptors)
+            data_transformer = (
+                None
+                if (
+                    data_descriptors.data_descriptors is None
+                    or ("data_transformer" not in data_descriptors.data_descriptors)
+                )
+                else data_descriptors.data_descriptors["data_transformer"]
+            )
+            if data_transformer is not None:
+                transform(data_transformer, customer_view.data, search_params=search_params)
+    
+            return customer_view
+            
         return await customers_repo.search_customers(
             data_table=data_descriptors.data_table,
             search_sql=data_descriptors.search_sql,
-            data_descriptors=data_descriptors.data_descriptors,
+            transformer=transform_view,
             search_params=search_params,
         )
     else:
