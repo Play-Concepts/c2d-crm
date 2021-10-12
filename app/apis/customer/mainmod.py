@@ -66,6 +66,7 @@ async def fn_search_customers(
 
         def transform_view(customer_view: CustomerView):
             from loguru import logger
+
             logger.info(data_descriptors)
             data_transformer = (
                 None
@@ -76,10 +77,12 @@ async def fn_search_customers(
                 else data_descriptors.data_descriptors["data_transformer"]
             )
             if data_transformer is not None:
-                transform(data_transformer, customer_view.data, search_params=search_params)
-    
+                transform(
+                    data_transformer, customer_view.data, search_params=search_params
+                )
+
             return customer_view
-            
+
         return await customers_repo.search_customers(
             data_table=data_descriptors.data_table,
             search_sql=data_descriptors.search_sql,
