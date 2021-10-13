@@ -179,6 +179,7 @@ class TestCustomersRepository:
                 "email": test_email,
                 "address": test_address,
             },
+            transformer=lambda x: x,
         )
         assert not is_empty(customer)
 
@@ -190,6 +191,7 @@ class TestCustomersRepository:
                 "email": test_email,
                 "address": test_address,
             },
+            transformer=lambda x: x,
         )
         assert is_empty(invalid_last_name_customer)
 
@@ -201,6 +203,7 @@ class TestCustomersRepository:
                 "email": random.choice([random_string(), ""]),
                 "address": test_address,
             },
+            transformer=lambda x: x,
         )
         assert is_empty(invalid_email_customer)
 
@@ -212,6 +215,7 @@ class TestCustomersRepository:
                 "email": test_email,
                 "address": random.choice([random_string(), ""]),
             },
+            transformer=lambda x: x,
         )
         assert is_empty(invalid_address_customer)
 
@@ -223,6 +227,7 @@ class TestCustomersRepository:
                 "email": test_email,
                 "address": test_address,
             },
+            transformer=lambda x: x,
         )
         assert not is_empty(trimmed_last_name_customer)
 
@@ -234,6 +239,7 @@ class TestCustomersRepository:
                 "email": random_pad(test_email),
                 "address": test_address,
             },
+            transformer=lambda x: x,
         )
         assert not is_empty(trimmed_email_customer)
 
@@ -245,6 +251,7 @@ class TestCustomersRepository:
                 "email": test_email,
                 "address": random_pad(test_address),
             },
+            transformer=lambda x: x,
         )
         assert not is_empty(trimmed_address_customer)
 

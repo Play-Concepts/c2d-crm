@@ -1,7 +1,6 @@
-from datetime import datetime
 from typing import Optional
 
-from app.models.core import CoreModel, IDModelMixin
+from app.models.core import CoreModel, CreatedAtMixin, IDModelMixin
 
 
 class CustomerLogBase(CoreModel):
@@ -12,9 +11,12 @@ class CustomerLogBase(CoreModel):
 CustomerLogNew = CustomerLogBase
 
 
-class CustomerLog(IDModelMixin, CustomerLogBase):
-    created_at: datetime
+class CustomerLogDBModel(IDModelMixin, CustomerLogBase, CreatedAtMixin):
+    pass
 
 
-class CustomerLogDBModel(IDModelMixin, CustomerLogBase):
-    created_at: Optional[datetime]
+CustomerLog = CustomerLogDBModel
+
+
+class CustomerLogNewResponse(IDModelMixin, CreatedAtMixin):
+    pass
