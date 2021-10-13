@@ -25,10 +25,17 @@ merchant_user = global_state.fastapi_users.current_user(
 
 
 @router.post(
+    "/data-passes/{data_pass_id}/barcode/verify",
+    name="merchant:barcode_verify",
+    tags=["merchants"],
+    response_model=Union[ScanResult, InvalidDataPass],
+)
+@router.post(
     "/{data_pass_id}/barcode/verify",
     name="merchant:barcode_verify",
     tags=["merchants"],
     response_model=Union[ScanResult, InvalidDataPass],
+    deprecated=True,
 )
 async def verify_barcode(
     request: Request,
@@ -64,10 +71,17 @@ async def verify_barcode(
 
 
 @router.get(
+    "/data-passes/{data_pass_id}/scan-transactions-count",
+    name="merchant:scan-transactions-count",
+    tags=["merchants"],
+    response_model=ScanTransactionCounts,
+)
+@router.get(
     "/{data_pass_id}/scan-transactions-count",
     name="merchant:scan-transactions-count",
     tags=["merchants"],
     response_model=ScanTransactionCounts,
+    deprecated=True,
 )
 @router.get(
     "/{data_pass_id}/scan_transactions_count",
