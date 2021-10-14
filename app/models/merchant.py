@@ -41,8 +41,8 @@ class MerchantView(IDModelMixin):
 
 
 class MerchantEmailView(IDModelMixin, MerchantBasicModel):
-    last_name: str
-    company_name: str
+    last_name: Optional[str]
+    company_name: Optional[str]
     address: Optional[str]
     phone_number: Optional[str]
     password_change_token: str
