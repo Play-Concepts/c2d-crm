@@ -17,7 +17,8 @@ NEW_MERCHANT_SQL = """
 """
 
 WELCOME_EMAIL_LIST_SQL = """
-    SELECT id, first_name, email, password_change_token FROM merchants WHERE welcome_email_sent is null;
+    SELECT id, first_name, last_name, email, company_name, address, phone_number,
+     password_change_token FROM merchants WHERE welcome_email_sent is null;
 """
 
 UPDATE_WELCOME_EMAIL_SENT_SQL = """

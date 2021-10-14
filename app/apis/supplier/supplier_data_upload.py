@@ -53,7 +53,11 @@ def _construct_payload(
 
     node_headers = ["{}{}".format(root_node, header) for header in headers]
     for log_line in lines:
-        data.append(dot_to_dict(dict(zip(node_headers, log_line))))
+        data.append(
+            dot_to_dict(
+                dict(zip(node_headers, log_line)),
+            )
+        )
 
     return data
 

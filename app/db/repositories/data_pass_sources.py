@@ -37,6 +37,11 @@ NEW_DATA_PASS_SOURCE_TABLE_SQL_PROC = [
 """,
 ]
 
+GET_DATA_PASS_SOURCE_SQL = """
+    SELECT data_table, search_sql, data_descriptors, user_id FROM data_pass_sources
+    WHERE id in (SELECT data_pass_source_id FROM data_passes WHERE id = :data_pass_id)
+"""
+
 GET_DATA_PASS_SOURCE_DESCRIPTORS_SQL = """
     SELECT data_table, null as search_sql, data_descriptors, user_id FROM data_pass_sources
     WHERE id in (SELECT data_pass_source_id FROM data_passes WHERE id = :data_pass_id)
@@ -88,6 +93,19 @@ class DataPassSourcesRepository(BaseRepository):
         query_values = {"data_pass_id": data_pass_id}
         data_pass_source_descriptor = await self.db.fetch_one(
             query=GET_DATA_PASS_SOURCE_SEARCH_SQL, values=query_values
+        )
+        return (
+            None
+            if data_pass_source_descriptor is None
+            else DataPassSourceDescriptor(**data_pass_source_descriptor)
+        )
+
+    async def get_data_pass_source(
+        self, *, data_pass_id: uuid.UUID
+    ) -> Optional[DataPassSourceDescriptor]:
+        query_values = {"data_pass_id": data_pass_id}
+        data_pass_source_descriptor = await self.db.fetch_one(
+            query=GET_DATA_PASS_SOURCE_SQL, values=query_values
         )
         return (
             None
