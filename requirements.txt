@@ -14,9 +14,9 @@ bcrypt==3.2.0
     # via
     #   -r requirements.in
     #   passlib
-boto3==1.18.57
+boto3==1.18.61
     # via -r requirements.in
-botocore==1.21.57
+botocore==1.21.61
     # via
     #   boto3
     #   s3transfer
@@ -34,7 +34,7 @@ click==8.0.1
     # via uvicorn
 cryptography==35.0.0
     # via -r requirements.in
-databases[postgresql]==0.5.2
+databases[postgresql]==0.5.3
     # via
     #   -r requirements.in
     #   fastapi-users-db-sqlalchemy
@@ -58,6 +58,8 @@ idna==3.2
     # via
     #   email-validator
     #   requests
+jinja2==3.0.2
+    # via -r requirements.in
 jmespath==0.10.0
     # via
     #   boto3
@@ -69,8 +71,10 @@ makefun==1.11.3
 mako==1.1.5
     # via alembic
 markupsafe==2.0.1
-    # via mako
-passlib==1.7.4
+    # via
+    #   jinja2
+    #   mako
+passlib[bcrypt]==1.7.4
     # via
     #   -r requirements.in
     #   fastapi-users
@@ -86,7 +90,7 @@ pyjwt==2.1.0
     #   fastapi-users
 python-dateutil==2.8.2
     # via botocore
-python-dotenv==0.19.0
+python-dotenv==0.19.1
     # via -r requirements.in
 python-multipart==0.0.5
     # via

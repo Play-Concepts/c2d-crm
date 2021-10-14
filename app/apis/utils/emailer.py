@@ -93,7 +93,42 @@ def send_notification_email_to_marketing(
                 },
                 "Subject": {
                     "Charset": charset,
-                    "Data": "[Elyria Data Passport] New Merchant active",
+                    "Data": "[{}] New Merchant active".format(
+                        app_config.APPLICATION_NAME
+                    ),
+                },
+            },
+        )
+    )
+
+
+def send_email_to_marketing(
+    email_content: str,
+    email_subject: str,
+    to: str = app_config.NOTIFY_MARKETING_EMAIL,
+    source: str = app_config.MAILER_FROM,
+):
+    charset = "UTF-8"
+    return (
+        None
+        if is_test
+        else ses.send_email(
+            Source=source,
+            Destination={
+                "ToAddresses": [email.strip() for email in to.split(",")],
+            },
+            Message={
+                "Body": {
+                    "Html": {
+                        "Charset": charset,
+                        "Data": email_content,
+                    },
+                },
+                "Subject": {
+                    "Charset": charset,
+                    "Data": "[{}] {}".format(
+                        app_config.APPLICATION_NAME, email_subject
+                    ),
                 },
             },
         )

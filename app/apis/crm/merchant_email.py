@@ -1,7 +1,10 @@
 import json
 from typing import List
 
-from app.apis.utils.emailer import send_bulk_templated_email
+import jinja2
+
+from app.apis.utils.emailer import (send_bulk_templated_email,
+                                    send_email_to_marketing)
 from app.core.global_config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.merchant import MerchantEmailView
@@ -9,6 +12,9 @@ from app.models.merchant import MerchantEmailView
 BATCH_SIZE = 50
 MERCHANT_WELCOME_ROOT_LINK = app_config.APPLICATION_ROOT + "/merchant/verify-email"
 MERCHANT_WELCOME_TEMPLATE = "datapassport-welcome"
+
+template_loader = jinja2.FileSystemLoader(searchpath="/app/templates")
+template_env = jinja2.Environment(loader=template_loader)
 
 
 async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
@@ -19,6 +25,8 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
         if len(merchants_to_email) > 0:
             do_send_merchant_welcome_email(merchants_to_email)
             await _flag_merchant_welcome_email_sent(merchants_to_email, merchants_repo)
+
+    notify_marketing(merchants)
 
 
 def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
@@ -57,3 +65,14 @@ async def _flag_merchant_welcome_email_sent(
 ):
     for merchant in merchants:
         await merchants_repo.update_welcome_email_sent(merchant_id=merchant.id)
+
+
+def notify_marketing(merchants):
+    template = template_env.get_template("dataswift-marketing.html")
+    for merchant in merchants:
+        output = template.render(merchant.dict())
+        if app_config.NOTIFY_MARKETING_EMAIL is not None:
+            send_email_to_marketing(
+                output,
+                "New Merchant Registration",
+            )

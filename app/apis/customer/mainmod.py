@@ -65,9 +65,6 @@ async def fn_search_customers(
         )
 
         def transform_view(customer_view: CustomerView):
-            from loguru import logger
-
-            logger.info(data_descriptors)
             data_transformer = (
                 None
                 if (
