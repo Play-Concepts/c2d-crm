@@ -91,9 +91,6 @@ jobs:
             service: dataswift-products-datapassport-prd-elyria
             container: dataswift-products-datapassport-prd-elyria
           - cluster: dataswift-products-datapassport-prd
-            service: dataswift-products-datapassport-prd-triune
-            container: dataswift-products-datapassport-prd-triune
-          - cluster: dataswift-products-datapassport-prd
             service: dataswift-products-datapassport-prd-datavista
             container: dataswift-products-datapassport-prd-datavista
 

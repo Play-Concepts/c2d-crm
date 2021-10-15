@@ -75,15 +75,6 @@ async def fn_data_upload(
             else data_descriptors.data_descriptors["data_headers"]
         )
 
-        data_headers = (
-            []
-            if (
-                data_descriptors.data_descriptors is None
-                or "data_headers" not in data_descriptors.data_descriptors
-            )
-            else data_descriptors.data_descriptors["data_headers"]
-        )
-
         data_root_node = (
             ""
             if (
