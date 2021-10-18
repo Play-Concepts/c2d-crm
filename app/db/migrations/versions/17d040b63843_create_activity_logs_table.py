@@ -17,6 +17,9 @@ activity_log_component_type = sa.Enum(
     "perk", "data_pass", name="activity_log_component_type"
 )
 activity_log_event_type = sa.Enum(
+    "perk_link_clicked",
+    "info_view_entered",
+    "info_view_exited",
     "view_entered",
     "view_exited",
     "liked",

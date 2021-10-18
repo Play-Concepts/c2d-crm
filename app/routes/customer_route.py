@@ -15,11 +15,10 @@ from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_unlike_merchant_perk)
 from app.apis.dependencies.database import get_repository
 from app.apis.log.mainmod import (fn_log_data_pass_activated,
-                                  fn_log_data_pass_view_entered,
-                                  fn_log_data_pass_view_exited,
-                                  fn_log_perk_liked, fn_log_perk_unliked,
-                                  fn_log_perk_view_entered,
-                                  fn_log_perk_view_exited)
+                                  fn_log_data_pass_info_view_entered,
+                                  fn_log_data_pass_info_view_exited,
+                                  fn_log_data_pass_perk_link_clicked,
+                                  fn_log_perk_liked, fn_log_perk_unliked)
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.db.repositories.customers import CustomersRepository
@@ -270,38 +269,57 @@ async def get_customer_perks(
 
 
 @router.put(
-    "/data-passes/{data_pass_id}/enter-view",
-    name="customer:data-passes:enter-view",
+    "/data-passes/{data_pass_id}/enter-info-view",
+    name="customer:data-passes:enter-info-view",
     tags=["customer"],
     response_model=ActivityLogNewResponse,
 )
-async def log_data_pass_view_entered(
+async def log_data_pass_info_view_entered(
     data_pass_id: uuid.UUID,
     activity_log_repo: ActivityLogRepository = Depends(
         get_repository(ActivityLogRepository)
     ),
     _=Depends(get_current_pda_user),
 ) -> ActivityLogNewResponse:
-    return await fn_log_data_pass_view_entered(
+    return await fn_log_data_pass_info_view_entered(
         data_pass_id,
         activity_log_repo,
     )
 
 
 @router.put(
-    "/data-passes/{data_pass_id}/exit-view",
-    name="customer:data-passes:exit-view",
+    "/data-passes/{data_pass_id}/exit-info-view",
+    name="customer:data-passes:exit-info-view",
     tags=["customer"],
     response_model=ActivityLogNewResponse,
 )
-async def log_data_pass_view_exited(
+async def log_data_pass_info_view_exited(
     data_pass_id: uuid.UUID,
     activity_log_repo: ActivityLogRepository = Depends(
         get_repository(ActivityLogRepository)
     ),
     _=Depends(get_current_pda_user),
 ) -> ActivityLogNewResponse:
-    return await fn_log_data_pass_view_exited(
+    return await fn_log_data_pass_info_view_exited(
+        data_pass_id,
+        activity_log_repo,
+    )
+
+
+@router.put(
+    "/data-passes/{data_pass_id}/perk-link-clicked",
+    name="customer:data-passes:perk-link-clicked",
+    tags=["customer"],
+    response_model=ActivityLogNewResponse,
+)
+async def log_data_pass_perk_link_clicked(
+    data_pass_id: uuid.UUID,
+    activity_log_repo: ActivityLogRepository = Depends(
+        get_repository(ActivityLogRepository)
+    ),
+    _=Depends(get_current_pda_user),
+) -> ActivityLogNewResponse:
+    return await fn_log_data_pass_perk_link_clicked(
         data_pass_id,
         activity_log_repo,
     )
@@ -366,6 +384,12 @@ async def unlike_merchant_perk(
 
 
 @router.get(
+    "/perks",
+    name="customer:perks",
+    tags=["customer"],
+    response_model=List[MerchantPerkCustomerView],
+)
+@router.get(
     "/perks/favourites",
     name="customer:perks:favourites",
     tags=["customer"],
@@ -381,42 +405,4 @@ async def get_customer_favourited_perks(
     return await fn_get_customer_favourited_perks(
         auth["iss"],
         merchant_perks_repo,
-    )
-
-
-@router.put(
-    "/perks/{merchant_perk_id}/enter-view",
-    name="customer:perks:enter-view",
-    tags=["customer"],
-    response_model=ActivityLogNewResponse,
-)
-async def log_perk_view_entered(
-    merchant_perk_id: uuid.UUID,
-    activity_log_repo: ActivityLogRepository = Depends(
-        get_repository(ActivityLogRepository)
-    ),
-    _=Depends(get_current_pda_user),
-) -> ActivityLogNewResponse:
-    return await fn_log_perk_view_entered(
-        merchant_perk_id,
-        activity_log_repo,
-    )
-
-
-@router.put(
-    "/perks/{merchant_perk_id}/exit-view",
-    name="customer:perks:exit-view",
-    tags=["customer"],
-    response_model=ActivityLogNewResponse,
-)
-async def log_perk_view_exited(
-    merchant_perk_id: uuid.UUID,
-    activity_log_repo: ActivityLogRepository = Depends(
-        get_repository(ActivityLogRepository)
-    ),
-    _=Depends(get_current_pda_user),
-) -> ActivityLogNewResponse:
-    return await fn_log_perk_view_exited(
-        merchant_perk_id,
-        activity_log_repo,
     )

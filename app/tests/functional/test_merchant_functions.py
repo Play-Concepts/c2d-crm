@@ -25,7 +25,7 @@ from app.tests.helpers.data_creator import (create_data_pass,
                                             create_data_source,
                                             create_data_verifier)
 from app.tests.helpers.data_generator import (
-    create_new_customer, create_new_data_pass_data, create_new_merchant,
+    create_new_customer, create_new_data_pass_data,
     create_valid_data_pass_source_data, create_valid_data_pass_verifier_data,
     supplier_email)
 
@@ -34,18 +34,6 @@ pytestmark = pytest.mark.asyncio
 fake = Faker()
 fake.add_provider(internet)
 fake.add_provider(lorem)
-
-
-@pytest.fixture
-async def valid_user():
-    new_merchant = create_new_merchant()
-    return await global_state.fastapi_users.create_user(
-        UserCreate(
-            email=new_merchant.email,
-            password=random_string(),
-            is_verified=True,
-        )
-    )
 
 
 @pytest.fixture(scope="class")
@@ -124,14 +112,14 @@ class TestMerchantFunctions:
         data_pass_sources_repository: DataPassSourcesRepository,
         data_pass_verifiers_repository: DataPassVerifiersRepository,
         db: Database,
-        valid_user,
+        user_merchant,
         valid_data_pass_source_data: dict,
         valid_data_pass_verifier_data: dict,
         valid_data_pass_data: dict,
         expired_data_pass_test_data: dict,
         valid_customer: CustomerNew,
     ) -> None:
-
+        valid_user, _ = user_merchant
         test_user = await self._get_current_valid_user_id(valid_user, db)
         _data_source = await create_data_source(
             valid_data_pass_source_data, data_pass_sources_repository

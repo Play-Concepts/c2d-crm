@@ -10,8 +10,11 @@ class ActivityLogComponentType(str, Enum):
 
 
 class ActivityLogEventType(str, Enum):
+    perk_link_clicked = "perk_link_clicked"
     view_entered = "view_entered"
     view_exited = "view_exited"
+    info_view_entered = "info_view_entered"
+    info_view_exited = "info_view_exited"
     liked = "liked"
     unliked = "unliked"
     activated = "activated"

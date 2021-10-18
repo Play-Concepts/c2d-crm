@@ -84,6 +84,32 @@ async def fn_log_data_pass_view_exited(
     )
 
 
+async def fn_log_data_pass_info_view_entered(
+    data_pass_id: uuid.UUID,
+    activity_log_repository: ActivityLogRepository,
+) -> ActivityLogNewResponse:
+    return await activity_log_repository.log_activity(
+        activity_log_new=ActivityLogNew(
+            component=ActivityLogComponentType.data_pass,
+            component_identifier=data_pass_id,
+            event=ActivityLogEventType.info_view_entered,
+        )
+    )
+
+
+async def fn_log_data_pass_info_view_exited(
+    data_pass_id: uuid.UUID,
+    activity_log_repository: ActivityLogRepository,
+) -> ActivityLogNewResponse:
+    return await activity_log_repository.log_activity(
+        activity_log_new=ActivityLogNew(
+            component=ActivityLogComponentType.data_pass,
+            component_identifier=data_pass_id,
+            event=ActivityLogEventType.info_view_exited,
+        )
+    )
+
+
 async def fn_log_data_pass_activated(
     data_pass_id: uuid.UUID,
     activity_log_repository: ActivityLogRepository,
@@ -106,5 +132,18 @@ async def fn_log_data_pass_deactivated(
             component=ActivityLogComponentType.data_pass,
             component_identifier=data_pass_id,
             event=ActivityLogEventType.deactivated,
+        )
+    )
+
+
+async def fn_log_data_pass_perk_link_clicked(
+    data_pass_id: uuid.UUID,
+    activity_log_repository: ActivityLogRepository,
+) -> ActivityLogNewResponse:
+    return await activity_log_repository.log_activity(
+        activity_log_new=ActivityLogNew(
+            component=ActivityLogComponentType.data_pass,
+            component_identifier=data_pass_id,
+            event=ActivityLogEventType.perk_link_clicked,
         )
     )
