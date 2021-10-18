@@ -4,8 +4,9 @@ from typing import List, Optional
 
 from app.apis.utils.random import random_string
 from app.db.repositories.base import BaseRepository
+from app.models.core import IDModelMixin
 from app.models.merchant import (MerchantEmailSentView, MerchantEmailView,
-                                 MerchantNew, MerchantView)
+                                 MerchantNew)
 
 NEW_MERCHANT_SQL = """
     INSERT INTO merchants(first_name, last_name, company_name, trade_name, address, email, phone_number,
@@ -34,14 +35,14 @@ GET_MERCHANT_BY_EMAIL_SQL = """
 class MerchantsRepository(BaseRepository):
     async def create_merchant(
         self, *, new_merchant: MerchantNew
-    ) -> Optional[MerchantView]:
+    ) -> Optional[IDModelMixin]:
         query_values = new_merchant.dict()
         query_values["offer"] = json.dumps(new_merchant.offer)
         query_values["password_change_token"] = random_string(40)
         created_merchant = await self.db.fetch_one(
             query=NEW_MERCHANT_SQL, values=query_values
         )
-        return None if created_merchant is None else MerchantView(**created_merchant)
+        return None if created_merchant is None else IDModelMixin(**created_merchant)
 
     async def get_merchants_email_list(self) -> List[MerchantEmailView]:
         merchants = await self.db.fetch_all(query=WELCOME_EMAIL_LIST_SQL)

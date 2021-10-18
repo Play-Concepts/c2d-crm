@@ -29,7 +29,12 @@ async def active_merchant(
     merchants_repository: MerchantsRepository, new_merchant: MerchantNew
 ) -> MerchantEmailView:
     # create merchant
-    await merchants_repository.create_merchant(new_merchant=new_merchant)
+    created_merchant = await merchants_repository.create_merchant(
+        new_merchant=new_merchant,
+    )
+    await merchants_repository.update_welcome_email_sent(
+        merchant_id=created_merchant.id
+    )
     await global_state.fastapi_users.create_user(
         UserCreate(
             email=new_merchant.email,

@@ -7,7 +7,8 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 
 from app.db.repositories.merchants import MerchantsRepository
-from app.models.merchant import MerchantEmailView, MerchantNew, MerchantView
+from app.models.core import IDModelMixin
+from app.models.merchant import MerchantEmailView, MerchantNew
 from app.tests.helpers.data_generator import create_new_merchant
 
 pytestmark = pytest.mark.asyncio
@@ -34,7 +35,7 @@ class TestMerchantsRepository:
             new_merchant=test_new_merchant
         )
         assert created_merchant is not None
-        assert isinstance(created_merchant, MerchantView)
+        assert isinstance(created_merchant, IDModelMixin)
         assert created_merchant.id is not None
 
         # Prep for the folloing tests
@@ -51,7 +52,7 @@ class TestMerchantsRepository:
         merchants_email_list = await merchants_repository.get_merchants_email_list()
 
         # +1 for conftest.user_merchant fixture
-        assert len(merchants_email_list) == NUMBER_OF_TEST_RECORDS + 1
+        assert len(merchants_email_list) == NUMBER_OF_TEST_RECORDS
         assert isinstance(random.choice(merchants_email_list), MerchantEmailView)
 
     async def test_update_welcome_email_sent(

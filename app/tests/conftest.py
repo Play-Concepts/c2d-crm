@@ -170,7 +170,12 @@ async def user_merchant(
     merchants_repository: MerchantsRepository, merchant_data: MerchantNew
 ) -> Tuple[CreateUserProtocol, MerchantEmailView]:
     # create merchant
-    await merchants_repository.create_merchant(new_merchant=merchant_data)
+    created_merchant = await merchants_repository.create_merchant(
+        new_merchant=merchant_data
+    )
+    await merchants_repository.update_welcome_email_sent(
+        merchant_id=created_merchant.id
+    )
     user = await global_state.fastapi_users.create_user(
         UserCreate(
             email=merchant_data.email,

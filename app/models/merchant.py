@@ -36,10 +36,6 @@ class MerchantDBModel(IDModelMixin, MerchantBase):
     password_change_token: Optional[str]
 
 
-class MerchantView(IDModelMixin):
-    pass
-
-
 class MerchantEmailView(IDModelMixin, MerchantBasicModel):
     last_name: Optional[str]
     company_name: Optional[str]
