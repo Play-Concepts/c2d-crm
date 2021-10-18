@@ -32,7 +32,7 @@ h11==0.12.0
     # via httpcore
 httpcore==0.13.6
     # via httpx
-httpx==0.19.0
+httpx==0.20.0
     # via -r requirements-dev.in
 idna==3.2
     # via
@@ -52,7 +52,7 @@ pathspec==0.9.0
     # via black
 pep517==0.11.0
     # via pip-tools
-pillow==8.3.2
+pillow==8.4.0
     # via -r requirements-dev.in
 pip-tools==6.4.0
     # via -r requirements-dev.in
@@ -73,13 +73,13 @@ pytest==6.2.5
     #   -r requirements-dev.in
     #   pytest-asyncio
     #   pytest-cov
-pytest-asyncio==0.15.1
+pytest-asyncio==0.16.0
     # via -r requirements-dev.in
 pytest-cov==3.0.0
     # via -r requirements-dev.in
 python-dateutil==2.8.2
     # via faker
-qrcode==7.3
+qrcode==7.3.1
     # via -r requirements-dev.in
 regex==2021.8.28
     # via black
