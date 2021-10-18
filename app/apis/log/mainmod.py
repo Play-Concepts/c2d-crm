@@ -84,7 +84,6 @@ async def fn_log_data_pass_view_exited(
     )
 
 
-
 async def fn_log_data_pass_info_view_entered(
     data_pass_id: uuid.UUID,
     activity_log_repository: ActivityLogRepository,
@@ -109,6 +108,7 @@ async def fn_log_data_pass_info_view_exited(
             event=ActivityLogEventType.info_view_exited,
         )
     )
+
 
 async def fn_log_data_pass_activated(
     data_pass_id: uuid.UUID,

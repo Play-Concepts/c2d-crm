@@ -16,6 +16,7 @@ from httpx import AsyncClient
 
 from app.apis.utils.random import random_string
 from app.core import global_state
+from app.db.repositories.activity_log import ActivityLogRepository
 # Apply migrations at beginning and end of testing session
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
@@ -106,6 +107,11 @@ async def data_pass_sources_repository(db: Database) -> DataPassSourcesRepositor
 @pytest.fixture
 async def data_pass_verifiers_repository(db: Database) -> DataPassVerifiersRepository:
     return DataPassVerifiersRepository(db)
+
+
+@pytest.fixture
+async def activity_log_repository(db: Database) -> ActivityLogRepository:
+    return ActivityLogRepository(db)
 
 
 # Make requests in our tests

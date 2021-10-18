@@ -140,11 +140,14 @@ def _activity_log_component() -> List[ActivityLogComponentType]:
 
 def _activity_log_event() -> List[ActivityLogEventType]:
     return [
+        ActivityLogEventType.perk_link_clicked,
         ActivityLogEventType.view_entered,
         ActivityLogEventType.view_exited,
+        ActivityLogEventType.info_view_entered,
+        ActivityLogEventType.info_view_exited,
         ActivityLogEventType.liked,
         ActivityLogEventType.unliked,
-        ActivityLogEventType.activited,
+        ActivityLogEventType.activated,
         ActivityLogEventType.deactivated,
     ]
 

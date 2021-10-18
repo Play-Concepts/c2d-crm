@@ -14,12 +14,11 @@ from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_search_customers,
                                        fn_unlike_merchant_perk)
 from app.apis.dependencies.database import get_repository
-from app.apis.log.mainmod import (fn_log_data_pass_activated, fn_log_data_pass_info_view_entered, fn_log_data_pass_info_view_exited, fn_log_data_pass_perk_link_clicked,
-                                  fn_log_data_pass_view_entered,
-                                  fn_log_data_pass_view_exited,
-                                  fn_log_perk_liked, fn_log_perk_unliked,
-                                  fn_log_perk_view_entered,
-                                  fn_log_perk_view_exited)
+from app.apis.log.mainmod import (fn_log_data_pass_activated,
+                                  fn_log_data_pass_info_view_entered,
+                                  fn_log_data_pass_info_view_exited,
+                                  fn_log_data_pass_perk_link_clicked,
+                                  fn_log_perk_liked, fn_log_perk_unliked)
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.db.repositories.customers import CustomersRepository
@@ -306,6 +305,7 @@ async def log_data_pass_info_view_exited(
         activity_log_repo,
     )
 
+
 @router.put(
     "/data-passes/{data_pass_id}/perk-link-clicked",
     name="customer:data-passes:perk-link-clicked",
@@ -323,6 +323,7 @@ async def log_data_pass_perk_link_clicked(
         data_pass_id,
         activity_log_repo,
     )
+
 
 @router.put(
     "/perks/{merchant_perk_id}/like",
