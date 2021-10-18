@@ -62,6 +62,7 @@ class CustomersRepository(BaseRepository):
         )
         return None if customer is None else CustomerView(**customer)
 
+    # Deprecate this soon.
     async def get_customer_basic(
         self, *, pda_url: str, data_table: str
     ) -> Optional[CustomerBasicView]:

@@ -1,4 +1,5 @@
 import json
+import random
 import uuid
 from datetime import datetime
 from typing import List
@@ -8,6 +9,8 @@ from faker.providers import address, company, internet, misc
 from pydantic.types import Json
 
 from app.apis.utils.random import random_hash
+from app.models.activity_log import (ActivityLogComponentType,
+                                     ActivityLogEventType, ActivityLogNew)
 from app.models.customer import CustomerNew
 from app.models.customer import StatusType as CustomerStatusType
 from app.models.customer_log import CustomerLogNew
@@ -129,3 +132,26 @@ def create_new_data_pass_data(status: str) -> dict:
         "status": status,
         "expiry_days": 365,
     }
+
+
+def _activity_log_component() -> List[ActivityLogComponentType]:
+    return [ActivityLogComponentType.perk, ActivityLogComponentType.data_pass]
+
+
+def _activity_log_event() -> List[ActivityLogEventType]:
+    return [
+        ActivityLogEventType.view_entered,
+        ActivityLogEventType.view_exited,
+        ActivityLogEventType.liked,
+        ActivityLogEventType.unliked,
+        ActivityLogEventType.activited,
+        ActivityLogEventType.deactivated,
+    ]
+
+
+def create_random_new_activity_log() -> ActivityLogNew:
+    return ActivityLogNew(
+        component=random.choice(_activity_log_component()),
+        component_identifier=uuid.uuid4(),
+        event=random.choice(_activity_log_event()),
+    )
