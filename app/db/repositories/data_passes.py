@@ -23,7 +23,7 @@ GET_CUSTOMER_DATA_PASSES_SQL = """
     AS activation_status FROM data_passes
     JOIN data_pass_sources sources ON (data_passes.data_pass_source_id=sources.id)
     JOIN data_pass_verifiers verifiers ON (data_passes.data_pass_verifier_id=verifiers.id)
-    WHERE data_passes.status = 'active'
+    WHERE data_passes.status='active'
     ORDER BY data_passes.title;
 """
 
