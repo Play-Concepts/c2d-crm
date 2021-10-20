@@ -1,5 +1,5 @@
-from datetime import datetime
 import random
+from datetime import datetime
 from typing import List
 
 import pytest
@@ -294,7 +294,9 @@ class TestCustomersRepository:
 
         assert customer is not None
         assert customer.id == identifier
-        assert not bool(customer.data)
+
+        is_deleted_after_claim = not bool(customer.data)
+        assert is_deleted_after_claim
 
     async def test_cleanup(
         self,

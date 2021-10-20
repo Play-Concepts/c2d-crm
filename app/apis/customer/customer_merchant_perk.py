@@ -53,3 +53,9 @@ async def fn_get_customer_favourited_perks(
     return await merchant_perks_repository.get_customer_favourited_perks(
         pda_url=pda_url
     )
+
+
+async def fn_get_all_customer_perks(
+    merchant_perks_repository: MerchantPerksRepository,
+) -> List[DataPassMerchantView]:
+    return await merchant_perks_repository.get_all_customer_perks()
