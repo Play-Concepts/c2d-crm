@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 from typing import List
 
 import pytest
@@ -28,6 +29,7 @@ pytestmark = pytest.mark.asyncio
 
 
 NUMBER_OF_TEST_RECORDS = 5
+PDA_URL = "testing.hubat.net"
 
 
 @pytest.fixture
@@ -254,6 +256,47 @@ class TestCustomersRepository:
             transformer=lambda x: x,
         )
         assert not is_empty(trimmed_address_customer)
+
+    async def test_data_to_claim(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        customers_repository: CustomersRepository,
+        test_customer: TestCustomer,
+        test_data_table: TestDataTable,
+    ):
+        data_table = test_data_table.data_table
+        identifier = test_customer.customer.id
+        customer = await customers_repository.data_to_claim(
+            data_table=data_table,
+            identifier=identifier,
+        )
+
+        assert customer is not None
+        assert customer.id == identifier
+
+    async def test_claim_data(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        customers_repository: CustomersRepository,
+        test_customer: TestCustomer,
+        test_data_table: TestDataTable,
+    ):
+        data_table = test_data_table.data_table
+        identifier = test_customer.customer.id
+        customer = await customers_repository.claim_data(
+            data_table=data_table,
+            identifier=identifier,
+            pda_url=PDA_URL,
+            claimed_timestamp=datetime.now(),
+        )
+
+        assert customer is not None
+        assert customer.id == identifier
+
+        is_deleted_after_claim = not bool(customer.data)
+        assert is_deleted_after_claim
 
     async def test_cleanup(
         self,

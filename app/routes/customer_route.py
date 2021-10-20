@@ -3,6 +3,7 @@ from typing import List, Union
 
 from fastapi import APIRouter, Body, Depends, Request, Response
 
+from app.apis.customer.customer_merchant_perk import fn_get_all_customer_perks
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
                                        fn_customer_get_scan_transactions_count,
@@ -389,6 +390,17 @@ async def unlike_merchant_perk(
     tags=["customer"],
     response_model=List[MerchantPerkCustomerView],
 )
+async def get_all_customer_perks(
+    merchant_perks_repo: MerchantPerksRepository = Depends(
+        get_repository(MerchantPerksRepository)
+    ),
+    _=Depends(get_current_pda_user),
+) -> List[MerchantPerkCustomerView]:
+    return await fn_get_all_customer_perks(
+        merchant_perks_repo,
+    )
+
+
 @router.get(
     "/perks/favourites",
     name="customer:perks:favourites",

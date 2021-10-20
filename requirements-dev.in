@@ -17,3 +17,5 @@ faker
 # helpers
 qrcode
 pillow
+
+beautifulsoup4

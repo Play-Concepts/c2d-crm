@@ -194,6 +194,7 @@ fn_customer_get_scan_transactions_count = (
 )
 
 fn_get_customer_perks = customer_merchant_perk.fn_get_customer_perks
+fn_get_all_customer_perks = customer_merchant_perk.fn_get_all_customer_perks
 fn_like_merchant_perk = customer_merchant_perk.fn_like_merchant_perk
 fn_unlike_merchant_perk = customer_merchant_perk.fn_unlike_merchant_perk
 fn_get_customer_favourited_perks = (

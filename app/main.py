@@ -16,7 +16,7 @@ sentry_sdk.init(dsn=app_config.SENTRY_DSN)
 
 app = FastAPI(
     title="Data Passport API",
-    version="1.0.2-RC1-20211018",
+    version="1.0.3-20211020",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",

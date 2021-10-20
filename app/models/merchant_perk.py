@@ -16,8 +16,12 @@ class MerchantPerkBase(CoreModel):
 
 
 class MerchantPerkCustomerView(IDModelMixin, MerchantPerkBase):
-    favourited: bool
+    favourited: Optional[bool]
 
 
 class MerchantPerkDBModel(IDModelMixin, MerchantPerkBase, TimestampsMixin):
     merchant_id: Optional[uuid.UUID]
+
+
+class MerchantPerkNew(MerchantPerkBase):
+    merchant_id: uuid.UUID
