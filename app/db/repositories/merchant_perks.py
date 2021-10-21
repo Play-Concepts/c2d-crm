@@ -3,7 +3,9 @@ from typing import List, Optional
 
 from app.models.core import IDModelMixin
 from app.models.merchant_perk import (MerchantPerkCustomerView,
-                                      MerchantPerkDBModel, MerchantPerkNew)
+                                      MerchantPerkDBModel,
+                                      MerchantPerkMerchantView,
+                                      MerchantPerkNew)
 
 from .base import BaseRepository
 
@@ -42,6 +44,12 @@ GET_ALL_CUSTOMER_PERKS_SQL = """
     SELECT merchant_perks.id, merchant_perks.title, merchant_perks.details, merchant_perks.start_date,
     merchant_perks.end_date, merchant_perks.perk_url, merchant_perks.logo_url, merchant_perks.perk_image_url,
     true AS favourited FROM merchant_perks;
+"""
+
+GET_MERCHANT_PERKS_SQL = """
+    SELECT merchant_perks.id, merchant_perks.title, merchant_perks.details, merchant_perks.start_date,
+    merchant_perks.end_date, merchant_perks.perk_url, merchant_perks.logo_url, merchant_perks.perk_image_url
+    FROM merchant_perks WHERE merchant_id IN (SELECT id FROM merchants WHERE email=:email);
 """
 
 
@@ -85,6 +93,17 @@ class MerchantPerksRepository(BaseRepository):
     async def get_all_customer_perks(self) -> List[MerchantPerkCustomerView]:
         perks = await self.db.fetch_all(query=GET_ALL_CUSTOMER_PERKS_SQL)
         return [MerchantPerkCustomerView(**perk) for perk in perks]
+
+    async def get_merchant_perks(
+        self,
+        *,
+        email: str,
+    ) -> List[MerchantPerkMerchantView]:
+        query_values = {"email": email}
+        perks = await self.db.fetch_all(
+            query=GET_MERCHANT_PERKS_SQL, values=query_values
+        )
+        return [MerchantPerkMerchantView(**perk) for perk in perks]
 
     # TODO: TRANSIENT - not currently used in application, only in test suite
     async def get_merchant_perk_(

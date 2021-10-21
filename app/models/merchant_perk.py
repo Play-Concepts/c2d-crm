@@ -25,3 +25,7 @@ class MerchantPerkDBModel(IDModelMixin, MerchantPerkBase, TimestampsMixin):
 
 class MerchantPerkNew(MerchantPerkBase):
     merchant_id: uuid.UUID
+
+
+class MerchantPerkMerchantView(IDModelMixin, MerchantPerkBase):
+    pass
