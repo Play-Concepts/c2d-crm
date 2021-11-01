@@ -16,7 +16,7 @@ class MerchantPerkBase(CoreModel):
 
 
 class MerchantPerkCustomerView(IDModelMixin, MerchantPerkBase):
-    favourited: Optional[bool]
+    pass
 
 
 class MerchantPerkDBModel(IDModelMixin, MerchantPerkBase, TimestampsMixin):
