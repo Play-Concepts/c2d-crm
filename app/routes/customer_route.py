@@ -81,6 +81,7 @@ async def get_customer_basic(
     response_model=List[CustomerView],
 )
 async def search_customers(
+    request: Request,
     response: Response,
     data_pass_id: uuid.UUID,
     search_params: dict = Body(...),
@@ -101,7 +102,8 @@ async def search_customers(
         data_passes_repo,
         data_pass_sources_repo,
         customers_repository,
-        response,
+        request = request,
+        response = response,
     )
 
 

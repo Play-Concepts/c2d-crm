@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import List, Union
 
-from fastapi import Response, status
+from fastapi import Response, Request, status
 from pydantic.types import Json
 
 from app.apis.customer import (customer_data_pass, customer_merchant_perk,
@@ -20,6 +20,7 @@ from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
 from app.models.customer_log import CustomerLogNew
 from app.models.data_pass import InvalidDataPass
 from app.models.data_pass_source import DataPassSourceDescriptor
+from app.logger import log_instance
 
 
 async def fn_get_customer_basic(
@@ -56,8 +57,11 @@ async def fn_search_customers(
     data_passes_repo: DataPassesRepository,
     data_pass_sources_repo: DataPassSourcesRepository,
     customers_repo: CustomersRepository,
+    *,
+    request: Request,
     response: Response,
 ) -> Union[InvalidDataPass, List[CustomerView]]:
+    log = log_instance(request)
     is_valid = await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_id)
     if is_valid:
         data_descriptors: DataPassSourceDescriptor = (
@@ -80,12 +84,15 @@ async def fn_search_customers(
 
             return customer_view
 
-        return await customers_repo.search_customers(
+        customers = await customers_repo.search_customers(
             data_table=data_descriptors.data_table,
             search_sql=data_descriptors.search_sql,
             transformer=transform_view,
             search_params=search_params,
         )
+        log.info("customer-search-result-count({})".format(len(customers)))
+        return customers
+
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return InvalidDataPass()
