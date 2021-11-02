@@ -9,7 +9,7 @@ from app.models.merchant_offer import (MerchantOfferCustomerView,
 
 from .base import BaseRepository
 
-GET_CUSTOMER_PERKS_SQL = """
+GET_CUSTOMER_OFFERS_SQL = """
     SELECT merchant_offers.id, merchant_offers.title, merchant_offers.details, merchant_offers.start_date,
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url
     FROM merchant_offers JOIN merchant_offers_data_passes
@@ -19,7 +19,7 @@ GET_CUSTOMER_PERKS_SQL = """
     WHERE merchant_offers_data_passes.data_pass_id=:data_pass_id;
 """
 
-LIKE_MERCHANT_PERK_SQL = """
+LIKE_MERCHANT_OFFER_SQL = """
     INSERT INTO merchant_offer_favourites(merchant_offer_id, pda_url)
     VALUES(:merchant_offer_id, :pda_url)
     ON CONFLICT(merchant_offer_id, pda_url)
@@ -27,26 +27,26 @@ LIKE_MERCHANT_PERK_SQL = """
     RETURNING id;
 """
 
-UNLIKE_MERCHANT_PERK_SQL = """
+UNLIKE_MERCHANT_OFFER_SQL = """
     DELETE FROM merchant_offer_favourites WHERE merchant_offer_id=:merchant_offer_id
     AND pda_url=:pda_url
     RETURNING id;
 """
 
-GET_CUSTOMER_FAVOURITED_PERKS_SQL = """
+GET_CUSTOMER_FAVOURITED_OFFERS_SQL = """
     SELECT merchant_offers.id, merchant_offers.title, merchant_offers.details, merchant_offers.start_date,
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url
     FROM merchant_offers WHERE id IN
     (SELECT merchant_offer_id FROM merchant_offer_favourites WHERE pda_url = :pda_url);
 """
 
-GET_ALL_CUSTOMER_PERKS_SQL = """
+GET_ALL_CUSTOMER_OFFERS_SQL = """
     SELECT merchant_offers.id, merchant_offers.title, merchant_offers.details, merchant_offers.start_date,
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url
     FROM merchant_offers;
 """
 
-GET_MERCHANT_PERKS_SQL = """
+GET_MERCHANT_OFFERS_SQL = """
     SELECT merchant_offers.id, merchant_offers.title, merchant_offers.details, merchant_offers.start_date,
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url
     FROM merchant_offers WHERE merchant_id IN (SELECT id FROM merchants WHERE email=:email);
@@ -59,7 +59,7 @@ class MerchantOffersRepository(BaseRepository):
     ) -> List[MerchantOfferCustomerView]:
         query_values = {"data_pass_id": data_pass_id, "pda_url": pda_url}
         offers = await self.db.fetch_all(
-            query=GET_CUSTOMER_PERKS_SQL, values=query_values
+            query=GET_CUSTOMER_OFFERS_SQL, values=query_values
         )
         return [MerchantOfferCustomerView(**offer) for offer in offers]
 
@@ -68,7 +68,7 @@ class MerchantOffersRepository(BaseRepository):
     ) -> IDModelMixin:
         query_values = {"merchant_offer_id": merchant_offer_id, "pda_url": pda_url}
         offer = await self.db.fetch_one(
-            query=LIKE_MERCHANT_PERK_SQL, values=query_values
+            query=LIKE_MERCHANT_OFFER_SQL, values=query_values
         )
         return IDModelMixin(**offer)
 
@@ -77,7 +77,7 @@ class MerchantOffersRepository(BaseRepository):
     ) -> Optional[IDModelMixin]:
         query_values = {"merchant_offer_id": merchant_offer_id, "pda_url": pda_url}
         offer = await self.db.fetch_one(
-            query=UNLIKE_MERCHANT_PERK_SQL, values=query_values
+            query=UNLIKE_MERCHANT_OFFER_SQL, values=query_values
         )
         return None if offer is None else IDModelMixin(**offer)
 
@@ -86,12 +86,12 @@ class MerchantOffersRepository(BaseRepository):
     ) -> List[MerchantOfferCustomerView]:
         query_values = {"pda_url": pda_url}
         offers = await self.db.fetch_all(
-            query=GET_CUSTOMER_FAVOURITED_PERKS_SQL, values=query_values
+            query=GET_CUSTOMER_FAVOURITED_OFFERS_SQL, values=query_values
         )
         return [MerchantOfferCustomerView(**offer) for offer in offers]
 
     async def get_all_customer_offers(self) -> List[MerchantOfferCustomerView]:
-        offers = await self.db.fetch_all(query=GET_ALL_CUSTOMER_PERKS_SQL)
+        offers = await self.db.fetch_all(query=GET_ALL_CUSTOMER_OFFERS_SQL)
         return [MerchantOfferCustomerView(**offer) for offer in offers]
 
     async def get_merchant_offers(
@@ -101,7 +101,7 @@ class MerchantOffersRepository(BaseRepository):
     ) -> List[MerchantOfferMerchantView]:
         query_values = {"email": email}
         offers = await self.db.fetch_all(
-            query=GET_MERCHANT_PERKS_SQL, values=query_values
+            query=GET_MERCHANT_OFFERS_SQL, values=query_values
         )
         return [MerchantOfferMerchantView(**offer) for offer in offers]
 
