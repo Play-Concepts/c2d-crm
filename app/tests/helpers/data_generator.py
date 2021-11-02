@@ -125,8 +125,8 @@ def create_new_data_pass_data(status: str) -> dict:
         "title": fake.sentence(),
         "description_for_merchants": fake.sentence(),
         "description_for_customers": fake.sentence(),
-        "perks_url_for_merchants": fake.url(),
-        "perks_url_for_customers": fake.url(),
+        "offers_url_for_merchants": fake.url(),
+        "offers_url_for_customers": fake.url(),
         "currency_code": "USD",
         "price": 0,
         "status": status,
@@ -135,12 +135,12 @@ def create_new_data_pass_data(status: str) -> dict:
 
 
 def _activity_log_component() -> List[ActivityLogComponentType]:
-    return [ActivityLogComponentType.perk, ActivityLogComponentType.data_pass]
+    return [ActivityLogComponentType.offer, ActivityLogComponentType.data_pass]
 
 
 def _activity_log_event() -> List[ActivityLogEventType]:
     return [
-        ActivityLogEventType.perk_link_clicked,
+        ActivityLogEventType.offer_link_clicked,
         ActivityLogEventType.view_entered,
         ActivityLogEventType.view_exited,
         ActivityLogEventType.info_view_entered,

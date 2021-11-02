@@ -23,7 +23,7 @@ from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
-from app.db.repositories.merchant_perks import MerchantPerksRepository
+from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.db.repositories.users import UsersRepository
@@ -80,10 +80,10 @@ async def merchants_repository(db: Database) -> MerchantsRepository:
     return MerchantsRepository(db)
 
 
-# Merchant Perks Repo
+# Merchant Offers Repo
 @pytest.fixture
-async def merchant_perks_repository(db: Database) -> MerchantPerksRepository:
-    return MerchantPerksRepository(db)
+async def merchant_offers_repository(db: Database) -> MerchantOffersRepository:
+    return MerchantOffersRepository(db)
 
 
 # Users Repo

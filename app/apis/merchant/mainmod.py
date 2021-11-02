@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi import Request
 
-from app.apis.merchant import merchant_data_pass, merchant_merchant_perk
+from app.apis.merchant import merchant_data_pass, merchant_merchant_offer
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
@@ -121,4 +121,4 @@ async def fn_get_scan_transactions_count(
 
 
 fn_get_merchant_data_passes = merchant_data_pass.fn_get_merchant_data_passes
-fn_get_merchant_perks = merchant_merchant_perk.fn_get_merchant_perks
+fn_get_merchant_offers = merchant_merchant_offer.fn_get_merchant_offers

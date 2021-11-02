@@ -7,15 +7,15 @@ from app.apis.dependencies.database import get_repository
 from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
                                        fn_get_scan_transactions_count,
                                        fn_verify_barcode)
-from app.apis.merchant.merchant_merchant_perk import fn_get_merchant_perks
+from app.apis.merchant.merchant_merchant_offer import fn_get_merchant_offers
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
-from app.db.repositories.merchant_perks import MerchantPerksRepository
+from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.data_pass import DataPassMerchantView, InvalidDataPass
-from app.models.merchant_perk import MerchantPerkMerchantView
+from app.models.merchant_offer import MerchantOfferMerchantView
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
 
@@ -122,18 +122,18 @@ async def get_customer_data_passes(
 
 
 @router.get(
-    "/perks",
-    name="merchant:perks",
+    "/offers",
+    name="merchant:offers",
     tags=["merchants"],
-    response_model=List[MerchantPerkMerchantView],
+    response_model=List[MerchantOfferMerchantView],
 )
-async def get_merchant_perks(
-    merchant_perks_repo: MerchantPerksRepository = Depends(
-        get_repository(MerchantPerksRepository)
+async def get_merchant_offers(
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
     ),
     auth=Depends(merchant_user),
-) -> List[MerchantPerkMerchantView]:
-    return await fn_get_merchant_perks(
+) -> List[MerchantOfferMerchantView]:
+    return await fn_get_merchant_offers(
         auth.email,
-        merchant_perks_repo,
+        merchant_offers_repo,
     )

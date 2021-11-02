@@ -5,27 +5,27 @@ from typing import Optional
 from app.models.core import CoreModel, IDModelMixin, TimestampsMixin
 
 
-class MerchantPerkBase(CoreModel):
+class MerchantOfferBase(CoreModel):
     title: str
     details: str
     start_date: datetime
     end_date: Optional[datetime]
-    perk_url: str
+    offer_url: str
     logo_url: Optional[str]
-    perk_image_url: Optional[str]
+    offer_image_url: Optional[str]
 
 
-class MerchantPerkCustomerView(IDModelMixin, MerchantPerkBase):
+class MerchantOfferCustomerView(IDModelMixin, MerchantOfferBase):
     pass
 
 
-class MerchantPerkDBModel(IDModelMixin, MerchantPerkBase, TimestampsMixin):
+class MerchantOfferDBModel(IDModelMixin, MerchantOfferBase, TimestampsMixin):
     merchant_id: Optional[uuid.UUID]
 
 
-class MerchantPerkNew(MerchantPerkBase):
+class MerchantOfferNew(MerchantOfferBase):
     merchant_id: uuid.UUID
 
 
-class MerchantPerkMerchantView(IDModelMixin, MerchantPerkBase):
+class MerchantOfferMerchantView(IDModelMixin, MerchantOfferBase):
     pass

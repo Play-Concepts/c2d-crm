@@ -3,30 +3,28 @@ from typing import List, Union
 
 from fastapi import APIRouter, Body, Depends, Request, Response
 
-from app.apis.customer.customer_merchant_perk import fn_get_all_customer_perks
+from app.apis.customer.customer_merchant_offer import \
+    fn_get_all_customer_offers
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
                                        fn_customer_get_scan_transactions_count,
                                        fn_get_customer_basic,
                                        fn_get_customer_data_passes,
-                                       fn_get_customer_favourited_perks,
-                                       fn_get_customer_perks,
-                                       fn_like_merchant_perk,
+                                       fn_get_customer_favourited_offers,
+                                       fn_get_customer_offers,
+                                       fn_like_merchant_offer,
                                        fn_search_customers,
-                                       fn_unlike_merchant_perk)
+                                       fn_unlike_merchant_offer)
 from app.apis.dependencies.database import get_repository
-from app.apis.log.mainmod import (fn_log_data_pass_activated,
-                                  fn_log_data_pass_info_view_entered,
-                                  fn_log_data_pass_info_view_exited,
-                                  fn_log_data_pass_perk_link_clicked,
-                                  fn_log_perk_liked, fn_log_perk_unliked)
+from app.apis.log.mainmod import (fn_log_activity, fn_log_data_pass_activated,
+                                  fn_log_offer_liked, fn_log_offer_unliked)
 from app.core.pda_auth import get_current_pda_user
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
-from app.db.repositories.merchant_perks import MerchantPerksRepository
+from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.activity_log import ActivityLogNewResponse
@@ -34,7 +32,7 @@ from app.models.core import BooleanResponse, IDModelMixin, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
-from app.models.merchant_perk import MerchantPerkCustomerView
+from app.models.merchant_offer import MerchantOfferCustomerView
 from app.models.scan_transaction import ScanTransactionCounts
 
 router = APIRouter()
@@ -236,108 +234,74 @@ async def get_scan_transactions_count(
 
 
 @router.get(
-    "/data-passes/{data_pass_id}/perks",
-    name="customer:perks",
+    "/data-passes/{data_pass_id}/offers",
+    name="customer:offers",
     tags=["customer"],
-    response_model=List[MerchantPerkCustomerView],
+    response_model=List[MerchantOfferCustomerView],
     responses={400: {"model": InvalidDataPass}},
 )
 @router.get(
-    "/{data_pass_id}/perks",
-    name="customer:perks",
+    "/{data_pass_id}/offers",
+    name="customer:offers",
     tags=["customer"],
-    response_model=List[MerchantPerkCustomerView],
+    response_model=List[MerchantOfferCustomerView],
     responses={400: {"model": InvalidDataPass}},
     deprecated=True,
 )
-async def get_customer_perks(
+async def get_customer_offers(
     response: Response,
     data_pass_id: uuid.UUID,
     data_passes_repo: DataPassesRepository = Depends(
         get_repository(DataPassesRepository)
     ),
-    merchant_perks_repo: MerchantPerksRepository = Depends(
-        get_repository(MerchantPerksRepository)
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
     ),
     auth_tuple=Depends(get_current_pda_user),
-) -> Union[InvalidDataPass, List[MerchantPerkCustomerView]]:
+) -> Union[InvalidDataPass, List[MerchantOfferCustomerView]]:
     auth, _ = auth_tuple
-    return await fn_get_customer_perks(
+    return await fn_get_customer_offers(
         auth["iss"],
         data_pass_id,
         data_passes_repo,
-        merchant_perks_repo,
+        merchant_offers_repo,
         response,
     )
 
 
 @router.put(
-    "/data-passes/{data_pass_id}/enter-info-view",
-    name="customer:data-passes:enter-info-view",
-    tags=["customer"],
+    "/events/{component}/{component_identifier}/{event}",
+    name="customer:event:log",
+    tags=["customer", "logs"],
     response_model=ActivityLogNewResponse,
 )
-async def log_data_pass_info_view_entered(
-    data_pass_id: uuid.UUID,
+async def log_activity(
+    component: str,
+    component_identifier: uuid.UUID,
+    event: str,
     activity_log_repo: ActivityLogRepository = Depends(
         get_repository(ActivityLogRepository)
     ),
     _=Depends(get_current_pda_user),
 ) -> ActivityLogNewResponse:
-    return await fn_log_data_pass_info_view_entered(
-        data_pass_id,
+    return await fn_log_activity(
+        component,
+        component_identifier,
+        event,
         activity_log_repo,
     )
 
 
 @router.put(
-    "/data-passes/{data_pass_id}/exit-info-view",
-    name="customer:data-passes:exit-info-view",
-    tags=["customer"],
-    response_model=ActivityLogNewResponse,
-)
-async def log_data_pass_info_view_exited(
-    data_pass_id: uuid.UUID,
-    activity_log_repo: ActivityLogRepository = Depends(
-        get_repository(ActivityLogRepository)
-    ),
-    _=Depends(get_current_pda_user),
-) -> ActivityLogNewResponse:
-    return await fn_log_data_pass_info_view_exited(
-        data_pass_id,
-        activity_log_repo,
-    )
-
-
-@router.put(
-    "/data-passes/{data_pass_id}/perk-link-clicked",
-    name="customer:data-passes:perk-link-clicked",
-    tags=["customer"],
-    response_model=ActivityLogNewResponse,
-)
-async def log_data_pass_perk_link_clicked(
-    data_pass_id: uuid.UUID,
-    activity_log_repo: ActivityLogRepository = Depends(
-        get_repository(ActivityLogRepository)
-    ),
-    _=Depends(get_current_pda_user),
-) -> ActivityLogNewResponse:
-    return await fn_log_data_pass_perk_link_clicked(
-        data_pass_id,
-        activity_log_repo,
-    )
-
-
-@router.put(
-    "/perks/{merchant_perk_id}/like",
-    name="customer:perks:like",
+    "/offers/{merchant_offer_id}/like",
+    name="customer:offers:like",
     tags=["customer"],
     response_model=IDModelMixin,
 )
-async def like_merchant_perk(
-    merchant_perk_id: uuid.UUID,
-    merchant_perks_repo: MerchantPerksRepository = Depends(
-        get_repository(MerchantPerksRepository)
+async def like_merchant_offer(
+    merchant_offer_id: uuid.UUID,
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
     ),
     activity_log_repo: ActivityLogRepository = Depends(
         get_repository(ActivityLogRepository)
@@ -345,28 +309,28 @@ async def like_merchant_perk(
     auth_tuple=Depends(get_current_pda_user),
 ) -> IDModelMixin:
     auth, _ = auth_tuple
-    favorite = await fn_like_merchant_perk(
+    favorite = await fn_like_merchant_offer(
         auth["iss"],
-        merchant_perk_id,
-        merchant_perks_repo,
+        merchant_offer_id,
+        merchant_offers_repo,
     )
-    await fn_log_perk_liked(
-        merchant_perk_id,
+    await fn_log_offer_liked(
+        merchant_offer_id,
         activity_log_repo,
     )
     return favorite
 
 
 @router.put(
-    "/perks/{merchant_perk_id}/unlike",
-    name="customer:perks:unlike",
+    "/offers/{merchant_offer_id}/unlike",
+    name="customer:offers:unlike",
     tags=["customer"],
     response_model=IDModelMixin,
 )
-async def unlike_merchant_perk(
-    merchant_perk_id: uuid.UUID,
-    merchant_perks_repo: MerchantPerksRepository = Depends(
-        get_repository(MerchantPerksRepository)
+async def unlike_merchant_offer(
+    merchant_offer_id: uuid.UUID,
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
     ),
     activity_log_repo: ActivityLogRepository = Depends(
         get_repository(ActivityLogRepository)
@@ -374,49 +338,49 @@ async def unlike_merchant_perk(
     auth_tuple=Depends(get_current_pda_user),
 ) -> IDModelMixin:
     auth, _ = auth_tuple
-    puke = await fn_unlike_merchant_perk(
+    puke = await fn_unlike_merchant_offer(
         auth["iss"],
-        merchant_perk_id,
-        merchant_perks_repo,
+        merchant_offer_id,
+        merchant_offers_repo,
     )
-    await fn_log_perk_unliked(
-        merchant_perk_id,
+    await fn_log_offer_unliked(
+        merchant_offer_id,
         activity_log_repo,
     )
     return puke
 
 
 @router.get(
-    "/perks",
-    name="customer:perks",
+    "/offers",
+    name="customer:offers",
     tags=["customer"],
-    response_model=List[MerchantPerkCustomerView],
+    response_model=List[MerchantOfferCustomerView],
 )
-async def get_all_customer_perks(
-    merchant_perks_repo: MerchantPerksRepository = Depends(
-        get_repository(MerchantPerksRepository)
+async def get_all_customer_offers(
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
     ),
     _=Depends(get_current_pda_user),
-) -> List[MerchantPerkCustomerView]:
-    return await fn_get_all_customer_perks(
-        merchant_perks_repo,
+) -> List[MerchantOfferCustomerView]:
+    return await fn_get_all_customer_offers(
+        merchant_offers_repo,
     )
 
 
 @router.get(
-    "/perks/favourites",
-    name="customer:perks:favourites",
+    "/offers/favourites",
+    name="customer:offers:favourites",
     tags=["customer"],
-    response_model=List[MerchantPerkCustomerView],
+    response_model=List[MerchantOfferCustomerView],
 )
-async def get_customer_favourited_perks(
-    merchant_perks_repo: MerchantPerksRepository = Depends(
-        get_repository(MerchantPerksRepository)
+async def get_customer_favourited_offers(
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
     ),
     auth_tuple=Depends(get_current_pda_user),
-) -> List[MerchantPerkCustomerView]:
+) -> List[MerchantOfferCustomerView]:
     auth, _ = auth_tuple
-    return await fn_get_customer_favourited_perks(
+    return await fn_get_customer_favourited_offers(
         auth["iss"],
-        merchant_perks_repo,
+        merchant_offers_repo,
     )

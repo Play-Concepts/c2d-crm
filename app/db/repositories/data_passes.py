@@ -14,7 +14,7 @@ GET_DATA_PASS_SQL = """
 
 GET_CUSTOMER_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
-    data_passes.description_for_customers, data_passes.perks_url_for_merchants, data_passes.perks_url_for_customers,
+    data_passes.description_for_customers, data_passes.offers_url_for_merchants, data_passes.offers_url_for_customers,
     data_passes.details_url, (select updated_at from data_pass_activations where pda_url=:pda_url and
     data_pass_id=data_passes.id) + data_passes.expiry_days * INTERVAL '1 day' AS expiry_date, data_passes.expiry_days,
     sources.name source_name, sources.description source_description, sources.logo_url source_logo_url,
@@ -29,7 +29,7 @@ GET_CUSTOMER_DATA_PASSES_SQL = """
 
 GET_MERCHANT_DATA_PASSES_SQL = """
     SELECT data_passes.id, data_passes.name, data_passes.title, data_passes.description_for_merchants,
-    data_passes.description_for_customers, data_passes.perks_url_for_merchants, data_passes.perks_url_for_customers,
+    data_passes.description_for_customers, data_passes.offers_url_for_merchants, data_passes.offers_url_for_customers,
     data_passes.currency_code, data_passes.price, data_passes.details_url, data_passes.expiry_days,
     sources.name source_name, sources.description source_description, sources.logo_url source_logo_url,
     verifiers.name verifier_name, verifiers.description verifier_description, verifiers.logo_url verifier_logo_url,
@@ -119,8 +119,8 @@ class DataPassesRepository(BaseRepository):
         title: str,
         description_for_merchants: str,
         description_for_customers: str,
-        perks_url_for_merchants: str,
-        perks_url_for_customers: str,
+        offers_url_for_merchants: str,
+        offers_url_for_customers: str,
         data_pass_source_id: uuid.UUID,
         data_pass_verifier_id: uuid.UUID,
         currency_code: str,
@@ -130,10 +130,10 @@ class DataPassesRepository(BaseRepository):
     ):
         sql = """
             INSERT INTO data_passes(name, title, description_for_merchants, description_for_customers,
-            perks_url_for_merchants, perks_url_for_customers, data_pass_source_id,
+            offers_url_for_merchants, offers_url_for_customers, data_pass_source_id,
             data_pass_verifier_id, currency_code, price, status, expiry_days)
             VALUES(:name, :title, :description_for_merchants, :description_for_customers,
-            :perks_url_for_merchants, :perks_url_for_customers, :data_pass_source_id,
+            :offers_url_for_merchants, :offers_url_for_customers, :data_pass_source_id,
             :data_pass_verifier_id, :currency_code, :price, :status, :expiry_days)
             RETURNING id
         """
@@ -142,8 +142,8 @@ class DataPassesRepository(BaseRepository):
             "title": title,
             "description_for_merchants": description_for_merchants,
             "description_for_customers": description_for_customers,
-            "perks_url_for_merchants": perks_url_for_merchants,
-            "perks_url_for_customers": perks_url_for_customers,
+            "offers_url_for_merchants": offers_url_for_merchants,
+            "offers_url_for_customers": offers_url_for_customers,
             "data_pass_source_id": data_pass_source_id,
             "data_pass_verifier_id": data_pass_verifier_id,
             "currency_code": currency_code,

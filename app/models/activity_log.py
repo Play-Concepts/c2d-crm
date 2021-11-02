@@ -5,12 +5,12 @@ from app.models.core import CoreModel, CreatedAtMixin, IDModelMixin
 
 
 class ActivityLogComponentType(str, Enum):
-    perk = "perk"
+    offer = "offer"
     data_pass = "data_pass"
 
 
 class ActivityLogEventType(str, Enum):
-    perk_link_clicked = "perk_link_clicked"
+    offer_link_clicked = "offer_link_clicked"
     view_entered = "view_entered"
     view_exited = "view_exited"
     info_view_entered = "info_view_entered"
@@ -22,9 +22,9 @@ class ActivityLogEventType(str, Enum):
 
 
 class ActivityLogBase(CoreModel):
-    component: ActivityLogComponentType
+    component: str
     component_identifier: uuid.UUID
-    event: ActivityLogEventType
+    event: str
 
 
 ActivityLogNew = ActivityLogBase
