@@ -188,8 +188,10 @@ async def fn_check_first_login(
     customers_log_repo: CustomersLogRepository,
 ) -> BooleanResponse:
     boolean_response = await customers_log_repo.customer_exists(pda_url=pda_url)
+    not_exists = boolean_response.value
+    event = "signup" if not_exists else "signin"
     await customers_log_repo.log_event(
-        customer_log_new=CustomerLogNew(pda_url=pda_url, event="signin")
+        customer_log_new=CustomerLogNew(pda_url=pda_url, event=event)
     )
     return boolean_response
 
