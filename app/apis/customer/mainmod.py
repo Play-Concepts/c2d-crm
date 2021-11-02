@@ -2,10 +2,10 @@ import uuid
 from datetime import datetime, timezone
 from typing import List, Union
 
-from fastapi import Response, Request, status
+from fastapi import Request, Response, status
 from pydantic.types import Json
 
-from app.apis.customer import (customer_data_pass, customer_merchant_perk,
+from app.apis.customer import (customer_data_pass, customer_merchant_offer,
                                customer_transaction)
 from app.apis.utils.pda_client import delete_pda_record, write_pda_data
 from app.apis.utils.transformer import transform
@@ -14,13 +14,13 @@ from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.customers_log import CustomersLogRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.logger import log_instance
 from app.models.core import BooleanResponse, NotFound
 from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
                                  CustomerView)
 from app.models.customer_log import CustomerLogNew
 from app.models.data_pass import InvalidDataPass
 from app.models.data_pass_source import DataPassSourceDescriptor
-from app.logger import log_instance
 
 
 async def fn_get_customer_basic(
@@ -202,10 +202,10 @@ fn_customer_get_scan_transactions_count = (
     customer_transaction.fn_customer_get_scan_transactions_count
 )
 
-fn_get_customer_perks = customer_merchant_perk.fn_get_customer_perks
-fn_get_all_customer_perks = customer_merchant_perk.fn_get_all_customer_perks
-fn_like_merchant_perk = customer_merchant_perk.fn_like_merchant_perk
-fn_unlike_merchant_perk = customer_merchant_perk.fn_unlike_merchant_perk
-fn_get_customer_favourited_perks = (
-    customer_merchant_perk.fn_get_customer_favourited_perks
+fn_get_customer_offers = customer_merchant_offer.fn_get_customer_offers
+fn_get_all_customer_offers = customer_merchant_offer.fn_get_all_customer_offers
+fn_like_merchant_offer = customer_merchant_offer.fn_like_merchant_offer
+fn_unlike_merchant_offer = customer_merchant_offer.fn_unlike_merchant_offer
+fn_get_customer_favourited_offers = (
+    customer_merchant_offer.fn_get_customer_favourited_offers
 )

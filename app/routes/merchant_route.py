@@ -7,12 +7,15 @@ from app.apis.dependencies.database import get_repository
 from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
                                        fn_get_scan_transactions_count,
                                        fn_verify_barcode)
+from app.apis.merchant.merchant_merchant_offer import fn_get_merchant_offers
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.data_pass import DataPassMerchantView, InvalidDataPass
+from app.models.merchant_offer import MerchantOfferMerchantView
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
 
@@ -113,6 +116,24 @@ async def get_customer_data_passes(
     data_passes_repository: DataPassesRepository = Depends(
         get_repository(DataPassesRepository)
     ),
-    auth_tuple=Depends(merchant_user),
+    auth=Depends(merchant_user),
 ) -> List[DataPassMerchantView]:
     return await fn_get_merchant_data_passes(data_passes_repository)
+
+
+@router.get(
+    "/offers",
+    name="merchant:offers",
+    tags=["merchants"],
+    response_model=List[MerchantOfferMerchantView],
+)
+async def get_merchant_offers(
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> List[MerchantOfferMerchantView]:
+    return await fn_get_merchant_offers(
+        auth.email,
+        merchant_offers_repo,
+    )

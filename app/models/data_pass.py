@@ -26,8 +26,8 @@ class DataPassBase(CoreModel):
     title: str
     description_for_merchants: Optional[str]
     description_for_customers: Optional[str]
-    perks_url_for_merchants: Optional[str]
-    perks_url_for_customers: Optional[str]
+    offers_url_for_merchants: Optional[str]
+    offers_url_for_customers: Optional[str]
     details_url: Optional[str]
     expiry_days: Optional[int]
     expiry_date: Optional[datetime]
