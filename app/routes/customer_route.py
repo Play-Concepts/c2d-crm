@@ -102,8 +102,8 @@ async def search_customers(
         data_passes_repo,
         data_pass_sources_repo,
         customers_repository,
-        request = request,
-        response = response,
+        request=request,
+        response=response,
     )
 
 
