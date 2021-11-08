@@ -261,7 +261,6 @@ async def get_customer_offers(
 ) -> Union[InvalidDataPass, List[MerchantOfferCustomerView]]:
     auth, _ = auth_tuple
     return await fn_get_customer_offers(
-        auth["iss"],
         data_pass_id,
         data_passes_repo,
         merchant_offers_repo,

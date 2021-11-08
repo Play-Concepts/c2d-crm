@@ -14,8 +14,6 @@ GET_CUSTOMER_OFFERS_SQL = """
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url
     FROM merchant_offers JOIN merchant_offers_data_passes
     ON (merchant_offers_data_passes.merchant_offer_id=merchant_offers.id)
-    LEFT JOIN (SELECT * FROM merchant_offer_favourites WHERE pda_url=:pda_url) mpf
-    ON (mpf.merchant_offer_id=merchant_offers_data_passes.merchant_offer_id)
     WHERE merchant_offers_data_passes.data_pass_id=:data_pass_id;
 """
 
@@ -55,9 +53,9 @@ GET_MERCHANT_OFFERS_SQL = """
 
 class MerchantOffersRepository(BaseRepository):
     async def get_customer_offers(
-        self, *, data_pass_id: uuid.UUID, pda_url: str
+        self, *, data_pass_id: uuid.UUID
     ) -> List[MerchantOfferCustomerView]:
-        query_values = {"data_pass_id": data_pass_id, "pda_url": pda_url}
+        query_values = {"data_pass_id": data_pass_id}
         offers = await self.db.fetch_all(
             query=GET_CUSTOMER_OFFERS_SQL, values=query_values
         )
