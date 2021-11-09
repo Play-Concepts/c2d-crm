@@ -4,6 +4,7 @@ from typing import List, Union
 from fastapi import APIRouter, Depends, Request
 
 from app.apis.dependencies.database import get_repository
+from app.apis.log.mainmod import fn_log_merchant_activity
 from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
                                        fn_get_scan_transactions_count,
                                        fn_verify_barcode)
@@ -12,9 +13,11 @@ from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.merchant_log import MerchantLogRepository
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.data_pass import DataPassMerchantView, InvalidDataPass
+from app.models.merchant_log import MerchantLogNewResponse
 from app.models.merchant_offer import MerchantOfferMerchantView
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
@@ -136,4 +139,28 @@ async def get_merchant_offers(
     return await fn_get_merchant_offers(
         auth.email,
         merchant_offers_repo,
+    )
+
+
+@router.put(
+    "/events/{component}/{component_identifier}/{event}",
+    name="merchant:event:log",
+    tags=["merchants", "logs"],
+    response_model=MerchantLogNewResponse,
+)
+async def log_activity(
+    component: str,
+    component_identifier: uuid.UUID,
+    event: str,
+    activity_log_repo: MerchantLogRepository = Depends(
+        get_repository(MerchantLogRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> MerchantLogNewResponse:
+    return await fn_log_merchant_activity(
+        auth.id,
+        component,
+        component_identifier,
+        event,
+        activity_log_repo,
     )

@@ -1,5 +1,7 @@
 import uuid
 
+from . import merchant_log
+
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.models.activity_log import (ActivityLogComponentType,
                                      ActivityLogEventType, ActivityLogNew,
@@ -71,3 +73,6 @@ async def fn_log_data_pass_deactivated(
             event=ActivityLogEventType.deactivated,
         )
     )
+
+
+fn_log_merchant_activity = merchant_log.fn_log_merchant_activity
