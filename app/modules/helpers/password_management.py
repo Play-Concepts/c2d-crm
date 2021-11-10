@@ -1,6 +1,6 @@
 from fastapi import Request
 
-from app.apis.crm.merchant_email import do_send_merchant_welcome_email
+from app.apis.crm.merchant_email import do_send_merchant_welcome_email, notify_marketing
 from app.apis.dependencies.database import get_database, get_repository
 from app.apis.utils.emailer import send_templated_email
 from app.core.global_config import config as app_config
@@ -28,3 +28,4 @@ async def _resend_welcome_email(email: str, request: Request):
     non_verified_merchant = await merchants_repo.get_merchant_by_email(email=email)
     if non_verified_merchant is not None:
         do_send_merchant_welcome_email([non_verified_merchant])
+        notify_marketing([non_verified_merchant])
