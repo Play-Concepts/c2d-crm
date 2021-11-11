@@ -117,12 +117,12 @@ class MerchantOffersRepository(BaseRepository):
     # TODO: TRANSIENT - not currently used in application, only in test suite
     async def create_merchant_offer_(
         self, *, merchant_offer_new: MerchantOfferNew
-    ) -> IDModelMixin:
+    ) -> Optional[IDModelMixin]:
         sql = """
-            INSERT INTO merchant_offers(merchant_id, title, details, start_date,
+            INSERT INTO merchant_offers(merchant_id, title, details, start_date, end_date,
             offer_url, logo_url, offer_image_url)
-            VALUES(:merchant_id, :title, :details, :start_date,
+            VALUES(:merchant_id, :title, :details, :start_date, :end_date,
             :offer_url, :logo_url, :offer_image_url) RETURNING id;
         """
-        offers = await self.db.fetch_all(query=sql, values=merchant_offer_new.dict())
-        return [MerchantOfferDBModel(**offer) for offer in offers]
+        offer = await self.db.fetch_one(query=sql, values=merchant_offer_new.dict())
+        return None if offer is None else IDModelMixin(**offer)

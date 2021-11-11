@@ -1,11 +1,11 @@
 import uuid
 
-from . import merchant_log
-
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.models.activity_log import (ActivityLogComponentType,
                                      ActivityLogEventType, ActivityLogNew,
                                      ActivityLogNewResponse)
+
+from . import merchant_log
 
 
 async def fn_log_activity(
