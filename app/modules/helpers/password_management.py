@@ -1,6 +1,7 @@
 from fastapi import Request
 
-from app.apis.crm.merchant_email import do_send_merchant_welcome_email, notify_marketing
+from app.apis.crm.merchant_email import (do_send_merchant_welcome_email,
+                                         notify_marketing)
 from app.apis.dependencies.database import get_database, get_repository
 from app.apis.utils.emailer import send_templated_email
 from app.core.global_config import config as app_config
