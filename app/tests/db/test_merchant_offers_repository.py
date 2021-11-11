@@ -34,7 +34,7 @@ class TestMerchantOffersRepository:
 
         merchant_offers_test_data = new_merchant_offers_test_data(user_merchant)
         for merchant_offer_data in merchant_offers_test_data:
-            await merchant_offers_repository.create_merchant_offer_(
+            await merchant_offers_repository.create_merchant_offer(
                 merchant_offer_new=merchant_offer_data
             )
 

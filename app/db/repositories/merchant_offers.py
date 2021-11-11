@@ -114,8 +114,7 @@ class MerchantOffersRepository(BaseRepository):
         offers = await self.db.fetch_all(query=sql, values=query_values)
         return [MerchantOfferDBModel(**offer) for offer in offers]
 
-    # TODO: TRANSIENT - not currently used in application, only in test suite
-    async def create_merchant_offer_(
+    async def create_merchant_offer(
         self, *, merchant_offer_new: MerchantOfferNew
     ) -> Optional[IDModelMixin]:
         sql = """
