@@ -2,6 +2,7 @@ import json
 from typing import List
 
 import jinja2
+from app.apis.utils.notify import Notify
 
 from app.apis.utils.emailer import (send_bulk_templated_email,
                                     send_email_to_marketing)
@@ -39,10 +40,7 @@ def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
         "appLogo": app_config.APPLICATION_LOGO,
         "issuer": app_config.DATA_PASSPORT_ISSUER,
     }
-    send_bulk_templated_email(
-        destinations, MERCHANT_WELCOME_TEMPLATE, json.dumps(default_data)
-    )
-
+    Notify().send_email(destinations, 'welcome', default_data)
 
 def _create_merchant_email_destination(merchant: MerchantEmailView):
     template_data = {
