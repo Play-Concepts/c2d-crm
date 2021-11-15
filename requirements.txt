@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-alembic==1.7.4
+alembic==1.7.5
     # via -r requirements.in
 asgiref==3.4.1
     # via uvicorn
@@ -14,9 +14,9 @@ bcrypt==3.2.0
     # via
     #   -r requirements.in
     #   passlib
-boto3==1.19.12
+boto3==1.20.5
     # via -r requirements.in
-botocore==1.22.12
+botocore==1.23.5
     # via
     #   boto3
     #   s3transfer
@@ -58,7 +58,7 @@ idna==3.2
     # via
     #   email-validator
     #   requests
-jinja2==3.0.2
+jinja2==3.0.3
     # via -r requirements.in
 jmespath==0.10.0
     # via
@@ -78,7 +78,7 @@ passlib[bcrypt]==1.7.4
     # via
     #   -r requirements.in
     #   fastapi-users
-psycopg2-binary==2.9.1
+psycopg2-binary==2.9.2
     # via -r requirements.in
 pycparser==2.20
     # via cffi
@@ -90,7 +90,7 @@ pyjwt==2.1.0
     #   fastapi-users
 python-dateutil==2.8.2
     # via botocore
-python-dotenv==0.19.1
+python-dotenv==0.19.2
     # via -r requirements.in
 python-multipart==0.0.5
     # via
@@ -107,7 +107,7 @@ six==1.16.0
     #   bcrypt
     #   python-dateutil
     #   python-multipart
-sqlalchemy==1.4.23
+sqlalchemy==1.4.27
     # via
     #   -r requirements.in
     #   alembic
