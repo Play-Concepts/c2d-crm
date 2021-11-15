@@ -1,4 +1,5 @@
-from app.models.activity_log import ActivityLogNew, ActivityLogNewResponse
+from app.models.activity_log import ActivityLogNew
+from app.models.core import NewRecordResponse
 
 from .base import BaseRepository
 
@@ -12,10 +13,10 @@ NEW_ACTIVITY_LOG_SQL = """
 class ActivityLogRepository(BaseRepository):
     async def log_activity(
         self, *, activity_log_new: ActivityLogNew
-    ) -> ActivityLogNewResponse:
+    ) -> NewRecordResponse:
         query_values = activity_log_new.dict()
 
         created_activity_log = await self.db.fetch_one(
             query=NEW_ACTIVITY_LOG_SQL, values=query_values
         )
-        return ActivityLogNewResponse(**created_activity_log)
+        return NewRecordResponse(**created_activity_log)

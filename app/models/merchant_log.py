@@ -18,7 +18,3 @@ class MerchantLogDBModel(IDModelMixin, MerchantLogBase, CreatedAtMixin):
 
 
 MerchantLog = MerchantLogDBModel
-
-
-class MerchantLogNewResponse(IDModelMixin, CreatedAtMixin):
-    pass

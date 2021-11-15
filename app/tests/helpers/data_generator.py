@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from typing import List
 
+from dateutil.relativedelta import relativedelta
 from faker import Faker
 from faker.providers import address, company, internet, misc
 from pydantic.types import Json
@@ -15,6 +16,7 @@ from app.models.customer import CustomerNew
 from app.models.customer import StatusType as CustomerStatusType
 from app.models.customer_log import CustomerLogNew
 from app.models.merchant import MerchantNew
+from app.models.merchant_offer import MerchantOfferNew
 
 fake = Faker()
 fake.add_provider(company)
@@ -40,6 +42,19 @@ def create_new_merchant() -> MerchantNew:
         },
         logo_url=fake.image_url(),
         terms_agreed=fake.boolean(chance_of_getting_true=50),
+    )
+
+
+def create_new_merchant_offer(merchant_id: uuid.UUID) -> MerchantOfferNew:
+    return MerchantOfferNew(
+        title=fake.sentence(),
+        details=fake.paragraph(),
+        start_date=datetime.now(),
+        end_date=datetime.now() + relativedelta(days=100),
+        offer_url=fake.url(),
+        logo_url=fake.image_url(),
+        offer_image_url=fake.image_url(),
+        merchant_id=merchant_id,
     )
 
 

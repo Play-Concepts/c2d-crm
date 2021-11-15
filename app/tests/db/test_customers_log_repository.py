@@ -7,8 +7,8 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 
 from app.db.repositories.customers_log import CustomersLogRepository
-from app.models.core import BooleanResponse
-from app.models.customer_log import CustomerLogNew, CustomerLogNewResponse
+from app.models.core import BooleanResponse, NewRecordResponse
+from app.models.customer_log import CustomerLogNew
 from app.tests.helpers.data_generator import (create_new_customer_log,
                                               fake_hostname)
 
@@ -36,7 +36,7 @@ class TestCustomersLogRepository:
             customer_log_new=test_new_customer_log
         )
         assert created_customer_log is not None
-        assert isinstance(created_customer_log, CustomerLogNewResponse)
+        assert isinstance(created_customer_log, NewRecordResponse)
         assert created_customer_log.id is not None
         assert isinstance(created_customer_log.created_at, datetime)
 

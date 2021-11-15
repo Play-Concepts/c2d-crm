@@ -1,24 +1,32 @@
 import uuid
-from typing import List, Union
+from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
+from starlette.status import HTTP_201_CREATED
 
 from app.apis.dependencies.database import get_repository
 from app.apis.log.mainmod import fn_log_merchant_activity
-from app.apis.merchant.mainmod import (fn_get_merchant_data_passes,
+from app.apis.merchant.mainmod import (fn_create_merchant_offer,
+                                       fn_get_merchant_data_passes,
+                                       fn_get_merchant_offers,
                                        fn_get_scan_transactions_count,
+                                       fn_update_merchant_offer,
+                                       fn_update_merchant_offer_status,
                                        fn_verify_barcode)
-from app.apis.merchant.merchant_merchant_offer import fn_get_merchant_offers
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchant_log import MerchantLogRepository
 from app.db.repositories.merchant_offers import MerchantOffersRepository
+from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
+from app.models.core import NewRecordResponse, NotFound, UpdatedRecordResponse
 from app.models.data_pass import DataPassMerchantView, InvalidDataPass
-from app.models.merchant_log import MerchantLogNewResponse
-from app.models.merchant_offer import MerchantOfferMerchantView
+from app.models.merchant_offer import (ForbiddenMerchantOfferEdit,
+                                       MerchantOfferMerchantView,
+                                       MerchantOfferNewRequest,
+                                       MerchantOfferUpdateRequest)
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
 
@@ -142,11 +150,92 @@ async def get_merchant_offers(
     )
 
 
+@router.post(
+    "/offers",
+    name="merchant:offers:create",
+    tags=["merchants"],
+    status_code=HTTP_201_CREATED,
+    response_model=NewRecordResponse,
+)
+async def create_merchant_offer(
+    merchant_offer_new_request: MerchantOfferNewRequest,
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> NewRecordResponse:
+    return await fn_create_merchant_offer(
+        auth.email,
+        merchant_offer_new_request,
+        merchants_repo,
+        merchant_offers_repo,
+    )
+
+
+@router.put(
+    "/offers",
+    name="merchant:offers:update",
+    tags=["merchants"],
+    responses={
+        200: {"model": Optional[UpdatedRecordResponse]},
+        403: {"model": ForbiddenMerchantOfferEdit},
+        404: {"model": NotFound},
+    },
+)
+async def update_merchant_offer(
+    response: Response,
+    merchant_offer_update_request: MerchantOfferUpdateRequest,
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> Union[NotFound, ForbiddenMerchantOfferEdit, Optional[UpdatedRecordResponse]]:
+    return await fn_update_merchant_offer(
+        auth.email,
+        merchant_offer_update_request,
+        merchants_repo,
+        merchant_offers_repo,
+        response,
+    )
+
+
+@router.put(
+    "/offers/{merchant_offer_id}/update-status/{status}",
+    name="merchant:offers:update_status",
+    tags=["merchants"],
+    responses={
+        200: {"model": Optional[UpdatedRecordResponse]},
+        403: {"model": ForbiddenMerchantOfferEdit},
+        404: {"model": NotFound},
+    },
+)
+async def update_merchant_offer_status(
+    response: Response,
+    merchant_offer_id: uuid.UUID,
+    status: str,
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> Union[NotFound, ForbiddenMerchantOfferEdit, Optional[UpdatedRecordResponse]]:
+    return await fn_update_merchant_offer_status(
+        auth.email,
+        merchant_offer_id,
+        status,
+        merchants_repo,
+        merchant_offers_repo,
+        response,
+    )
+
+
 @router.put(
     "/events/{component}/{component_identifier}/{event}",
     name="merchant:event:log",
     tags=["merchants", "logs"],
-    response_model=MerchantLogNewResponse,
+    response_model=NewRecordResponse,
 )
 async def log_activity(
     component: str,
@@ -156,7 +245,7 @@ async def log_activity(
         get_repository(MerchantLogRepository)
     ),
     auth=Depends(merchant_user),
-) -> MerchantLogNewResponse:
+) -> NewRecordResponse:
     return await fn_log_merchant_activity(
         auth.id,
         component,

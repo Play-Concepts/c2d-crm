@@ -26,7 +26,7 @@ coverage[toml]==6.0
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-faker==9.8.0
+faker==9.8.1
     # via -r requirements-dev.in
 flake8==4.0.1
     # via -r requirements-dev.in
@@ -42,7 +42,7 @@ idna==3.2
     #   rfc3986
 iniconfig==1.1.1
     # via pytest
-isort==5.10.0
+isort==5.10.1
     # via -r requirements-dev.in
 mccabe==0.6.1
     # via flake8
