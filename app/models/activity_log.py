@@ -35,7 +35,3 @@ class ActivityLogDBModel(IDModelMixin, ActivityLogBase, CreatedAtMixin):
 
 
 ActivityLog = ActivityLogDBModel
-
-
-class ActivityLogNewResponse(IDModelMixin, CreatedAtMixin):
-    pass

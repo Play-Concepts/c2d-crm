@@ -26,6 +26,18 @@ class CreatedAtMixin(BaseModel):
     created_at: datetime
 
 
+class UpdatedAtMixin(BaseModel):
+    updated_at: datetime
+
+
+class NewRecordResponse(IDModelMixin, CreatedAtMixin):
+    pass
+
+
+class UpdatedRecordResponse(IDModelMixin, UpdatedAtMixin):
+    pass
+
+
 class TimestampsMixin(CreatedAtMixin):
     updated_at: datetime
 
