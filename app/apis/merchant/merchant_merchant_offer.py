@@ -5,7 +5,7 @@ from fastapi import Response, status
 
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
-from app.models.core import IDModelMixin, NotFound, UpdatedRecordResponse
+from app.models.core import IDModelMixin, NewRecordResponse, NotFound, UpdatedRecordResponse
 from app.models.data_pass import DataPassMerchantView
 from app.models.merchant_offer import (ForbiddenMerchantOfferEdit,
                                        MerchantOfferNew,
@@ -25,10 +25,12 @@ async def fn_create_merchant_offer(
     merchant_offer_new_request: MerchantOfferNewRequest,
     merchant_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
-) -> Optional[IDModelMixin]:
+    response: Response,
+) -> Union[NotFound, Optional[NewRecordResponse]]:
     merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
-        return None
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return NotFound(message="Merchant Not Found")
     merchant_offer_new_data = merchant_offer_new_request.dict() | {
         "merchant_id": merchant.id
     }
