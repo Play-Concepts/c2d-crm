@@ -155,21 +155,26 @@ async def get_merchant_offers(
     name="merchant:offers:create",
     tags=["merchants"],
     status_code=HTTP_201_CREATED,
-    response_model=NewRecordResponse,
+    responses={
+        201: {"model": Optional[NewRecordResponse]},
+        404: {"model": NotFound},
+    },
 )
 async def create_merchant_offer(
+    response: Response,
     merchant_offer_new_request: MerchantOfferNewRequest,
     merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     merchant_offers_repo: MerchantOffersRepository = Depends(
         get_repository(MerchantOffersRepository)
     ),
     auth=Depends(merchant_user),
-) -> NewRecordResponse:
+) -> Union[NotFound, Optional[NewRecordResponse]]:
     return await fn_create_merchant_offer(
         auth.email,
         merchant_offer_new_request,
         merchants_repo,
         merchant_offers_repo,
+        response,
     )
 
 
