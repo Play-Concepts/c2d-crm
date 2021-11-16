@@ -1,11 +1,12 @@
 import uuid
 from typing import List, Optional, Union
 
-from fastapi import Response, status
+from fastapi import Response, UploadFile, status
 
+from app.apis.utils.s3uploader import put_file_for_preview
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
-from app.models.core import IDModelMixin, NewRecordResponse, NotFound, UpdatedRecordResponse
+from app.models.core import NewRecordResponse, NotFound, UpdatedRecordResponse
 from app.models.data_pass import DataPassMerchantView
 from app.models.merchant_offer import (ForbiddenMerchantOfferEdit,
                                        MerchantOfferNew,
@@ -90,3 +91,36 @@ async def fn_update_merchant_offer_status(
         id=merchant_offer_id,
         status=status,
     )
+
+
+async def fn_upload_merchant_offer_image(
+    merchant_email: str,
+    merchant_offer_id: uuid.UUID,
+    file: UploadFile,
+    merchant_repository: MerchantsRepository,
+    merchant_offers_repository: MerchantOffersRepository,
+    response: Response,
+) -> int:
+    merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
+    if merchant is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return NotFound(message="Merchant Not Found")
+
+    is_edit_permitted = await merchant_offers_repository.is_merchant_offer_updateable(
+        id=merchant_offer_id, merchant_id=merchant.id
+    )
+    if not is_edit_permitted.value:
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return ForbiddenMerchantOfferEdit()
+
+    *filename, extension = file.filename.split(".")
+    fname = "{}-{}.{}".format(str(merchant_offer_id), "offer_image", extension)
+    upload_status = put_file_for_preview(file.file, fname)
+
+    if upload_status == status.HTTP_200_OK:
+        await merchant_offers_repository.update_merchant_offer_status(
+            id=merchant_offer_id, status="pending_approval"
+        )
+        # notify_support
+
+    return upload_status

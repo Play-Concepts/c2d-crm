@@ -4,7 +4,6 @@ from typing import List, Optional
 from app.models.core import (BooleanResponse, IDModelMixin, NewRecordResponse,
                              UpdatedRecordResponse)
 from app.models.merchant_offer import (MerchantOfferCustomerView,
-                                       MerchantOfferDBModel,
                                        MerchantOfferMerchantView,
                                        MerchantOfferNew,
                                        MerchantOfferUpdateRequest)
@@ -129,17 +128,6 @@ class MerchantOffersRepository(BaseRepository):
             query=GET_MERCHANT_OFFERS_SQL, values=query_values
         )
         return [MerchantOfferMerchantView(**offer) for offer in offers]
-
-    # TODO: TRANSIENT - not currently used in application, only in test suite
-    async def get_merchant_offer_(
-        self, *, merchant_offer_id: uuid.UUID
-    ) -> List[MerchantOfferDBModel]:
-        sql = """
-            SELECT * FROM merchant_offers WHERE id = :merchant_offer_id;
-        """
-        query_values = {"merchant_offer_id": merchant_offer_id}
-        offers = await self.db.fetch_all(query=sql, values=query_values)
-        return [MerchantOfferDBModel(**offer) for offer in offers]
 
     async def create_merchant_offer(
         self, *, merchant_offer_new: MerchantOfferNew

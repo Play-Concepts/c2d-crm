@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, File, Request, Response, UploadFile
 from starlette.status import HTTP_201_CREATED
 
 from app.apis.dependencies.database import get_repository
@@ -13,6 +13,8 @@ from app.apis.merchant.mainmod import (fn_create_merchant_offer,
                                        fn_update_merchant_offer,
                                        fn_update_merchant_offer_status,
                                        fn_verify_barcode)
+from app.apis.merchant.merchant_merchant_offer import \
+    fn_upload_merchant_offer_image
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
@@ -200,6 +202,31 @@ async def update_merchant_offer(
     return await fn_update_merchant_offer(
         auth.email,
         merchant_offer_update_request,
+        merchants_repo,
+        merchant_offers_repo,
+        response,
+    )
+
+
+@router.post(
+    "/offers/{merchant_offer_id}/upload",
+    name="merchant:offers:upload_image",
+    tags=["merchants"],
+)
+async def upload_merchant_offer_image(
+    response: Response,
+    merchant_offer_id: uuid.UUID,
+    image_file: UploadFile = File(...),
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+    merchant_offers_repo: MerchantOffersRepository = Depends(
+        get_repository(MerchantOffersRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> int:
+    return await fn_upload_merchant_offer_image(
+        auth.email,
+        merchant_offer_id,
+        image_file,
         merchants_repo,
         merchant_offers_repo,
         response,
