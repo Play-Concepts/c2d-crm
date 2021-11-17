@@ -1,11 +1,7 @@
-import json
 from typing import List
 
 import jinja2
 from app.apis.utils.notify import Notify
-
-from app.apis.utils.emailer import (send_bulk_templated_email,
-                                    send_email_to_marketing)
 from app.core.global_config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.merchant import MerchantEmailView
@@ -32,31 +28,15 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
 
 def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
     destinations = [
-        _create_merchant_email_destination(merchant) for merchant in merchants
+        merchant.email for merchant in merchants
     ]
-    default_data = {
+    variables = {
         "verificationLink": "",
         "appName": app_config.APPLICATION_NAME,
         "appLogo": app_config.APPLICATION_LOGO,
         "issuer": app_config.DATA_PASSPORT_ISSUER,
     }
-    Notify().send_email(destinations, 'welcome', default_data)
-
-def _create_merchant_email_destination(merchant: MerchantEmailView):
-    template_data = {
-        "verificationLink": "{}/{}?email={}".format(
-            MERCHANT_WELCOME_ROOT_LINK, merchant.password_change_token, merchant.email
-        ),
-    }
-    return {
-        "Destination": {
-            "ToAddresses": [
-                merchant.email,
-            ],
-        },
-        "ReplacementTemplateData": json.dumps(template_data),
-    }
-
+    Notify().send_email(destinations, 'welcome', variables)
 
 async def _flag_merchant_welcome_email_sent(
     merchants: List[MerchantEmailView], merchants_repo: MerchantsRepository
@@ -66,11 +46,6 @@ async def _flag_merchant_welcome_email_sent(
 
 
 def notify_marketing(merchants):
-    template = template_env.get_template("dataswift-marketing.html")
     for merchant in merchants:
-        output = template.render(merchant.dict())
         if app_config.NOTIFY_MARKETING_EMAIL is not None:
-            send_email_to_marketing(
-                output,
-                "New Merchant Registration",
-            )
+            Notify.send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-notify', merchant.dict())

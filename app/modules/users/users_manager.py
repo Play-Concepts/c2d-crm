@@ -5,7 +5,7 @@ from fastapi_users import BaseUserManager
 from app.apis.crm.merchant_email import (do_send_merchant_welcome_email,
                                          notify_marketing)
 from app.apis.dependencies.database import get_database, get_repository
-from app.apis.utils.emailer import send_templated_email
+from app.apis.utils.notify import Notify
 from app.core.global_config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.user import UserCreate, UserDB
@@ -25,10 +25,10 @@ class UserManager(BaseUserManager[UserCreate, UserDB]):
 
         reset_link = f"{app_config.APPLICATION_ROOT}/merchant/reset-password/{token}?email={user.email}"
         template_data = {"email": user.email, "resetLink": reset_link}
-        send_templated_email(user.email, "datapassport-reset-password", template_data)
+        Notify().send_email(user.email, 'password-reset', template_data)
 
     def on_after_reset_password(self, user: UserDB, _: Request):
-        send_templated_email(user.email, "datapassport-password-updated", {})
+        Notify().send_email(user.email, 'password-updated')
 
     async def _resend_welcome_email(self, email: str, request: Request):
         merchants_repo: MerchantsRepository = get_repository(MerchantsRepository)(
