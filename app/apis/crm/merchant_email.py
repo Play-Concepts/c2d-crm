@@ -48,4 +48,4 @@ async def _flag_merchant_welcome_email_sent(
 def notify_marketing(merchants):
     for merchant in merchants:
         if app_config.NOTIFY_MARKETING_EMAIL is not None:
-            Notify.send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-notify', merchant.dict())
+            Notify.send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-created', merchant.dict())

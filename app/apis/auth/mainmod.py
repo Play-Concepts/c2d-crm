@@ -14,6 +14,6 @@ async def fn_create_password(
         Notify.send(updated_user.email, 'password-created')
 
         if app_config.NOTIFY_MARKETING_EMAIL is not None:
-            Notify.send(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-active', updated_user)
+            Notify.send(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-verified', updated_user)
 
     return updated_user
