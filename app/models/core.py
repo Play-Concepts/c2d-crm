@@ -49,6 +49,10 @@ class BooleanResponse(BaseModel):
     value: bool
 
 
+class StringResponse(BaseModel):
+    value: str
+
+
 class NotFound(BaseModel):
     message: str
 

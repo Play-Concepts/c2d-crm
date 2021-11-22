@@ -44,6 +44,8 @@ class GlobalConfig(BaseSettings):
     BUCKET_MEDIA_URL: Optional[str] = os.environ.get("BUCKET_MEDIA_URL", None)
     BUCKET_PRIVATE: Optional[str] = os.environ.get("BUCKET_PRIVATE", None)
 
+    STRIPE_SECRET_KEY: Optional[str] = os.environ.get("STRIPE_SECRET_KEY", None)
+
 
 config = GlobalConfig()
 # print(config.__repr__())

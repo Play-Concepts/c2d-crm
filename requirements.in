@@ -34,3 +34,6 @@ boto3
 loguru
 
 jinja2
+
+# Payment
+stripe

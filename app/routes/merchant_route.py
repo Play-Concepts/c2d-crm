@@ -12,9 +12,8 @@ from app.apis.merchant.mainmod import (fn_create_merchant_offer,
                                        fn_get_scan_transactions_count,
                                        fn_update_merchant_offer,
                                        fn_update_merchant_offer_status,
+                                       fn_upload_merchant_offer_image,
                                        fn_verify_barcode)
-from app.apis.merchant.merchant_merchant_offer import \
-    fn_upload_merchant_offer_image
 from app.core import global_state
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository

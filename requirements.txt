@@ -97,7 +97,9 @@ python-multipart==0.0.5
     #   -r requirements.in
     #   fastapi-users
 requests==2.26.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   stripe
 s3transfer==0.5.0
     # via boto3
 sentry-sdk==1.5.0
@@ -115,6 +117,8 @@ sqlalchemy==1.4.27
     #   fastapi-users-db-sqlalchemy
 starlette==0.14.2
     # via fastapi
+stripe==2.63.0
+    # via -r requirements.in
 typing-extensions==3.10.0.2
     # via pydantic
 urllib3==1.26.6

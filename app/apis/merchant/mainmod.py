@@ -12,6 +12,8 @@ from app.logger import log_instance
 from app.models.scan_transaction import (ScanTransactionCounts,
                                          ScanTransactionNew)
 
+from .payment import stripe_purchase
+
 
 async def fn_verify_barcode(
     barcode: str,
@@ -128,3 +130,5 @@ fn_update_merchant_offer_status = (
     merchant_merchant_offer.fn_update_merchant_offer_status
 )
 fn_upload_merchant_offer_image = merchant_merchant_offer.fn_upload_merchant_offer_image
+
+fn_start_payment = stripe_purchase.fn_start_payment
