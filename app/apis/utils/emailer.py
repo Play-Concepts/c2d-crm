@@ -102,11 +102,11 @@ def send_notification_email_to_marketing(
     )
 
 
-def send_email_to_marketing(
+def _do_send_email(
     email_content: str,
     email_subject: str,
-    to: str = app_config.NOTIFY_MARKETING_EMAIL,
-    source: str = app_config.MAILER_FROM,
+    to: str,
+    source: str,
 ):
     charset = "UTF-8"
     return (
@@ -133,3 +133,21 @@ def send_email_to_marketing(
             },
         )
     )
+
+
+def send_email_to_marketing(
+    email_content: str,
+    email_subject: str,
+    to: str = app_config.NOTIFY_MARKETING_EMAIL,
+    source: str = app_config.MAILER_FROM,
+):
+    _do_send_email(email_content, email_subject, to, source)
+
+
+def send_email_to_support(
+    email_content: str,
+    email_subject: str,
+    to: str = app_config.NOTIFY_SUPPORT_EMAIL,
+    source: str = app_config.MAILER_FROM,
+):
+    _do_send_email(email_content, email_subject, to, source)

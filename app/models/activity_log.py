@@ -35,3 +35,5 @@ class ActivityLogDBModel(IDModelMixin, ActivityLogBase, CreatedAtMixin):
 
 
 ActivityLog = ActivityLogDBModel
+
+ActivityLogSearch = ActivityLogBase
