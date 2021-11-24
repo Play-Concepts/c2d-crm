@@ -30,6 +30,11 @@ class UpdatedAtMixin(BaseModel):
     updated_at: datetime
 
 
+class DaySeriesUnit(BaseModel):
+    day: datetime
+    count: int
+
+
 class NewRecordResponse(IDModelMixin, CreatedAtMixin):
     pass
 

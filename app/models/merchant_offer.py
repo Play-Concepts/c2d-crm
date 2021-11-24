@@ -54,5 +54,5 @@ class MerchantOfferMerchantView(IDModelMixin, MerchantOfferBase, ImagesMixIn):
     status: str
 
 
-class ForbiddenMerchantOfferEdit(NotPermitted):
-    message: str = "You do not have permission to edit this Merchant Offer."
+class ForbiddenMerchantOfferAccess(NotPermitted):
+    message: str = "You do not have permission to access this Merchant Offer."

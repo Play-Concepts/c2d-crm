@@ -5,7 +5,7 @@ from app.models.activity_log import (ActivityLogComponentType,
                                      ActivityLogEventType, ActivityLogNew)
 from app.models.core import NewRecordResponse
 
-from . import merchant_log
+from . import log_statistics, merchant_log
 
 
 async def fn_log_activity(
@@ -76,3 +76,6 @@ async def fn_log_data_pass_deactivated(
 
 
 fn_log_merchant_activity = merchant_log.fn_log_merchant_activity
+fn_merchant_get_log_activity_daily_stats = (
+    log_statistics.fn_merchant_get_log_activity_daily_stats
+)
