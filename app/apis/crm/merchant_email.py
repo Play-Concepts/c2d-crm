@@ -4,7 +4,8 @@ from typing import List
 import jinja2
 
 from app.apis.utils.emailer import (send_bulk_templated_email,
-                                    send_email_to_marketing)
+                                    send_email_to_marketing,
+                                    send_email_to_support)
 from app.core.global_config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.merchant import MerchantEmailView
@@ -76,3 +77,13 @@ def notify_marketing(merchants):
                 output,
                 "New Merchant Registration",
             )
+
+
+def notify_support():
+    template = template_env.get_template("dataswift-support.html")
+    output = template.render({})
+    if app_config.NOTIFY_SUPPORT_EMAIL is not None:
+        send_email_to_support(
+            output,
+            "New Merchant Offer",
+        )

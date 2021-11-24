@@ -8,7 +8,7 @@ from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import NewRecordResponse, NotFound, UpdatedRecordResponse
 from app.models.data_pass import DataPassMerchantView
-from app.models.merchant_offer import (ForbiddenMerchantOfferEdit,
+from app.models.merchant_offer import (ForbiddenMerchantOfferAccess,
                                        MerchantOfferNew,
                                        MerchantOfferNewRequest,
                                        MerchantOfferUpdateRequest)
@@ -48,7 +48,7 @@ async def fn_update_merchant_offer(
     merchant_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
-) -> Union[NotFound, ForbiddenMerchantOfferEdit, Optional[UpdatedRecordResponse]]:
+) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
     merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -59,7 +59,7 @@ async def fn_update_merchant_offer(
     )
     if not is_edit_permitted.value:
         response.status_code = status.HTTP_403_FORBIDDEN
-        return ForbiddenMerchantOfferEdit()
+        return ForbiddenMerchantOfferAccess()
 
     merchant_offer_update_request.before_save()
     return await merchant_offers_repository.update_merchant_offer(
@@ -74,7 +74,7 @@ async def fn_update_merchant_offer_status(
     merchant_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
-) -> Union[NotFound, ForbiddenMerchantOfferEdit, Optional[UpdatedRecordResponse]]:
+) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
     merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -85,7 +85,7 @@ async def fn_update_merchant_offer_status(
     )
     if not is_edit_permitted.value:
         response.status_code = status.HTTP_403_FORBIDDEN
-        return ForbiddenMerchantOfferEdit()
+        return ForbiddenMerchantOfferAccess()
 
     return await merchant_offers_repository.update_merchant_offer_status(
         id=merchant_offer_id,
@@ -111,7 +111,7 @@ async def fn_upload_merchant_offer_image(
     )
     if not is_edit_permitted.value:
         response.status_code = status.HTTP_403_FORBIDDEN
-        return ForbiddenMerchantOfferEdit()
+        return ForbiddenMerchantOfferAccess()
 
     *filename, extension = file.filename.split(".")
     fname = "{}-{}.{}".format(str(merchant_offer_id), "offer_image", extension)
