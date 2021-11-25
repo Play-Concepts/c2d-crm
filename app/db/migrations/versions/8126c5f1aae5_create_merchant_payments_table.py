@@ -24,9 +24,9 @@ def create_merchant_payments_table():
             server_default=sa.text("uuid_generate_v4()"),
         ),
         sa.Column(
-            "user_id",
+            "merchant_id",
             UUID(as_uuid=True),
-            sa.ForeignKey("users.id", name="fk_users_merchant_payments"),
+            sa.ForeignKey("merchants.id", name="fk_merchants_merchant_payments"),
             nullable=False,
         ),
         sa.Column(

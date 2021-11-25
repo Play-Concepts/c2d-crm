@@ -13,4 +13,4 @@ class LookupPaymentBalanceDBModel(
     pass
 
 
-LookupPaymentBalance = LookupPaymentBalanceDBModel
+LookupPaymentBalance = LookupPaymentBalanceBase

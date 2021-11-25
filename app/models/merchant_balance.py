@@ -4,7 +4,7 @@ from app.models.core import CoreModel, IDModelMixin, TimestampsMixin
 
 
 class MerchantBalanceBase(CoreModel):
-    user_id: uuid.UUID
+    merchant_id: uuid.UUID
     amount: int
     balance_type: str
 
@@ -14,3 +14,8 @@ class MerchantBalanceDBModel(IDModelMixin, MerchantBalanceBase, TimestampsMixin)
 
 
 MerchantBalance = MerchantBalanceDBModel
+MerchantBalanceNew = MerchantBalanceBase
+
+
+class MerchantBalanceAmount(CoreModel):
+    amount: int
