@@ -5,6 +5,7 @@ from app.models.core import CoreModel, IDModelMixin, TimestampsMixin
 
 class MerchantPaymentBase(CoreModel):
     merchant_id: uuid.UUID
+    currency: str
     amount: int
     payment_identifier: str
     status: str

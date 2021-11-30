@@ -24,11 +24,11 @@ async def fn_get_merchant_offers(
 async def fn_create_merchant_offer(
     merchant_email: str,
     merchant_offer_new_request: MerchantOfferNewRequest,
-    merchant_repository: MerchantsRepository,
+    merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
 ) -> Union[NotFound, Optional[NewRecordResponse]]:
-    merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
+    merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Merchant Not Found")
@@ -45,11 +45,11 @@ async def fn_create_merchant_offer(
 async def fn_update_merchant_offer(
     merchant_email: str,
     merchant_offer_update_request: MerchantOfferUpdateRequest,
-    merchant_repository: MerchantsRepository,
+    merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
-    merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
+    merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Merchant Not Found")
@@ -71,11 +71,11 @@ async def fn_update_merchant_offer_status(
     merchant_email: str,
     merchant_offer_id: uuid.UUID,
     status: str,
-    merchant_repository: MerchantsRepository,
+    merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
-    merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
+    merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Merchant Not Found")
@@ -97,11 +97,11 @@ async def fn_upload_merchant_offer_image(
     merchant_email: str,
     merchant_offer_id: uuid.UUID,
     file: UploadFile,
-    merchant_repository: MerchantsRepository,
+    merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
 ) -> int:
-    merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
+    merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Merchant Not Found")

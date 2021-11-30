@@ -1,10 +1,15 @@
-import stripe
-from fastapi import APIRouter, Body, Depends, Request
+from typing import Union
 
+import stripe
+from fastapi import APIRouter, Body, Depends, Request, Response
+
+from app.apis.dependencies.database import get_repository
 from app.apis.merchant.mainmod import fn_start_payment
 from app.core import global_state
+from app.db.repositories.merchant_payments import MerchantPaymentsRepository
+from app.db.repositories.merchants import MerchantsRepository
 from app.logger import log_instance
-from app.models.core import StringResponse
+from app.models.core import NotFound, StringResponse
 from app.models.stripe import PaymentIntent
 
 router = APIRouter()
@@ -19,13 +24,23 @@ merchant_user = global_state.fastapi_users.current_user(
     "/start-payment",
     name="payment:start-payment",
     tags=["payment"],
-    response_model=StringResponse,
+    responses={
+        200: {"model": StringResponse},
+        404: {"model": NotFound},
+    },
 )
-def start_payment(
+async def start_payment(
+    response: Response,
     payment_intent: PaymentIntent,
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+    merchant_payments_repo: MerchantPaymentsRepository = Depends(
+        get_repository(MerchantPaymentsRepository)
+    ),
     auth=Depends(merchant_user),
-) -> StringResponse:
-    return fn_start_payment(payment_intent)
+) -> Union[NotFound, StringResponse]:
+    return await fn_start_payment(
+        auth.email, payment_intent, merchants_repo, merchant_payments_repo, response
+    )
 
 
 @router.post(

@@ -30,6 +30,11 @@ def create_merchant_payments_table():
             nullable=False,
         ),
         sa.Column(
+            "currency",
+            sa.VARCHAR,
+            nullable=False,
+        ),
+        sa.Column(
             "amount",
             sa.INTEGER,
             nullable=False,

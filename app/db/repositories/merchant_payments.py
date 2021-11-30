@@ -6,14 +6,14 @@ from app.models.merchant_payment import (MerchantPayment, MerchantPaymentNew,
                                          MerchantPaymentUpdate)
 
 NEW_MERCHANT_PAYMENT_SQL = """
-    INSERT INTO merchant_payments(merchant_id, amount, payment_identifier, status)
-    VALUES(:merchant_id, :amount, :payment_identifier, :status)
+    INSERT INTO merchant_payments(merchant_id, currency, amount, payment_identifier, status)
+    VALUES(:merchant_id, :currency, :amount, :payment_identifier, :status)
     RETURNING id
 """
 
 
 GET_MERCHANT_PAYMENT_BY_IDENTIFIER_SQL = """
-    SELECT id, merchant_id, amount, payment_identifier, status FROM merchant_payments
+    SELECT id, merchant_id, currency, amount, payment_identifier, status FROM merchant_payments
     WHERE payment_identifier = :payment_identifier
 """
 
@@ -21,7 +21,7 @@ GET_MERCHANT_PAYMENT_BY_IDENTIFIER_SQL = """
 UPDATE_MERCHANT_PAYMENT_STATUS_SQL = """
     UPDATE merchant_payments SET status = :status
     WHERE id = :id
-    RETURNING id, merchant_id, amount, payment_identifier, status
+    RETURNING id, merchant_id, currency, amount, payment_identifier, status
 """
 
 
