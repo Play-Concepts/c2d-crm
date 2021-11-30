@@ -43,6 +43,12 @@ class GlobalConfig(BaseSettings):
         "NOTIFY_MARKETING_EMAIL", None
     )
 
+    NOTIFY_SUPPORT_EMAIL: Optional[str] = os.environ.get("NOTIFY_SUPPORT_EMAIL", None)
+
+    BUCKET_MEDIA: Optional[str] = os.environ.get("BUCKET_MEDIA", None)
+    BUCKET_MEDIA_URL: Optional[str] = os.environ.get("BUCKET_MEDIA_URL", None)
+    BUCKET_PRIVATE: Optional[str] = os.environ.get("BUCKET_PRIVATE", None)
+
 
 config = GlobalConfig()
 # print(config.__repr__())

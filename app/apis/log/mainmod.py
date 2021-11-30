@@ -1,11 +1,11 @@
 import uuid
 
-from . import merchant_log
-
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.models.activity_log import (ActivityLogComponentType,
-                                     ActivityLogEventType, ActivityLogNew,
-                                     ActivityLogNewResponse)
+                                     ActivityLogEventType, ActivityLogNew)
+from app.models.core import NewRecordResponse
+
+from . import log_statistics, merchant_log
 
 
 async def fn_log_activity(
@@ -13,7 +13,7 @@ async def fn_log_activity(
     component_identifier: uuid.UUID,
     event: str,
     activity_log_repository: ActivityLogRepository,
-) -> ActivityLogNewResponse:
+) -> NewRecordResponse:
     return await activity_log_repository.log_activity(
         activity_log_new=ActivityLogNew(
             component=component,
@@ -26,7 +26,7 @@ async def fn_log_activity(
 async def fn_log_offer_liked(
     merchant_offer_id: uuid.UUID,
     activity_log_repository: ActivityLogRepository,
-) -> ActivityLogNewResponse:
+) -> NewRecordResponse:
     return await activity_log_repository.log_activity(
         activity_log_new=ActivityLogNew(
             component=ActivityLogComponentType.offer,
@@ -39,7 +39,7 @@ async def fn_log_offer_liked(
 async def fn_log_offer_unliked(
     merchant_offer_id: uuid.UUID,
     activity_log_repository: ActivityLogRepository,
-) -> ActivityLogNewResponse:
+) -> NewRecordResponse:
     return await activity_log_repository.log_activity(
         activity_log_new=ActivityLogNew(
             component=ActivityLogComponentType.offer,
@@ -52,7 +52,7 @@ async def fn_log_offer_unliked(
 async def fn_log_data_pass_activated(
     data_pass_id: uuid.UUID,
     activity_log_repository: ActivityLogRepository,
-) -> ActivityLogNewResponse:
+) -> NewRecordResponse:
     return await activity_log_repository.log_activity(
         activity_log_new=ActivityLogNew(
             component=ActivityLogComponentType.data_pass,
@@ -65,7 +65,7 @@ async def fn_log_data_pass_activated(
 async def fn_log_data_pass_deactivated(
     data_pass_id: uuid.UUID,
     activity_log_repository: ActivityLogRepository,
-) -> ActivityLogNewResponse:
+) -> NewRecordResponse:
     return await activity_log_repository.log_activity(
         activity_log_new=ActivityLogNew(
             component=ActivityLogComponentType.data_pass,
@@ -76,3 +76,6 @@ async def fn_log_data_pass_deactivated(
 
 
 fn_log_merchant_activity = merchant_log.fn_log_merchant_activity
+fn_merchant_get_log_activity_daily_stats = (
+    log_statistics.fn_merchant_get_log_activity_daily_stats
+)

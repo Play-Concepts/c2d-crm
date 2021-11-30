@@ -49,3 +49,14 @@ def notify_marketing(merchants):
     for merchant in merchants:
         if app_config.NOTIFY_MARKETING_EMAIL is not None:
             Notify.send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-created', merchant.dict())
+
+
+def notify_support():
+    template = template_env.get_template("dataswift-support.html")
+    output = template.render({})
+    if app_config.NOTIFY_SUPPORT_EMAIL is not None:
+        Notify.send_email(app_config.NOTIFY_SUPPORT_EMAIL, 'marketing-merchant-created', merchant.dict())
+        # send_email_to_support(
+        #     output,
+        #     "New Merchant Offer",
+        # )

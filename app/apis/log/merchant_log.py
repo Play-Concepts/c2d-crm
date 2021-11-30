@@ -1,7 +1,8 @@
 import uuid
 
 from app.db.repositories.merchant_log import MerchantLogRepository
-from app.models.merchant_log import MerchantLogNew, MerchantLogNewResponse
+from app.models.core import NewRecordResponse
+from app.models.merchant_log import MerchantLogNew
 
 
 async def fn_log_merchant_activity(
@@ -10,7 +11,7 @@ async def fn_log_merchant_activity(
     component_identifier: uuid.UUID,
     event: str,
     merchant_log_repository: MerchantLogRepository,
-) -> MerchantLogNewResponse:
+) -> NewRecordResponse:
     return await merchant_log_repository.log_merchant(
         merchant_log_new=MerchantLogNew(
             user_id=user_id,

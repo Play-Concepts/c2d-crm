@@ -27,8 +27,8 @@ from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
-from app.models.activity_log import ActivityLogNewResponse
-from app.models.core import BooleanResponse, IDModelMixin, NotFound
+from app.models.core import (BooleanResponse, IDModelMixin, NewRecordResponse,
+                             NotFound)
 from app.models.customer import (CustomerBasicView, CustomerClaim,
                                  CustomerClaimResponse, CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
@@ -272,7 +272,7 @@ async def get_customer_offers(
     "/events/{component}/{component_identifier}/{event}",
     name="customer:event:log",
     tags=["customer", "logs"],
-    response_model=ActivityLogNewResponse,
+    response_model=NewRecordResponse,
 )
 async def log_activity(
     component: str,
@@ -282,7 +282,7 @@ async def log_activity(
         get_repository(ActivityLogRepository)
     ),
     _=Depends(get_current_pda_user),
-) -> ActivityLogNewResponse:
+) -> NewRecordResponse:
     return await fn_log_activity(
         component,
         component_identifier,

@@ -122,3 +122,9 @@ async def fn_get_scan_transactions_count(
 
 fn_get_merchant_data_passes = merchant_data_pass.fn_get_merchant_data_passes
 fn_get_merchant_offers = merchant_merchant_offer.fn_get_merchant_offers
+fn_create_merchant_offer = merchant_merchant_offer.fn_create_merchant_offer
+fn_update_merchant_offer = merchant_merchant_offer.fn_update_merchant_offer
+fn_update_merchant_offer_status = (
+    merchant_merchant_offer.fn_update_merchant_offer_status
+)
+fn_upload_merchant_offer_image = merchant_merchant_offer.fn_upload_merchant_offer_image

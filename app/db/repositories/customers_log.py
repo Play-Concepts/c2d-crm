@@ -1,5 +1,5 @@
-from app.models.core import BooleanResponse
-from app.models.customer_log import CustomerLogNew, CustomerLogNewResponse
+from app.models.core import BooleanResponse, NewRecordResponse
+from app.models.customer_log import CustomerLogNew
 
 from .base import BaseRepository
 
@@ -15,15 +15,13 @@ CHECK_FIRST_LOGIN_CUSTOMER_SQL = """
 
 
 class CustomersLogRepository(BaseRepository):
-    async def log_event(
-        self, *, customer_log_new: CustomerLogNew
-    ) -> CustomerLogNewResponse:
+    async def log_event(self, *, customer_log_new: CustomerLogNew) -> NewRecordResponse:
         query_values = customer_log_new.dict()
 
         created_customer_log = await self.db.fetch_one(
             query=NEW_CUSTOMER_LOG_SQL, values=query_values
         )
-        return CustomerLogNewResponse(**created_customer_log)
+        return NewRecordResponse(**created_customer_log)
 
     async def customer_exists(self, *, pda_url: str) -> BooleanResponse:
         response = await self.db.fetch_one(

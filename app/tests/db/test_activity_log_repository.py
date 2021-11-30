@@ -6,7 +6,8 @@ from fastapi.applications import FastAPI
 from httpx import AsyncClient
 
 from app.db.repositories.activity_log import ActivityLogRepository
-from app.models.activity_log import ActivityLogNew, ActivityLogNewResponse
+from app.models.activity_log import ActivityLogNew
+from app.models.core import NewRecordResponse
 from app.tests.helpers.data_generator import create_random_new_activity_log
 
 pytestmark = pytest.mark.asyncio
@@ -33,6 +34,6 @@ class TestActivityLogRepository:
             )
 
             assert created_activity_log is not None
-            assert isinstance(created_activity_log, ActivityLogNewResponse)
+            assert isinstance(created_activity_log, NewRecordResponse)
             assert created_activity_log.id is not None
             assert isinstance(created_activity_log.created_at, datetime)

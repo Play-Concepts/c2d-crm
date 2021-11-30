@@ -16,7 +16,3 @@ class CustomerLogDBModel(IDModelMixin, CustomerLogBase, CreatedAtMixin):
 
 
 CustomerLog = CustomerLogDBModel
-
-
-class CustomerLogNewResponse(IDModelMixin, CreatedAtMixin):
-    pass
