@@ -7,34 +7,33 @@ from app.core.global_config import config as app_config
 
 is_test = os.environ.get("TEST")
 
+
 class Notify():
     def __init__(self):
-        self.headers = {'Authorization': 'Token ' + app_config.NOTIFY_TOKEN}
+        self.headers = {
+            'Authorization': 'Token ' + app_config.NOTIFY_TOKEN,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         self.prefix = app_config.NOTIFY_API
 
-
     def send_email(
-      self,
-      to: Union[str, List],
-      template: str,
-      variables: Dict[str, Any]
-    ): 
-      if(is_test):
-        return 
-
-      # if(isinstance(to, Dict)):
-      # to = ', '.join(str(v) for v in to.values())
-
-      data = json.dumps({ "to": to, "variables": variables })
-      print(data)
-
-      response = requests.post(self.prefix + "/v1/mail/datapassport/{}".format(template), json=data , headers=self.headers)
-      print(response.content)
+        self,
+        to: Union[str, List],
+        template: str,
+        variables: Dict[str, Any]
+    ):
+        if(is_test):
+            return
+        data = {"to": to, "variables": variables}
+        requests.post(self.prefix + "/v1/mail/datapassport/{}".format(template), data=data , headers=self.headers)
 
     def send_sms(
         self,
         to: Union[str, Dict, Any],
         template: str,
         variables: Dict[str, Any] = {}
-      ): 
-      return 
+    ):
+        if(is_test):
+            return
+        return

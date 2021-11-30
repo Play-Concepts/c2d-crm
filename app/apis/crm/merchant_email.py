@@ -8,11 +8,6 @@ from app.models.merchant import MerchantEmailView
 
 BATCH_SIZE = 50
 MERCHANT_WELCOME_ROOT_LINK = app_config.APPLICATION_ROOT + "/merchant/verify-email"
-MERCHANT_WELCOME_TEMPLATE = "datapassport-welcome"
-
-template_loader = jinja2.FileSystemLoader(searchpath="/app/templates")
-template_env = jinja2.Environment(loader=template_loader)
-
 
 async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
     merchants = await merchants_repo.get_merchants_email_list()
@@ -38,6 +33,7 @@ def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
     }
     Notify().send_email(destinations, 'welcome', variables)
 
+
 async def _flag_merchant_welcome_email_sent(
     merchants: List[MerchantEmailView], merchants_repo: MerchantsRepository
 ):
@@ -46,17 +42,11 @@ async def _flag_merchant_welcome_email_sent(
 
 
 def notify_marketing(merchants):
-    for merchant in merchants:
-        if app_config.NOTIFY_MARKETING_EMAIL is not None:
-            Notify.send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-created', merchant.dict())
+    if app_config.NOTIFY_MARKETING_EMAIL is not None:        
+        for merchant in merchants:
+            data = { 'email': merchant.email }
+            Notify().send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-created', data)
 
-
-def notify_support():
-    template = template_env.get_template("dataswift-support.html")
-    output = template.render({})
+def notify_support(variables = {}):
     if app_config.NOTIFY_SUPPORT_EMAIL is not None:
-        Notify.send_email(app_config.NOTIFY_SUPPORT_EMAIL, 'marketing-merchant-created', merchant.dict())
-        # send_email_to_support(
-        #     output,
-        #     "New Merchant Offer",
-        # )
+        Notify().send_email(app_config.NOTIFY_SUPPORT_EMAIL, 'marketing-merchant-created', variables)
