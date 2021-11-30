@@ -49,4 +49,4 @@ def notify_marketing(merchants):
 
 def notify_support(variables = {}):
     if app_config.NOTIFY_SUPPORT_EMAIL is not None:
-        Notify().send_email(app_config.NOTIFY_SUPPORT_EMAIL, 'marketing-merchant-created', variables)
+        Notify().send_email(app_config.NOTIFY_SUPPORT_EMAIL, 'support-offer-created', variables)
