@@ -35,6 +35,6 @@ class Notify():
         self,
         to: Union[str, Dict, Any],
         template: str,
-        variables: Dict[str, Any]
+        variables: Dict[str, Any] = {}
       ): 
       return 
