@@ -59,11 +59,9 @@ async def fn_payment_callback(
     log.info(payment_intent["type"])
     if payment_intent["type"] == "payment_intent.succeeded":
         payment_data = payment_intent["data"]["object"]
-        log.info(payment_data)
         payment = await merchant_payments_repo.get_merchant_payment_by_identifier(
             payment_identifier=payment_data["id"]
         )
-        log.info(payment)
         if payment is None:
             log.info("payment_not_found:{}".format(payment_data["id"]))
         else:
