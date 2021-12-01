@@ -6,6 +6,7 @@ from stripe.error import StripeError
 
 from app.db.repositories.merchant_payments import MerchantPaymentsRepository
 from app.db.repositories.merchants import MerchantsRepository
+from app.logger import log_instance
 from app.models.core import GenericError, NotFound, StringResponse
 from app.models.merchant_payment import (MerchantPaymentNew,
                                          MerchantPaymentUpdate)
