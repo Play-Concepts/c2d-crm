@@ -132,3 +132,4 @@ fn_update_merchant_offer_status = (
 fn_upload_merchant_offer_image = merchant_merchant_offer.fn_upload_merchant_offer_image
 
 fn_start_payment = stripe_purchase.fn_start_payment
+fn_payment_callback = stripe_purchase.fn_payment_callback
