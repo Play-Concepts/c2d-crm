@@ -26,7 +26,7 @@ class Notify():
         if(is_test):
             return
         data = {"to": to, "variables": variables}
-        requests.post(self.prefix + "/v1/mail/datapassport/{}".format(template), data=data , headers=self.headers)
+        requests.post(self.prefix + "/v1/mail/datapassport/{}".format(template), json.dumps(data) , headers=self.headers)
 
     def send_sms(
         self,
