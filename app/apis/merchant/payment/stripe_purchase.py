@@ -6,7 +6,6 @@ from stripe.error import StripeError
 
 from app.db.repositories.merchant_payments import MerchantPaymentsRepository
 from app.db.repositories.merchants import MerchantsRepository
-from app.logger import log_instance
 from app.models.core import GenericError, NotFound, StringResponse
 from app.models.merchant_payment import (MerchantPaymentNew,
                                          MerchantPaymentUpdate)
@@ -54,14 +53,16 @@ async def fn_start_payment(
 async def fn_payment_callback(
     payment_intent: stripe.Event,
     merchant_payments_repo: MerchantPaymentsRepository,
-    request: Request,
+    log,
 ) -> StringResponse:
-    log = log_instance(request)
+    log.info(payment_intent["type"])
     if payment_intent["type"] == "payment_intent.succeeded":
         payment_data = payment_intent["data"]["object"]
+        log.info(payment_data)
         payment = await merchant_payments_repo.get_merchant_payment_by_identifier(
             payment_identifier=payment_data["id"]
         )
+        log.info(payment)
         if payment is None:
             log.info("payment_not_found:{}".format(payment_data["id"]))
         else:
