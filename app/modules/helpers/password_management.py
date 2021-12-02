@@ -3,7 +3,7 @@ from fastapi import Request
 from app.apis.crm.merchant_email import (do_send_merchant_welcome_email,
                                          notify_marketing)
 from app.apis.dependencies.database import get_database, get_repository
-from app.apis.utils.emailer import send_templated_email
+from app.apis.utils.notify import Notify
 from app.core.global_config import config as app_config
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.user import UserDB
@@ -12,14 +12,14 @@ from app.models.user import UserDB
 async def on_after_forgot_password(user: UserDB, token: str, request: Request):
     if user.is_verified is False:
         return await _resend_welcome_email(user.email, request)
-
     reset_link = f"{app_config.APPLICATION_ROOT}/merchant/reset-password/{token}?email={user.email}"
-    template_data = {"email": user.email, "resetLink": reset_link}
-    send_templated_email(user.email, "datapassport-reset-password", template_data)
+    data = {"email": user.email, "resetLink": reset_link}
+    Notify().send_email([user.email], "password-reset", data)
 
 
 def on_after_reset_password(user: UserDB, _: Request):
-    send_templated_email(user.email, "datapassport-password-updated", {})
+    data = {"email": user.email}
+    Notify().send_email([user.email], "password-updated", data)
 
 
 async def _resend_welcome_email(email: str, request: Request):
