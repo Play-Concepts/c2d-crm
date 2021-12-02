@@ -2,7 +2,7 @@ import json
 import os
 import requests
 
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 from app.core.global_config import config as app_config
 
 is_test = os.environ.get("TEST")
@@ -19,7 +19,7 @@ class Notify():
 
     def send_email(
         self,
-        to: Union[str, List],
+        to: List,
         template: str,
         variables: Dict[str, Any]
     ):
@@ -30,7 +30,7 @@ class Notify():
 
     def send_sms(
         self,
-        to: Union[str, Dict, Any],
+        to: List,
         template: str,
         variables: Dict[str, Any] = {}
     ):

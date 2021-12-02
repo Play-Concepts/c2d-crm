@@ -45,8 +45,8 @@ def notify_marketing(merchants):
     if app_config.NOTIFY_MARKETING_EMAIL is not None:        
         for merchant in merchants:
             data = { 'email': merchant.email }
-            Notify().send_email(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-created', data)
+            Notify().send_email(app_config.NOTIFY_MARKETING_EMAIL.split(','), 'marketing-merchant-created', data)
 
 def notify_support(variables = {}):
     if app_config.NOTIFY_SUPPORT_EMAIL is not None:
-        Notify().send_email(app_config.NOTIFY_SUPPORT_EMAIL, 'support-offer-created', variables)
+        Notify().send_email(app_config.NOTIFY_SUPPORT_EMAIL.split(','), 'support-offer-created', variables)
