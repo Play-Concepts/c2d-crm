@@ -14,11 +14,13 @@ async def on_after_forgot_password(user: UserDB, token: str, request: Request):
         return await _resend_welcome_email(user.email, request)
     reset_link = f"{app_config.APPLICATION_ROOT}/merchant/reset-password/{token}?email={user.email}"
     data = {"email": user.email, "resetLink": reset_link}
-    Notify().send_email([user.email], 'password-reset', data)
+    Notify().send_email([user.email], "password-reset", data)
+
 
 def on_after_reset_password(user: UserDB, _: Request):
     data = {"email": user.email}
-    Notify().send_email([user.email], 'password-updated', data)
+    Notify().send_email([user.email], "password-updated", data)
+
 
 async def _resend_welcome_email(email: str, request: Request):
     merchants_repo: MerchantsRepository = get_repository(MerchantsRepository)(
