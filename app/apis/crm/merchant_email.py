@@ -9,6 +9,7 @@ from app.models.merchant import MerchantEmailView
 BATCH_SIZE = 50
 MERCHANT_WELCOME_ROOT_LINK = app_config.APPLICATION_ROOT + "/merchant/verify-email"
 
+
 async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
     merchants = await merchants_repo.get_merchants_email_list()
 
@@ -22,16 +23,16 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
 
 
 def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
-    destinations = [
-        merchant.email for merchant in merchants
-    ]
-    variables = {
-        "verificationLink": "",
-        "appName": app_config.APPLICATION_NAME,
-        "appLogo": app_config.APPLICATION_LOGO,
-        "issuer": app_config.DATA_PASSPORT_ISSUER,
-    }
-    Notify().send_email(destinations, 'welcome', variables)
+    for merchant in merchants:
+        variables = {
+            "verificationLink": "{}/{}?email={}".format(
+                MERCHANT_WELCOME_ROOT_LINK, merchant.password_change_token, merchant.email
+            ),
+            "appName": app_config.APPLICATION_NAME,
+            "appLogo": app_config.APPLICATION_LOGO,
+            "issuer": app_config.DATA_PASSPORT_ISSUER,
+        }
+        Notify().send_email([merchant.email], 'welcome', variables)
 
 
 async def _flag_merchant_welcome_email_sent(
@@ -42,11 +43,12 @@ async def _flag_merchant_welcome_email_sent(
 
 
 def notify_marketing(merchants):
-    if app_config.NOTIFY_MARKETING_EMAIL is not None:        
+    if app_config.NOTIFY_MARKETING_EMAIL is not None:
         for merchant in merchants:
-            data = { 'email': merchant.email }
+            data = {'email': merchant.email}
             Notify().send_email(app_config.NOTIFY_MARKETING_EMAIL.split(','), 'marketing-merchant-created', data)
 
-def notify_support(variables = {}):
+
+def notify_support(variables={}):
     if app_config.NOTIFY_SUPPORT_EMAIL is not None:
         Notify().send_email(app_config.NOTIFY_SUPPORT_EMAIL.split(','), 'support-offer-created', variables)
