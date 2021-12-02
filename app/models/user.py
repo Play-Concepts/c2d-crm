@@ -26,3 +26,9 @@ class UserDB(User, models.BaseUserDB):
 
 class UserView(IDModelMixin):
     email: str
+    
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "email": self.email,
+        }
