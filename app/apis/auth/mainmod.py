@@ -10,10 +10,11 @@ async def fn_create_password(
     token: str, password: str, users_repo: UsersRepository
 ) -> Optional[UserView]:
     updated_user = await users_repo.create_password(token=token, password=password)
+    notifier = Notify()
     if updated_user is not None:
-        Notify.send(updated_user.email, 'password-created')
+        notifier.send(updated_user.email, 'password-created')
 
         if app_config.NOTIFY_MARKETING_EMAIL is not None:
-            Notify.send(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-verified', updated_user)
+            notifier.send(app_config.NOTIFY_MARKETING_EMAIL, 'marketing-merchant-verified', updated_user)
 
     return updated_user

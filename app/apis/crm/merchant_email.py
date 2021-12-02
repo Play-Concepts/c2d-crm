@@ -23,6 +23,7 @@ async def send_merchant_welcome_email(merchants_repo: MerchantsRepository):
 
 
 def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
+    notifier = Notify()
     for merchant in merchants:
         variables = {
             "verificationLink": "{}/{}?email={}".format(
@@ -32,7 +33,7 @@ def do_send_merchant_welcome_email(merchants: List[MerchantEmailView]):
             "appLogo": app_config.APPLICATION_LOGO,
             "issuer": app_config.DATA_PASSPORT_ISSUER,
         }
-        Notify().send_email([merchant.email], 'welcome', variables)
+        notifier.send_email([merchant.email], 'welcome', variables)
 
 
 async def _flag_merchant_welcome_email_sent(
@@ -44,9 +45,10 @@ async def _flag_merchant_welcome_email_sent(
 
 def notify_marketing(merchants):
     if app_config.NOTIFY_MARKETING_EMAIL is not None:
+        notifier = Notify()
         for merchant in merchants:
             data = {'email': merchant.email}
-            Notify().send_email(app_config.NOTIFY_MARKETING_EMAIL.split(','), 'marketing-merchant-created', data)
+            notifier.send_email(app_config.NOTIFY_MARKETING_EMAIL.split(','), 'marketing-merchant-created', data)
 
 
 def notify_support(variables={}):
