@@ -31,6 +31,11 @@ class GlobalConfig(BaseSettings):
     SENTRY_DSN: Optional[str] = os.environ.get("SENTRY_DSN", "")
 
     MAILER_FROM: Optional[str] = os.environ.get("MAILER_FROM", "root@localhost")
+    NOTIFY_API: Optional[str] = os.environ.get(
+        "NOTIFY_API", "https://one.dataswift.io/notify"
+    )
+    NOTIFY_TOKEN: Optional[str] = os.environ.get("NOTIFY_TOKEN", "")
+
     DATA_PASSPORT_ISSUER: Optional[str] = os.environ.get(
         "DATA_PASSPORT_ISSUER", "Sample DP Issuer"
     )
