@@ -1,4 +1,5 @@
 import uuid
+from enum import Enum
 
 from app.models.core import CoreModel, IDModelMixin, TimestampsMixin
 
@@ -19,3 +20,8 @@ MerchantBalanceNew = MerchantBalanceBase
 
 class MerchantBalanceAmount(CoreModel):
     amount: int
+
+
+class BalanceType(str, Enum):
+    credit = "credit"
+    debit = "debit"

@@ -1,11 +1,11 @@
 import uuid
+from enum import Enum
 
 from app.models.core import CoreModel, IDModelMixin, TimestampsMixin
 
 
 class MerchantPaymentBase(CoreModel):
     merchant_id: uuid.UUID
-    currency: str
     amount: int
     payment_identifier: str
     status: str
@@ -24,3 +24,8 @@ MerchantPaymentNew = MerchantPaymentBase
 
 class MerchantPaymentUpdate(IDModelMixin):
     status: str
+
+
+class PaymentStatus(str, Enum):
+    new = "new"
+    completed = "completed"

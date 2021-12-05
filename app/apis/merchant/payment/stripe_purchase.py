@@ -4,12 +4,15 @@ import stripe
 from fastapi import Request, Response, status
 from stripe.error import StripeError
 
+from app.core.global_config import config as app_config
+from app.db.repositories.merchant_balances import MerchantBalancesRepository
 from app.db.repositories.merchant_payments import MerchantPaymentsRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.logger import log_instance
 from app.models.core import GenericError, NotFound, StringResponse
+from app.models.merchant_balance import BalanceType, MerchantBalanceNew
 from app.models.merchant_payment import (MerchantPaymentNew,
-                                         MerchantPaymentUpdate)
+                                         MerchantPaymentUpdate, PaymentStatus)
 from app.models.stripe import PaymentIntent
 
 
@@ -40,7 +43,7 @@ async def fn_start_payment(
                 currency=intent["currency"],
                 amount=int(intent["amount"]),
                 payment_identifier=intent["id"],
-                status="new",
+                status=PaymentStatus.new,
             )
         )
     except StripeError as e:
@@ -54,6 +57,7 @@ async def fn_start_payment(
 async def fn_payment_callback(
     payment_intent: stripe.Event,
     merchant_payments_repo: MerchantPaymentsRepository,
+    merchant_balances_repo: MerchantBalancesRepository,
     log,
 ) -> StringResponse:
     log.info(payment_intent["type"])
@@ -67,12 +71,19 @@ async def fn_payment_callback(
         else:
             if (
                 payment.amount == payment_data["amount_received"]
-                and payment.currency.lower() == payment_data["currency"].lower()
+                and payment_data["currency"].lower() == app_config.NETWORK_CURRENCY
             ):
                 await merchant_payments_repo.update_merchant_payment_status(
                     merchant_payment_update=MerchantPaymentUpdate(
                         id=payment.id,
-                        status="completed",
+                        status=PaymentStatus.completed,
+                    )
+                )
+                await merchant_balances_repo.create_merchant_balance(
+                    new_merchant_balance=MerchantBalanceNew(
+                        merchant_id=payment.merchant_id,
+                        amount=payment.amount,
+                        balance_type=BalanceType.credit,
                     )
                 )
                 log.info("payment_credited:{}".format(payment_data["id"]))

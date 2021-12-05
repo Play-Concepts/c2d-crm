@@ -1,6 +1,6 @@
 """create_merchant_payments_table
 Revision ID: 8126c5f1aae5
-Revises: 803814d41740
+Revises: 62f210cc070c
 Create Date: 2021-11-23 17:06:19.942701
 """
 import sqlalchemy as sa
@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 # revision identifiers, used by Alembic
 revision = "8126c5f1aae5"
-down_revision = "803814d41740"
+down_revision = "62f210cc070c"
 branch_labels = None
 depends_on = None
 
@@ -27,11 +27,6 @@ def create_merchant_payments_table():
             "merchant_id",
             UUID(as_uuid=True),
             sa.ForeignKey("merchants.id", name="fk_merchants_merchant_payments"),
-            nullable=False,
-        ),
-        sa.Column(
-            "currency",
-            sa.VARCHAR,
             nullable=False,
         ),
         sa.Column(
