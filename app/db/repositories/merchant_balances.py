@@ -7,8 +7,8 @@ from app.models.merchant_balance import (MerchantBalanceAmount,
                                          MerchantBalanceNew)
 
 NEW_MERCHANT_BALANCE_SQL = """
-    INSERT INTO merchant_balances(merchant_id, amount, balance_type)
-    VALUES(:merchant_id, :amount, :balance_type)
+    INSERT INTO merchant_balances(merchant_id, amount, balance_type, transaction_identifier)
+    VALUES(:merchant_id, :amount, :balance_type, :transaction_identifier)
     RETURNING id
 """
 
@@ -18,6 +18,14 @@ GET_MERCHANT_BALANCE_AMOUNT_SQL = """
     (SELECT CASE WHEN balance_type='credit' THEN amount
     ELSE amount * (-1) END AS amount FROM merchant_balances
     WHERE merchant_id = :merchant_id) AS cred_deb
+"""
+
+GET_MERCHANT_BALANCE_AMOUNT_BY_EMAIL_SQL = """
+    SELECT SUM(amount) AS amount FROM
+    (SELECT CASE WHEN balance_type='credit' THEN amount
+    ELSE amount * (-1) END AS amount FROM merchant_balances
+    WHERE merchant_id IN (SELECT id FROM merchants WHERE email = :email))
+    AS cred_deb
 """
 
 
@@ -45,6 +53,23 @@ class MerchantBalancesRepository(BaseRepository):
         }
         merchant_balance = await self.db.fetch_one(
             query=GET_MERCHANT_BALANCE_AMOUNT_SQL, values=query_values
+        )
+        return (
+            None
+            if merchant_balance is None
+            else MerchantBalanceAmount(**merchant_balance)
+        )
+
+    async def get_merchant_balance_amount_by_email(
+        self,
+        *,
+        email: str,
+    ) -> Optional[MerchantBalanceAmount]:
+        query_values = {
+            "email": email,
+        }
+        merchant_balance = await self.db.fetch_one(
+            query=GET_MERCHANT_BALANCE_AMOUNT_BY_EMAIL_SQL, values=query_values
         )
         return (
             None

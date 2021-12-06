@@ -84,6 +84,7 @@ async def fn_payment_callback(
                         merchant_id=payment.merchant_id,
                         amount=payment.amount,
                         balance_type=BalanceType.credit,
+                        transaction_identifier=payment.id,
                     )
                 )
                 log.info("payment_credited:{}".format(payment_data["id"]))

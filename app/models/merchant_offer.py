@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from app.models.core import (CoreModel, IDModelMixin, NotPermitted,
                              TimestampsMixin)
@@ -17,6 +17,7 @@ class MerchantOfferBase(CoreModel):
     start_date: datetime
     end_date: Optional[datetime]
     offer_url: str
+    data_passes: Optional[List[uuid.UUID]]
 
 
 class MerchantOfferCustomerView(IDModelMixin, MerchantOfferBase, ImagesMixIn):

@@ -41,6 +41,11 @@ def create_merchant_balances_table():
             comment="credit vs debit",
         ),
         sa.Column(
+            "transaction_identifier",
+            UUID(as_uuid=True),
+            nullable=True,
+        ),
+        sa.Column(
             "created_at", sa.TIMESTAMP, nullable=False, server_default=sa.text("now()")
         ),
         sa.Column("updated_at", sa.TIMESTAMP, nullable=True),

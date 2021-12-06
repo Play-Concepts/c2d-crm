@@ -81,7 +81,11 @@ class TestMerchantRoutes:
     @pytest.mark.parametrize(
         "route_name, route_path, include_data_pass_id",
         [
-            ("merchant:barcode_verify", "/api/merchant/{}/barcode/verify", True),
+            (
+                "merchant:barcode_verify",
+                "/api/merchant/data-passes/{}/barcode/verify",
+                True,
+            ),
             (
                 "merchant:scan_transactions_count",
                 "/api/merchant/{}/scan_transactions_count",

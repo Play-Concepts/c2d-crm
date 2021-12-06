@@ -8,7 +8,7 @@ from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import NewRecordResponse, NotFound, UpdatedRecordResponse
 from app.models.data_pass import DataPassMerchantView
-from app.models.merchant_offer import (ForbiddenMerchantOfferAccess,
+from app.models.merchant_offer import (ForbiddenMerchantOfferAccess, MerchantOfferMerchantView,
                                        MerchantOfferNew,
                                        MerchantOfferNewRequest,
                                        MerchantOfferUpdateRequest)
@@ -17,7 +17,7 @@ from app.models.merchant_offer import (ForbiddenMerchantOfferAccess,
 async def fn_get_merchant_offers(
     email: str,
     merchant_offers_repository: MerchantOffersRepository,
-) -> List[DataPassMerchantView]:
+) -> List[MerchantOfferMerchantView]:
     return await merchant_offers_repository.get_merchant_offers(email=email)
 
 

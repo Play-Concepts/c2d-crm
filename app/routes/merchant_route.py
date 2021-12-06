@@ -1,8 +1,8 @@
 import uuid
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends, File, Request, Response, UploadFile
-from starlette.status import HTTP_201_CREATED
+from fastapi import (APIRouter, Depends, File, Request, Response, UploadFile,
+                     status)
 
 from app.apis.dependencies.database import get_repository
 from app.apis.log.mainmod import (fn_log_merchant_activity,
@@ -16,10 +16,13 @@ from app.apis.merchant.mainmod import (fn_create_merchant_offer,
                                        fn_upload_merchant_offer_image,
                                        fn_verify_barcode)
 from app.core import global_state
+from app.core.errors import (InsufficientFundsException,
+                             InsufficientFundsResponse)
 from app.db.repositories.activity_log import ActivityLogRepository
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.merchant_balances import MerchantBalancesRepository
 from app.db.repositories.merchant_log import MerchantLogRepository
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
@@ -47,16 +50,11 @@ merchant_user = global_state.fastapi_users.current_user(
     name="merchant:barcode_verify",
     tags=["merchants"],
     response_model=Union[ScanResult, InvalidDataPass],
-)
-@router.post(
-    "/{data_pass_id}/barcode/verify",
-    name="merchant:barcode_verify",
-    tags=["merchants"],
-    response_model=Union[ScanResult, InvalidDataPass],
-    deprecated=True,
+    responses={402: {"model": InsufficientFundsResponse}},
 )
 async def verify_barcode(
     request: Request,
+    response: Response,
     data_pass_id: uuid.UUID,
     scan_request: ScanRequest,
     customers_repo: CustomersRepository = Depends(get_repository(CustomersRepository)),
@@ -69,23 +67,32 @@ async def verify_barcode(
     data_pass_sources_repo: DataPassSourcesRepository = Depends(
         get_repository(DataPassSourcesRepository)
     ),
+    merchant_balances_repo: MerchantBalancesRepository = Depends(
+        get_repository(MerchantBalancesRepository)
+    ),
     auth=Depends(merchant_user),
 ) -> Union[ScanResult, InvalidDataPass]:
-    verified, is_valid_data_pass, is_data_pass_expired = await fn_verify_barcode(
-        scan_request.barcode,
-        data_pass_id,
-        auth.id,
-        customers_repo,
-        scan_transactions_repo,
-        data_passes_repo,
-        data_pass_sources_repo,
-        request=request,
-    )
-    return (
-        ScanResult(verified=verified, message="")
-        if is_valid_data_pass
-        else InvalidDataPass(expired=is_data_pass_expired)
-    )
+    try:
+        verified, is_valid_data_pass, is_data_pass_expired = await fn_verify_barcode(
+            scan_request.barcode,
+            data_pass_id,
+            auth.id,
+            auth.email,
+            customers_repo,
+            scan_transactions_repo,
+            data_passes_repo,
+            data_pass_sources_repo,
+            merchant_balances_repo,
+            request=request,
+        )
+        return (
+            ScanResult(verified=verified, message="")
+            if is_valid_data_pass
+            else InvalidDataPass(expired=is_data_pass_expired)
+        )
+    except InsufficientFundsException:
+        response.status_code = status.HTTP_402_PAYMENT_REQUIRED
+        return InsufficientFundsResponse()
 
 
 @router.get(
@@ -127,7 +134,7 @@ async def get_scan_transactions_count(
     tags=["merchants"],
     response_model=List[DataPassMerchantView],
 )
-async def get_customer_data_passes(
+async def get_merchant_data_passes(
     data_passes_repository: DataPassesRepository = Depends(
         get_repository(DataPassesRepository)
     ),
@@ -158,7 +165,7 @@ async def get_merchant_offers(
     "/offers",
     name="merchant:offers:create",
     tags=["merchants"],
-    status_code=HTTP_201_CREATED,
+    status_code=status.HTTP_201_CREATED,
     responses={
         201: {"model": Optional[NewRecordResponse]},
         404: {"model": NotFound},

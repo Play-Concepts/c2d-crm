@@ -3,26 +3,30 @@ from typing import List
 
 from fastapi import Request
 
-from app.apis.merchant import merchant_data_pass, merchant_merchant_offer
+from app.apis.merchant import (merchant_balance, merchant_data_pass,
+                               merchant_merchant_offer)
+from app.apis.merchant.payment import stripe_purchase
+from app.core.errors import InsufficientFundsException
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.merchant_balances import MerchantBalancesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.scan_transaction import (ScanTransactionCounts,
                                          ScanTransactionNew)
-
-from .payment import stripe_purchase
 
 
 async def fn_verify_barcode(
     barcode: str,
     data_pass_id: uuid.UUID,
     user_id: uuid.UUID,
+    merchant_email: str,
     customers_repo: CustomersRepository,
     scan_transactions_repo: ScanTransactionsRepository,
     data_passes_repo: DataPassesRepository,
     data_pass_sources_repo: DataPassSourcesRepository,
+    merchant_balances_repo: MerchantBalancesRepository,
     *,
     raw: bool = False,
     request: Request = None,
@@ -96,6 +100,11 @@ async def fn_verify_barcode(
                 "expired-datapass({}):{}".format(str(data_pass_ident), customer_pda_url)
             )
 
+        if is_valid_data_pass and not is_data_pass_expired:
+            has_credit = await fn_has_credit(merchant_email, merchant_balances_repo)
+            if not has_credit:
+                raise InsufficientFundsException
+
     result = customer_id is not None
     log.info("{}:{}:{}:{}".format(barcode, data_pass_id, user_id, result))
     return (
@@ -133,3 +142,6 @@ fn_upload_merchant_offer_image = merchant_merchant_offer.fn_upload_merchant_offe
 
 fn_start_payment = stripe_purchase.fn_start_payment
 fn_payment_callback = stripe_purchase.fn_payment_callback
+
+fn_has_credit = merchant_balance.fn_has_credit
+fn_get_merchant_balance_amount = merchant_balance.fn_get_merchant_balance_amount
