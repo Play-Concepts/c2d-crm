@@ -43,8 +43,8 @@ class UpdatedRecordResponse(IDModelMixin, UpdatedAtMixin):
     pass
 
 
-class TimestampsMixin(CreatedAtMixin):
-    updated_at: datetime
+class TimestampsMixin(CreatedAtMixin, UpdatedAtMixin):
+    pass
 
 
 Count = CreatedCount

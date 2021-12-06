@@ -11,13 +11,16 @@ class ImagesMixIn(CoreModel):
     offer_image_url: Optional[str]
 
 
+class DataPassesMixin(CoreModel):
+    data_passes: Optional[List[uuid.UUID]]
+
+
 class MerchantOfferBase(CoreModel):
     title: str
     details: str
     start_date: datetime
     end_date: Optional[datetime]
     offer_url: str
-    data_passes: Optional[List[uuid.UUID]]
 
 
 class MerchantOfferCustomerView(IDModelMixin, MerchantOfferBase, ImagesMixIn):
@@ -30,10 +33,11 @@ class MerchantOfferDBModel(
     merchant_id: Optional[uuid.UUID]
 
 
-MerchantOfferNewRequest = MerchantOfferBase
+class MerchantOfferNewRequest(MerchantOfferBase, DataPassesMixin):
+    pass
 
 
-class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase):
+class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase, DataPassesMixin):
     status: str
 
     def before_save(self):
@@ -42,7 +46,7 @@ class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase):
             self.end_date = self.end_date.replace(tzinfo=None)
 
 
-class MerchantOfferNew(MerchantOfferNewRequest):
+class MerchantOfferNew(MerchantOfferBase):
     merchant_id: Optional[uuid.UUID]
 
     def before_save(self):

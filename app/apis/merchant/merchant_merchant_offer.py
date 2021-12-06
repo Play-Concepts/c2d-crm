@@ -7,8 +7,8 @@ from app.apis.utils.s3uploader import put_file_for_preview
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import NewRecordResponse, NotFound, UpdatedRecordResponse
-from app.models.data_pass import DataPassMerchantView
-from app.models.merchant_offer import (ForbiddenMerchantOfferAccess, MerchantOfferMerchantView,
+from app.models.merchant_offer import (ForbiddenMerchantOfferAccess,
+                                       MerchantOfferMerchantView,
                                        MerchantOfferNew,
                                        MerchantOfferNewRequest,
                                        MerchantOfferUpdateRequest)

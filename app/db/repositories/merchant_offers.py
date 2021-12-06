@@ -72,8 +72,8 @@ GET_ALL_CUSTOMER_OFFERS_SQL = """
 GET_MERCHANT_OFFERS_SQL = """
     SELECT merchant_offers.id, merchant_offers.title, merchant_offers.details, merchant_offers.start_date,
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url,
-    merchant_offers.status, (select ARRAY_AGG(data_pass_id) from merchant_offers_data_passes where merchant_offer_id=merchant_offers.id)
-    as data_passes
+    merchant_offers.status, (SELECT ARRAY_AGG(data_pass_id) FROM merchant_offers_data_passes
+    WHERE merchant_offer_id=merchant_offers.id) AS data_passes
     FROM merchant_offers WHERE merchant_id IN (SELECT id FROM merchants WHERE email=:email);
 """
 

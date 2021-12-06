@@ -56,9 +56,7 @@ class GlobalConfig(BaseSettings):
 
     # Transient: to be removed when MULTI-TENANCY comes in play
     NETWORK_CURRENCY: str = os.environ.get("NETWORK_CURRENCY", "myr")
-    NETWORK_PRICE_FACTOR: int = int(
-        os.environ.get("NETWORK_PRICE_FACTOR", "100")
-    )
+    NETWORK_PRICE_FACTOR: int = int(os.environ.get("NETWORK_PRICE_FACTOR", "100"))
     NETWORK_TRANSACTION_COST: int = int(
         os.environ.get("NETWORK_TRANSACTION_COST", "30")
     )
