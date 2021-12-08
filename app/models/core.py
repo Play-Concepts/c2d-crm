@@ -43,8 +43,8 @@ class UpdatedRecordResponse(IDModelMixin, UpdatedAtMixin):
     pass
 
 
-class TimestampsMixin(CreatedAtMixin):
-    updated_at: datetime
+class TimestampsMixin(CreatedAtMixin, UpdatedAtMixin):
+    pass
 
 
 Count = CreatedCount
@@ -54,19 +54,20 @@ class BooleanResponse(BaseModel):
     value: bool
 
 
-class NotFound(BaseModel):
+class StringResponse(BaseModel):
+    value: str
+
+
+class GenericError(BaseModel):
     message: str
 
 
-class InvalidToken(BaseModel):
-    message: str
+NotFound = GenericError
+InvalidToken = GenericError
+NotPermitted = GenericError
 
 
-class NotPermitted(BaseModel):
-    message: str
-
-
-class FileMismatchError(BaseModel):
+class FileMismatchError(GenericError):
     message: str = "The file is not in the expected file format."
 
 

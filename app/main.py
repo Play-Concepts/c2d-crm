@@ -1,6 +1,7 @@
 import uuid
 
 import sentry_sdk
+import stripe
 from fastapi import FastAPI, Request
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -13,10 +14,11 @@ from app.routes import root_route
 
 sentry_sdk.init(dsn=app_config.SENTRY_DSN)
 
+stripe.api_key = app_config.STRIPE_SECRET_KEY
 
 app = FastAPI(
     title="Data Passport API",
-    version="1.0.6c-20211202-NOT",
+    version="1.0.6e-20211208-PAY",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",

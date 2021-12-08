@@ -18,11 +18,11 @@ async def fn_merchant_get_log_activity_daily_stats(
     component_identifier: uuid.UUID,
     event: str,
     activity_log_repository: ActivityLogRepository,
-    merchant_repository: MerchantsRepository,
+    merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     response: Response,
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, List[DaySeriesUnit]]:
-    merchant = await merchant_repository.get_merchant_by_email(email=merchant_email)
+    merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Merchant Not Found")

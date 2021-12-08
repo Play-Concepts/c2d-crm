@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from app.models.core import (CoreModel, IDModelMixin, NotPermitted,
                              TimestampsMixin)
@@ -9,6 +9,10 @@ from app.models.core import (CoreModel, IDModelMixin, NotPermitted,
 class ImagesMixIn(CoreModel):
     logo_url: Optional[str]
     offer_image_url: Optional[str]
+
+
+class DataPassesMixin(CoreModel):
+    data_passes: Optional[List[uuid.UUID]]
 
 
 class MerchantOfferBase(CoreModel):
@@ -29,19 +33,11 @@ class MerchantOfferDBModel(
     merchant_id: Optional[uuid.UUID]
 
 
-MerchantOfferNewRequest = MerchantOfferBase
+class MerchantOfferNewRequest(MerchantOfferBase, DataPassesMixin):
+    pass
 
 
-class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase):
-    status: str
-
-    def before_save(self):
-        self.start_date = self.start_date.replace(tzinfo=None)
-        if self.end_date is not None:
-            self.end_date = self.end_date.replace(tzinfo=None)
-
-
-class MerchantOfferNew(MerchantOfferNewRequest):
+class MerchantOfferNew(MerchantOfferBase):
     merchant_id: Optional[uuid.UUID]
 
     def before_save(self):
@@ -50,7 +46,22 @@ class MerchantOfferNew(MerchantOfferNewRequest):
             self.end_date = self.end_date.replace(tzinfo=None)
 
 
-class MerchantOfferMerchantView(IDModelMixin, MerchantOfferBase, ImagesMixIn):
+class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase, DataPassesMixin):
+    status: str
+
+
+class MerchantOfferUpdate(IDModelMixin, MerchantOfferBase):
+    status: str
+
+    def before_save(self):
+        self.start_date = self.start_date.replace(tzinfo=None)
+        if self.end_date is not None:
+            self.end_date = self.end_date.replace(tzinfo=None)
+
+
+class MerchantOfferMerchantView(
+    IDModelMixin, MerchantOfferBase, DataPassesMixin, ImagesMixIn
+):
     status: str
 
 

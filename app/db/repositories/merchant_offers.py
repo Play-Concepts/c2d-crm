@@ -5,8 +5,7 @@ from app.models.core import (BooleanResponse, IDModelMixin, NewRecordResponse,
                              UpdatedRecordResponse)
 from app.models.merchant_offer import (MerchantOfferCustomerView,
                                        MerchantOfferMerchantView,
-                                       MerchantOfferNew,
-                                       MerchantOfferUpdateRequest)
+                                       MerchantOfferNew, MerchantOfferUpdate)
 
 from .base import BaseRepository
 
@@ -72,7 +71,8 @@ GET_ALL_CUSTOMER_OFFERS_SQL = """
 GET_MERCHANT_OFFERS_SQL = """
     SELECT merchant_offers.id, merchant_offers.title, merchant_offers.details, merchant_offers.start_date,
     merchant_offers.end_date, merchant_offers.offer_url, merchant_offers.logo_url, merchant_offers.offer_image_url,
-    merchant_offers.status
+    merchant_offers.status, (SELECT ARRAY_AGG(data_pass_id) FROM merchant_offers_data_passes
+    WHERE merchant_offer_id=merchant_offers.id) AS data_passes
     FROM merchant_offers WHERE merchant_id IN (SELECT id FROM merchants WHERE email=:email);
 """
 
@@ -138,10 +138,10 @@ class MerchantOffersRepository(BaseRepository):
         return None if offer is None else NewRecordResponse(**offer)
 
     async def update_merchant_offer(
-        self, *, merchant_offer_update_request: MerchantOfferUpdateRequest
+        self, *, merchant_offer_update: MerchantOfferUpdate
     ) -> Optional[UpdatedRecordResponse]:
         offer = await self.db.fetch_one(
-            query=UPDATE_MERCHANT_OFFER_SQL, values=merchant_offer_update_request.dict()
+            query=UPDATE_MERCHANT_OFFER_SQL, values=merchant_offer_update.dict()
         )
         return None if offer is None else UpdatedRecordResponse(**offer)
 

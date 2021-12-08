@@ -1,4 +1,5 @@
 import os
+from distutils.util import strtobool
 from typing import Optional
 
 from pydantic import BaseSettings
@@ -39,7 +40,7 @@ class GlobalConfig(BaseSettings):
     DATA_PASSPORT_ISSUER: Optional[str] = os.environ.get(
         "DATA_PASSPORT_ISSUER", "Sample DP Issuer"
     )
-    IP_LOGGING: Optional[str] = os.environ.get("IP_LOGGING", False)
+    IP_LOGGING: bool = strtobool(os.environ.get("IP_LOGGING", "False"))
 
     NOTIFY_MARKETING_EMAIL: Optional[str] = os.environ.get(
         "NOTIFY_MARKETING_EMAIL", None
@@ -50,6 +51,15 @@ class GlobalConfig(BaseSettings):
     BUCKET_MEDIA: Optional[str] = os.environ.get("BUCKET_MEDIA", None)
     BUCKET_MEDIA_URL: Optional[str] = os.environ.get("BUCKET_MEDIA_URL", None)
     BUCKET_PRIVATE: Optional[str] = os.environ.get("BUCKET_PRIVATE", None)
+
+    STRIPE_SECRET_KEY: Optional[str] = os.environ.get("STRIPE_SECRET_KEY", None)
+
+    # Transient: to be removed when MULTI-TENANCY comes in play
+    NETWORK_CURRENCY: str = os.environ.get("NETWORK_CURRENCY", "myr")
+    NETWORK_PRICE_FACTOR: int = int(os.environ.get("NETWORK_PRICE_FACTOR", "100"))
+    NETWORK_TRANSACTION_COST: int = int(
+        os.environ.get("NETWORK_TRANSACTION_COST", "30")
+    )
 
 
 config = GlobalConfig()
