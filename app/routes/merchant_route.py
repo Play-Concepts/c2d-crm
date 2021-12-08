@@ -25,6 +25,8 @@ from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchant_balances import MerchantBalancesRepository
 from app.db.repositories.merchant_log import MerchantLogRepository
 from app.db.repositories.merchant_offers import MerchantOffersRepository
+from app.db.repositories.merchant_offers_data_passes import \
+    MerchantOffersDataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.models.core import (DaySeriesUnit, NewRecordResponse, NotFound,
@@ -178,6 +180,9 @@ async def create_merchant_offer(
     merchant_offers_repo: MerchantOffersRepository = Depends(
         get_repository(MerchantOffersRepository)
     ),
+    merchant_offers_data_passes_repo: MerchantOffersDataPassesRepository = Depends(
+        get_repository(MerchantOffersDataPassesRepository)
+    ),
     auth=Depends(merchant_user),
 ) -> Union[NotFound, Optional[NewRecordResponse]]:
     return await fn_create_merchant_offer(
@@ -185,6 +190,7 @@ async def create_merchant_offer(
         merchant_offer_new_request,
         merchants_repo,
         merchant_offers_repo,
+        merchant_offers_data_passes_repo,
         response,
     )
 
@@ -206,6 +212,9 @@ async def update_merchant_offer(
     merchant_offers_repo: MerchantOffersRepository = Depends(
         get_repository(MerchantOffersRepository)
     ),
+    merchant_offers_data_passes_repo: MerchantOffersDataPassesRepository = Depends(
+        get_repository(MerchantOffersDataPassesRepository)
+    ),
     auth=Depends(merchant_user),
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
     return await fn_update_merchant_offer(
@@ -213,6 +222,7 @@ async def update_merchant_offer(
         merchant_offer_update_request,
         merchants_repo,
         merchant_offers_repo,
+        merchant_offers_data_passes_repo,
         response,
     )
 

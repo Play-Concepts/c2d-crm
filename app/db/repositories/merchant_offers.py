@@ -5,8 +5,7 @@ from app.models.core import (BooleanResponse, IDModelMixin, NewRecordResponse,
                              UpdatedRecordResponse)
 from app.models.merchant_offer import (MerchantOfferCustomerView,
                                        MerchantOfferMerchantView,
-                                       MerchantOfferNew,
-                                       MerchantOfferUpdateRequest)
+                                       MerchantOfferNew, MerchantOfferUpdate)
 
 from .base import BaseRepository
 
@@ -139,10 +138,10 @@ class MerchantOffersRepository(BaseRepository):
         return None if offer is None else NewRecordResponse(**offer)
 
     async def update_merchant_offer(
-        self, *, merchant_offer_update_request: MerchantOfferUpdateRequest
+        self, *, merchant_offer_update: MerchantOfferUpdate
     ) -> Optional[UpdatedRecordResponse]:
         offer = await self.db.fetch_one(
-            query=UPDATE_MERCHANT_OFFER_SQL, values=merchant_offer_update_request.dict()
+            query=UPDATE_MERCHANT_OFFER_SQL, values=merchant_offer_update.dict()
         )
         return None if offer is None else UpdatedRecordResponse(**offer)
 

@@ -1,7 +1,7 @@
 import uuid
-from typing import Optional
+from typing import List, Optional
 
-from app.models.core import NewRecordResponse
+from app.models.core import NewRecordResponse, UpdatedRecordResponse
 from app.models.merchant_offer_data_pass import MerchantOfferDataPassNew
 
 from .base import BaseRepository
@@ -21,7 +21,8 @@ GET_MERCHANT_OFFER_DATA_PASSES_SQL = """
 
 DISABLE_MERCHANT_OFFER_DATA_PASSES_SQL = """
     UPDATE merchant_offers_data_passes SET status='inactive', updated_at = now()
-    WHERE merchant_offer_id=:merchant_offer_id;
+    WHERE merchant_offer_id=:merchant_offer_id
+    RETURNING id, updated_at;
 """
 
 
@@ -43,10 +44,14 @@ class MerchantOffersDataPassesRepository(BaseRepository):
         self,
         *,
         merchant_offer_id: uuid.UUID,
-    ):
-        return await self.db.fetch_one(
+    ) -> List[UpdatedRecordResponse]:
+        updated_records = await self.db.fetch_all(
             query=DISABLE_MERCHANT_OFFER_DATA_PASSES_SQL,
             values={
                 "merchant_offer_id": merchant_offer_id,
             },
         )
+        return [
+            UpdatedRecordResponse(**updated_records)
+            for updated_records in updated_records
+        ]

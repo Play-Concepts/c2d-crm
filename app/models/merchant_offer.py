@@ -37,15 +37,6 @@ class MerchantOfferNewRequest(MerchantOfferBase, DataPassesMixin):
     pass
 
 
-class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase, DataPassesMixin):
-    status: str
-
-    def before_save(self):
-        self.start_date = self.start_date.replace(tzinfo=None)
-        if self.end_date is not None:
-            self.end_date = self.end_date.replace(tzinfo=None)
-
-
 class MerchantOfferNew(MerchantOfferBase):
     merchant_id: Optional[uuid.UUID]
 
@@ -55,7 +46,22 @@ class MerchantOfferNew(MerchantOfferBase):
             self.end_date = self.end_date.replace(tzinfo=None)
 
 
-class MerchantOfferMerchantView(IDModelMixin, MerchantOfferBase, ImagesMixIn):
+class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase, DataPassesMixin):
+    status: str
+
+
+class MerchantOfferUpdate(IDModelMixin, MerchantOfferBase):
+    status: str
+
+    def before_save(self):
+        self.start_date = self.start_date.replace(tzinfo=None)
+        if self.end_date is not None:
+            self.end_date = self.end_date.replace(tzinfo=None)
+
+
+class MerchantOfferMerchantView(
+    IDModelMixin, MerchantOfferBase, DataPassesMixin, ImagesMixIn
+):
     status: str
 
 
