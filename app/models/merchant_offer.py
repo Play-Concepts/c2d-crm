@@ -46,7 +46,7 @@ class MerchantOfferNew(MerchantOfferBase):
             self.end_date = self.end_date.replace(tzinfo=None)
 
 
-class MerchantOfferUpdateRequest(IDModelMixin, MerchantOfferBase, DataPassesMixin):
+class MerchantOfferUpdateRequest(MerchantOfferBase, DataPassesMixin):
     status: str
 
 

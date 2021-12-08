@@ -196,7 +196,7 @@ async def create_merchant_offer(
 
 
 @router.put(
-    "/offers",
+    "/offers/{merchant_offer_id}",
     name="merchant:offers:update",
     tags=["merchants"],
     responses={
@@ -207,6 +207,7 @@ async def create_merchant_offer(
 )
 async def update_merchant_offer(
     response: Response,
+    merchant_offer_id: uuid.UUID,
     merchant_offer_update_request: MerchantOfferUpdateRequest,
     merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     merchant_offers_repo: MerchantOffersRepository = Depends(
@@ -219,6 +220,7 @@ async def update_merchant_offer(
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
     return await fn_update_merchant_offer(
         auth.email,
+        merchant_offer_id,
         merchant_offer_update_request,
         merchants_repo,
         merchant_offers_repo,

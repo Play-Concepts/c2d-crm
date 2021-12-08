@@ -59,6 +59,7 @@ async def fn_create_merchant_offer(
 
 async def fn_update_merchant_offer(
     merchant_email: str,
+    merchant_offer_id: uuid.UUID,
     merchant_offer_update_request: MerchantOfferUpdateRequest,
     merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
@@ -71,13 +72,15 @@ async def fn_update_merchant_offer(
         return NotFound(message="Merchant Not Found")
 
     is_edit_permitted = await merchant_offers_repository.is_merchant_offer_updateable(
-        id=merchant_offer_update_request.id, merchant_id=merchant.id
+        id=merchant_offer_id, merchant_id=merchant.id
     )
     if not is_edit_permitted.value:
         response.status_code = status.HTTP_403_FORBIDDEN
         return ForbiddenMerchantOfferAccess()
 
-    merchant_offer_update_data = merchant_offer_update_request.dict()
+    merchant_offer_update_data = merchant_offer_update_request.dict() | {
+        "id": merchant_offer_id,
+    }
     data_passes = merchant_offer_update_data.pop("data_passes")
 
     merchant_offer_update = MerchantOfferUpdate(**merchant_offer_update_data)

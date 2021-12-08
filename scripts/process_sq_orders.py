@@ -28,17 +28,15 @@ NEW_MECHANT_PERK_SQL = """
 for index, row in df.iterrows():
     if row['Fulfillment Status'] == 'pending':
         print(NEW_USER_SQL.format(row['Email']))
-        print(row['Lineitem sku'])
         
         names = row["Billing Name"].split()
         last_name = names.pop()
         first_name = " ".join(names)
-        
         address_row = concat(
             row["Billing Address1"],
             row["Billing Address2"],
             row["Billing City"],
-            row["Billing Zip"],
+            str(row["Billing Zip"]),
             row["Billing Province"],
             row["Billing Country"],
             separator = " ",
@@ -46,6 +44,8 @@ for index, row in df.iterrows():
             filter_fn = lambda x: x is not None and x != 'nan',
         )
         trade_name = row['Checkout Form: Business Name']
+        #logo_url = placeholder_image_url
+        logo_url = row["Checkout Form: Logo"]
         
         print(NEW_MERCHANT_SQL.format(first_name=first_name,
                                       last_name=last_name,
@@ -54,7 +54,7 @@ for index, row in df.iterrows():
                                       address=address_row,
                                       email=row['Email'],
                                       phone_number=row['Billing Phone'],
-                                      logo_url=placeholder_image_url,
+                                      logo_url=logo_url,
                                       password_change_token=random_string(40),
                                       ))
         
@@ -67,15 +67,12 @@ for index, row in df.iterrows():
         m, d, year = map(lambda x: x.rjust(2, '0'), raw_end.split("/"))
         end_date = "{}-{}-{}".format(year, m, d)
         
-        print(start_date, end_date)
-        
         offer_url = row["Checkout Form: Website"]
-        print(offer_url)
         
-        logo_url = placeholder_image_url
-        #offer_image_url = "Checkout Form: Image of your offer"
-        offer_image_url = placeholder_image_url
         
+        #offer_image_url = placeholder_image_url
+        offer_image_url = row["Checkout Form: Image of your offer"]
+                
         print(NEW_MECHANT_PERK_SQL.format(merchant_id='<fill_me_up>',
                                           title=title,
                                           details=details,
