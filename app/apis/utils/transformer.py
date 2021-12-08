@@ -3,9 +3,9 @@ from functools import reduce
 from pydantic.types import Json
 
 
-def concat(*args, separator: str = ", "):
-    return separator.join(filter(None, args))
-
+def concat(*args, separator: str = ", ", map_fn = None, filter_fn = None):
+    res = separator.join(filter(filter_fn, args))
+    return res if map_fn is None else map_fn(res)
 
 def transform(code: str, data: dict, *, search_params: Json):
     data_path, value = code.split("=")
