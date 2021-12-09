@@ -3,22 +3,23 @@ from datetime import datetime, timedelta
 from typing import Optional, Union
 
 from app.db.repositories.base import BaseRepository
-from app.models.scan_transaction import (ScanTransactionBasicView,
-                                         ScanTransactionCount,
+from app.models.core import NewRecordResponse
+from app.models.scan_transaction import (ScanTransactionCount,
                                          ScanTransactionCounts,
                                          ScanTransactionNew,
                                          ScanTransactionNewTest)
 
 NEW_SCAN_TRANSACTION_SQL = """
     INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid, data_pass_expired)
-    VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :data_pass_expired) RETURNING id;
+    VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :data_pass_expired)
+    RETURNING id, created_at;
 """
 
 NEW_SCAN_TRANSACTION_TEST_SQL_ = """
     INSERT INTO scan_transactions(customer_id, user_id, data_pass_id, data_pass_verified_valid,
     data_pass_expired, created_at)
     VALUES (:customer_id, :user_id, :data_pass_id, :data_pass_verified_valid, :data_pass_expired,
-    :created_at) RETURNING id;
+    :created_at) RETURNING  id, created_at;
 """
 
 GET_SCAN_TRANSACTIONS_COUNT_SQL = """
@@ -40,7 +41,7 @@ GET_CUSTOMER_SCAN_TRANSACTIONS_COUNT_SQL = """
 class ScanTransactionsRepository(BaseRepository):
     async def create_scan_transaction(
         self, *, scan_transaction: Union[ScanTransactionNew, ScanTransactionNewTest]
-    ) -> Optional[ScanTransactionBasicView]:
+    ) -> Optional[NewRecordResponse]:
         query_values = scan_transaction.dict()
         query = (
             NEW_SCAN_TRANSACTION_SQL
@@ -54,7 +55,7 @@ class ScanTransactionsRepository(BaseRepository):
         return (
             None
             if created_scan_transaction is None
-            else ScanTransactionBasicView(**created_scan_transaction)
+            else NewRecordResponse(**created_scan_transaction)
         )
 
     async def get_scan_trans_count_with_interval_n_days(

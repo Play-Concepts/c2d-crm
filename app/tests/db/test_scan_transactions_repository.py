@@ -14,11 +14,11 @@ from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_pass_verifiers import DataPassVerifiersRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
+from app.models.core import NewRecordResponse
 from app.models.customer import CustomerNew
 from app.models.customer import StatusType as CustomerStatusType
 from app.models.merchant import MerchantEmailView
-from app.models.scan_transaction import (ScanTransactionBasicView,
-                                         ScanTransactionCounts,
+from app.models.scan_transaction import (ScanTransactionCounts,
                                          ScanTransactionNew,
                                          ScanTransactionNewTest)
 from app.models.user import UserCreate
@@ -148,7 +148,7 @@ class TestScanTransactionsRepository:
             )
         )
         assert created_scan_transaction is not None
-        assert isinstance(created_scan_transaction, ScanTransactionBasicView)
+        assert isinstance(created_scan_transaction, NewRecordResponse)
 
         # cleanup so the created transaction doesn't affect the remaining tests
         await scan_transactions_repository.db.execute(

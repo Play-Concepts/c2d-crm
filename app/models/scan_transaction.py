@@ -27,10 +27,6 @@ class ScanTransactionDBModel(IDModelMixin, ScanTransactionBase):
     created_at: datetime
 
 
-class ScanTransactionBasicView(IDModelMixin):
-    pass
-
-
 ScanTransactionView = ScanTransactionDBModel
 
 
