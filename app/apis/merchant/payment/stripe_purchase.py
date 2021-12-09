@@ -33,7 +33,7 @@ async def fn_start_payment(
     try:
         intent = stripe.PaymentIntent.create(
             amount=payment_intent.amount,
-            currency=payment_intent.currency,
+            currency=app_config.NETWORK_CURRENCY,
             payment_method_types=["card"],
         )
 

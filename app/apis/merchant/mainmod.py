@@ -7,10 +7,12 @@ from app.apis.merchant import (merchant_balance, merchant_data_pass,
                                merchant_merchant_offer)
 from app.apis.merchant.payment import stripe_purchase
 from app.core.errors import InsufficientFundsException
+from app.core.global_config import config as app_config
 from app.db.repositories.customers import CustomersRepository
 from app.db.repositories.data_pass_sources import DataPassSourcesRepository
 from app.db.repositories.data_passes import DataPassesRepository
 from app.db.repositories.merchant_balances import MerchantBalancesRepository
+from app.db.repositories.merchants import MerchantsRepository
 from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.scan_transaction import (ScanTransactionCounts,
@@ -26,6 +28,7 @@ async def fn_verify_barcode(
     scan_transactions_repo: ScanTransactionsRepository,
     data_passes_repo: DataPassesRepository,
     data_pass_sources_repo: DataPassSourcesRepository,
+    merchants_repo: MerchantsRepository,
     merchant_balances_repo: MerchantBalancesRepository,
     *,
     raw: bool = False,
@@ -84,7 +87,7 @@ async def fn_verify_barcode(
             else await data_passes_repo.is_data_pass_valid(data_pass_id=data_pass_ident)
         )
 
-        await scan_transactions_repo.create_scan_transaction(
+        valid_scan = await scan_transactions_repo.create_scan_transaction(
             scan_transaction=ScanTransactionNew(
                 customer_id=customer_id,
                 user_id=user_id,
@@ -101,8 +104,21 @@ async def fn_verify_barcode(
             )
 
         if is_valid_data_pass and not is_data_pass_expired:
-            has_credit = await fn_has_credit(merchant_email, merchant_balances_repo)
-            if not has_credit:
+            merchant = await merchants_repo.get_merchant_by_email(email=merchant_email)
+
+            has_credit = await fn_has_credit(
+                merchant.id,
+                app_config.NETWORK_TRANSACTION_COST,
+                merchant_balances_repo,
+            )
+            if has_credit:
+                await fn_debit_merchant_balance(
+                    merchant.id,
+                    app_config.NETWORK_TRANSACTION_COST,
+                    valid_scan.id,
+                    merchant_balances_repo,
+                )
+            else:
                 raise InsufficientFundsException
 
     result = customer_id is not None
@@ -144,4 +160,5 @@ fn_start_payment = stripe_purchase.fn_start_payment
 fn_payment_callback = stripe_purchase.fn_payment_callback
 
 fn_has_credit = merchant_balance.fn_has_credit
+fn_debit_merchant_balance = merchant_balance.fn_debit_merchant_balance
 fn_get_merchant_balance_amount = merchant_balance.fn_get_merchant_balance_amount

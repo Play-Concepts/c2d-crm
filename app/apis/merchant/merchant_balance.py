@@ -2,25 +2,41 @@ import uuid
 from typing import Optional
 
 from app.db.repositories.merchant_balances import MerchantBalancesRepository
-from app.models.merchant_balance import MerchantBalanceAmount
+from app.models.core import NewRecordResponse
+from app.models.merchant_balance import (MerchantBalanceAmount,
+                                         MerchantBalanceNew)
 
 
 async def fn_has_credit(
-    email: str, merchant_balances_repo: MerchantBalancesRepository
+    merchant_id: uuid.UUID,
+    minimum_amount: int,
+    merchant_balances_repo: MerchantBalancesRepository,
 ) -> bool:
-    balance_amount = await fn_get_merchant_balance_amount_by_email(
-        email, merchant_balances_repo
+    balance_amount = await fn_get_merchant_balance_amount(
+        merchant_id, merchant_balances_repo
     )
-    return False if balance_amount is None else balance_amount.amount > 0
+    return False if balance_amount is None else balance_amount.amount > minimum_amount
 
 
 async def fn_get_merchant_balance_amount(
     merchant_id: uuid.UUID, merchant_balances_repo: MerchantBalancesRepository
 ) -> Optional[MerchantBalanceAmount]:
-    return merchant_balances_repo.get_merchant_balance_amount(merchant_id=merchant_id)
+    return await merchant_balances_repo.get_merchant_balance_amount(
+        merchant_id=merchant_id
+    )
 
 
-async def fn_get_merchant_balance_amount_by_email(
-    email: str, merchant_balances_repo: MerchantBalancesRepository
-) -> Optional[MerchantBalanceAmount]:
-    return merchant_balances_repo.get_merchant_balance_amount_by_email(email=email)
+async def fn_debit_merchant_balance(
+    merchant_id: uuid.UUID,
+    amount: int,
+    transaction_identifier: Optional[uuid.UUID],
+    merchant_balances_repo: MerchantBalancesRepository,
+) -> Optional[NewRecordResponse]:
+    return await merchant_balances_repo.create_merchant_balance(
+        new_merchant_balance=MerchantBalanceNew(
+            merchant_id=merchant_id,
+            amount=amount,
+            transaction_identifier=transaction_identifier,
+            balance_type="debit",
+        )
+    )
