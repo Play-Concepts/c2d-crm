@@ -39,7 +39,7 @@ class MerchantBalancesRepository(BaseRepository):
         self,
         *,
         merchant_id: uuid.UUID,
-    ) -> Optional[MerchantBalanceAmount]:
+    ) -> MerchantBalanceAmount:
         query_values = {
             "merchant_id": merchant_id,
         }
@@ -47,7 +47,7 @@ class MerchantBalancesRepository(BaseRepository):
             query=GET_MERCHANT_BALANCE_AMOUNT_SQL, values=query_values
         )
         return (
-            None
-            if merchant_balance is None
+            MerchantBalanceAmount(amount=0)
+            if merchant_balance is None or merchant_balance.amount is None
             else MerchantBalanceAmount(**merchant_balance)
         )
