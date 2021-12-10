@@ -3,11 +3,14 @@ from typing import Union
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.apis.dependencies.database import get_repository
-from app.apis.merchant.mainmod import fn_start_payment
+from app.apis.merchant.mainmod import (fn_get_merchant_balance_amount,
+                                       fn_start_payment)
 from app.core import global_state
+from app.db.repositories.merchant_balances import MerchantBalancesRepository
 from app.db.repositories.merchant_payments import MerchantPaymentsRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import GenericError, NotFound, StringResponse
+from app.models.merchant_balance import MerchantBalanceAmount
 from app.models.stripe import PaymentIntent
 
 router = APIRouter()
@@ -43,5 +46,30 @@ async def start_payment(
         merchants_repo,
         merchant_payments_repo,
         request,
+        response,
+    )
+
+
+@router.get(
+    "/total-balance",
+    name="merchant:total-balance",
+    tags=["merchant-transactions"],
+    responses={
+        200: {"model": MerchantBalanceAmount},
+        404: {"model": NotFound},
+    },
+)
+async def get_merchant_balance_amount(
+    response: Response,
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
+    merchant_balances_repo: MerchantBalancesRepository = Depends(
+        get_repository(MerchantBalancesRepository)
+    ),
+    auth=Depends(merchant_user),
+) -> Union[NotFound, MerchantBalanceAmount]:
+    return await fn_get_merchant_balance_amount(
+        auth.email,
+        merchants_repo,
+        merchant_balances_repo,
         response,
     )

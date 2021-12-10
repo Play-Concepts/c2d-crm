@@ -1,8 +1,11 @@
 import uuid
-from typing import Optional
+from typing import Optional, Union
+
+from fastapi import Response, status
 
 from app.db.repositories.merchant_balances import MerchantBalancesRepository
-from app.models.core import NewRecordResponse
+from app.db.repositories.merchants import MerchantsRepository
+from app.models.core import NewRecordResponse, NotFound
 from app.models.merchant_balance import (MerchantBalanceAmount,
                                          MerchantBalanceNew)
 
@@ -19,10 +22,18 @@ async def fn_has_credit(
 
 
 async def fn_get_merchant_balance_amount(
-    merchant_id: uuid.UUID, merchant_balances_repo: MerchantBalancesRepository
-) -> Optional[MerchantBalanceAmount]:
+    merchant_email: str,
+    merchants_repository: MerchantsRepository,
+    merchant_balances_repo: MerchantBalancesRepository,
+    response: Response,
+) -> Union[NotFound, MerchantBalanceAmount]:
+    merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
+    if merchant is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return NotFound(message="Merchant Not Found")
+
     return await merchant_balances_repo.get_merchant_balance_amount(
-        merchant_id=merchant_id
+        merchant_id=merchant.id
     )
 
 
