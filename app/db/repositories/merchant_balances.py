@@ -48,6 +48,6 @@ class MerchantBalancesRepository(BaseRepository):
         )
         return (
             MerchantBalanceAmount(amount=0)
-            if merchant_balance is None or merchant_balance.amount is None
+            if merchant_balance is None or merchant_balance["amount"] is None
             else MerchantBalanceAmount(**merchant_balance)
         )
