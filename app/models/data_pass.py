@@ -35,6 +35,8 @@ class DataPassBase(CoreModel):
 
 class DataPassBasicView(IDModelMixin):
     name: str
+    price: float
+    status: str
 
 
 class DataPassCustomerView(IDModelMixin, DataPassBase, DataPassSourceVerifier):
