@@ -33,7 +33,7 @@ class MerchantOfferDBModel(
     merchant_id: Optional[uuid.UUID]
 
 
-class MerchantOfferNewRequest(MerchantOfferBase, DataPassesMixin):
+class MerchantOfferDataRequest(MerchantOfferBase, DataPassesMixin):
     pass
 
 
@@ -46,12 +46,8 @@ class MerchantOfferNew(MerchantOfferBase):
             self.end_date = self.end_date.replace(tzinfo=None)
 
 
-class MerchantOfferUpdateRequest(MerchantOfferBase, DataPassesMixin):
-    status: str
-
-
 class MerchantOfferUpdate(IDModelMixin, MerchantOfferBase):
-    status: str
+    status: str = "pending_approval"
 
     def before_save(self):
         self.start_date = self.start_date.replace(tzinfo=None)

@@ -22,6 +22,15 @@ async def fn_has_credit(
 
 
 async def fn_get_merchant_balance_amount(
+    merchant_id: uuid.UUID,
+    merchant_balances_repo: MerchantBalancesRepository,
+) -> Union[NotFound, MerchantBalanceAmount]:
+    return await merchant_balances_repo.get_merchant_balance_amount(
+        merchant_id=merchant_id
+    )
+
+
+async def fn_get_merchant_balance_amount_by_email(
     merchant_email: str,
     merchants_repository: MerchantsRepository,
     merchant_balances_repo: MerchantBalancesRepository,

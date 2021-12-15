@@ -4,18 +4,21 @@ from typing import List, Optional, Union
 from fastapi import Response, UploadFile, status
 
 from app.apis.utils.s3uploader import put_file_for_preview
+from app.core.errors import InsufficientFundsException
+from app.db.repositories.data_passes import DataPassesRepository
+from app.db.repositories.merchant_balances import MerchantBalancesRepository
 from app.db.repositories.merchant_offers import MerchantOffersRepository
 from app.db.repositories.merchant_offers_data_passes import \
     MerchantOffersDataPassesRepository
 from app.db.repositories.merchants import MerchantsRepository
 from app.models.core import NewRecordResponse, NotFound, UpdatedRecordResponse
 from app.models.merchant_offer import (ForbiddenMerchantOfferAccess,
+                                       MerchantOfferDataRequest,
                                        MerchantOfferMerchantView,
-                                       MerchantOfferNew,
-                                       MerchantOfferNewRequest,
-                                       MerchantOfferUpdate,
-                                       MerchantOfferUpdateRequest)
+                                       MerchantOfferNew, MerchantOfferUpdate)
 from app.models.merchant_offer_data_pass import MerchantOfferDataPassNew
+
+from .payment import merchant_balance_adjustment
 
 
 async def fn_get_merchant_offers(
@@ -27,7 +30,7 @@ async def fn_get_merchant_offers(
 
 async def fn_create_merchant_offer(
     merchant_email: str,
-    merchant_offer_new_request: MerchantOfferNewRequest,
+    merchant_offer_data_request: MerchantOfferDataRequest,
     merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     merchant_offers_data_passes_repository: MerchantOffersDataPassesRepository,
@@ -37,7 +40,7 @@ async def fn_create_merchant_offer(
     if merchant is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return NotFound(message="Merchant Not Found")
-    merchant_offer_new_data = merchant_offer_new_request.dict() | {
+    merchant_offer_new_data = merchant_offer_data_request.dict() | {
         "merchant_id": merchant.id
     }
     data_passes = merchant_offer_new_data.pop("data_passes")
@@ -60,7 +63,7 @@ async def fn_create_merchant_offer(
 async def fn_update_merchant_offer(
     merchant_email: str,
     merchant_offer_id: uuid.UUID,
-    merchant_offer_update_request: MerchantOfferUpdateRequest,
+    merchant_offer_data_request: MerchantOfferDataRequest,
     merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
     merchant_offers_data_passes_repository: MerchantOffersDataPassesRepository,
@@ -78,7 +81,7 @@ async def fn_update_merchant_offer(
         response.status_code = status.HTTP_403_FORBIDDEN
         return ForbiddenMerchantOfferAccess()
 
-    merchant_offer_update_data = merchant_offer_update_request.dict() | {
+    merchant_offer_update_data = merchant_offer_data_request.dict() | {
         "id": merchant_offer_id,
     }
     data_passes = merchant_offer_update_data.pop("data_passes")
@@ -110,6 +113,9 @@ async def fn_update_merchant_offer_status(
     status: str,
     merchants_repository: MerchantsRepository,
     merchant_offers_repository: MerchantOffersRepository,
+    data_passes_repository: DataPassesRepository,
+    merchant_balances_repository: MerchantBalancesRepository,
+    merchant_offers_data_passes_repository: MerchantOffersDataPassesRepository,
     response: Response,
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
     merchant = await merchants_repository.get_merchant_by_email(email=merchant_email)
@@ -124,10 +130,24 @@ async def fn_update_merchant_offer_status(
         response.status_code = status.HTTP_403_FORBIDDEN
         return ForbiddenMerchantOfferAccess()
 
-    return await merchant_offers_repository.update_merchant_offer_status(
-        id=merchant_offer_id,
-        status=status,
-    )
+    if status == "active":
+        charge_status = (
+            await merchant_balance_adjustment.charge_new_merchant_offers_data_passes(
+                merchant.id,
+                merchant_offer_id,
+                data_passes_repository,
+                merchant_balances_repository,
+                merchant_offers_data_passes_repository,
+            )
+        )
+
+    if charge_status == -1:
+        raise InsufficientFundsException
+    else:
+        return await merchant_offers_repository.update_merchant_offer_status(
+            id=merchant_offer_id,
+            status=status,
+        )
 
 
 async def fn_upload_merchant_offer_image(

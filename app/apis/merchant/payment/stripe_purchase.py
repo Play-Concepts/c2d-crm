@@ -60,7 +60,6 @@ async def fn_payment_callback(
     merchant_balances_repo: MerchantBalancesRepository,
     log,
 ) -> StringResponse:
-    log.info(payment_intent["type"])
     if payment_intent["type"] == "payment_intent.succeeded":
         payment_data = payment_intent["data"]["object"]
         payment = await merchant_payments_repo.get_merchant_payment_by_identifier(

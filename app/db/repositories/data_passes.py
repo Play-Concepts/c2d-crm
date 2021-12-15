@@ -8,7 +8,7 @@ from app.models.data_pass import (DataPassBasicView, DataPassCustomerView,
 from .base import BaseRepository
 
 GET_DATA_PASS_SQL = """
-    SELECT id, name FROM data_passes
+    SELECT id, name, price, status FROM data_passes
     WHERE id = :data_pass_id;
 """
 

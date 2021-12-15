@@ -33,9 +33,8 @@ from app.models.core import (DaySeriesUnit, NewRecordResponse, NotFound,
                              UpdatedRecordResponse)
 from app.models.data_pass import DataPassMerchantView, InvalidDataPass
 from app.models.merchant_offer import (ForbiddenMerchantOfferAccess,
-                                       MerchantOfferMerchantView,
-                                       MerchantOfferNewRequest,
-                                       MerchantOfferUpdateRequest)
+                                       MerchantOfferDataRequest,
+                                       MerchantOfferMerchantView)
 from app.models.scan_transaction import (ScanRequest, ScanResult,
                                          ScanTransactionCounts)
 
@@ -69,6 +68,7 @@ async def verify_barcode(
     data_pass_sources_repo: DataPassSourcesRepository = Depends(
         get_repository(DataPassSourcesRepository)
     ),
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     merchant_balances_repo: MerchantBalancesRepository = Depends(
         get_repository(MerchantBalancesRepository)
     ),
@@ -84,6 +84,7 @@ async def verify_barcode(
             scan_transactions_repo,
             data_passes_repo,
             data_pass_sources_repo,
+            merchants_repo,
             merchant_balances_repo,
             request=request,
         )
@@ -175,7 +176,7 @@ async def get_merchant_offers(
 )
 async def create_merchant_offer(
     response: Response,
-    merchant_offer_new_request: MerchantOfferNewRequest,
+    merchant_offer_data_request: MerchantOfferDataRequest,
     merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     merchant_offers_repo: MerchantOffersRepository = Depends(
         get_repository(MerchantOffersRepository)
@@ -187,7 +188,7 @@ async def create_merchant_offer(
 ) -> Union[NotFound, Optional[NewRecordResponse]]:
     return await fn_create_merchant_offer(
         auth.email,
-        merchant_offer_new_request,
+        merchant_offer_data_request,
         merchants_repo,
         merchant_offers_repo,
         merchant_offers_data_passes_repo,
@@ -208,7 +209,7 @@ async def create_merchant_offer(
 async def update_merchant_offer(
     response: Response,
     merchant_offer_id: uuid.UUID,
-    merchant_offer_update_request: MerchantOfferUpdateRequest,
+    merchant_offer_data_request: MerchantOfferDataRequest,
     merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     merchant_offers_repo: MerchantOffersRepository = Depends(
         get_repository(MerchantOffersRepository)
@@ -221,7 +222,7 @@ async def update_merchant_offer(
     return await fn_update_merchant_offer(
         auth.email,
         merchant_offer_id,
-        merchant_offer_update_request,
+        merchant_offer_data_request,
         merchants_repo,
         merchant_offers_repo,
         merchant_offers_data_passes_repo,
@@ -260,6 +261,7 @@ async def upload_merchant_offer_image(
     tags=["merchants"],
     responses={
         200: {"model": Optional[UpdatedRecordResponse]},
+        402: {"model": InsufficientFundsResponse},
         403: {"model": ForbiddenMerchantOfferAccess},
         404: {"model": NotFound},
     },
@@ -272,16 +274,32 @@ async def update_merchant_offer_status(
     merchant_offers_repo: MerchantOffersRepository = Depends(
         get_repository(MerchantOffersRepository)
     ),
+    data_passes_repo: DataPassesRepository = Depends(
+        get_repository(DataPassesRepository)
+    ),
+    merchant_balances_repo: MerchantBalancesRepository = Depends(
+        get_repository(MerchantBalancesRepository)
+    ),
+    merchant_offers_data_passes_repo: MerchantOffersDataPassesRepository = Depends(
+        get_repository(MerchantOffersDataPassesRepository)
+    ),
     auth=Depends(merchant_user),
 ) -> Union[NotFound, ForbiddenMerchantOfferAccess, Optional[UpdatedRecordResponse]]:
-    return await fn_update_merchant_offer_status(
-        auth.email,
-        merchant_offer_id,
-        status,
-        merchants_repo,
-        merchant_offers_repo,
-        response,
-    )
+    try:
+        return await fn_update_merchant_offer_status(
+            auth.email,
+            merchant_offer_id,
+            status,
+            merchants_repo,
+            merchant_offers_repo,
+            data_passes_repo,
+            merchant_balances_repo,
+            merchant_offers_data_passes_repo,
+            response,
+        )
+    except InsufficientFundsException:
+        response.status_code = status.HTTP_402_PAYMENT_REQUIRED
+        return InsufficientFundsResponse()
 
 
 @router.put(
