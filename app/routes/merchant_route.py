@@ -68,6 +68,7 @@ async def verify_barcode(
     data_pass_sources_repo: DataPassSourcesRepository = Depends(
         get_repository(DataPassSourcesRepository)
     ),
+    merchants_repo: MerchantsRepository = Depends(get_repository(MerchantsRepository)),
     merchant_balances_repo: MerchantBalancesRepository = Depends(
         get_repository(MerchantBalancesRepository)
     ),
@@ -83,6 +84,7 @@ async def verify_barcode(
             scan_transactions_repo,
             data_passes_repo,
             data_pass_sources_repo,
+            merchants_repo,
             merchant_balances_repo,
             request=request,
         )

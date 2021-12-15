@@ -18,7 +18,7 @@ stripe.api_key = app_config.STRIPE_SECRET_KEY
 
 app = FastAPI(
     title="Data Passport API",
-    version="1.0.6k-20211214-PAY",
+    version="1.0.6l-20211215-PAY",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",

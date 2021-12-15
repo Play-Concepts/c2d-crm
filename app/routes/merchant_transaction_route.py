@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.apis.dependencies.database import get_repository
-from app.apis.merchant.mainmod import (fn_get_merchant_balance_amount,
+from app.apis.merchant.mainmod import (fn_get_merchant_balance_amount_by_email,
                                        fn_start_payment)
 from app.core import global_state
 from app.db.repositories.merchant_balances import MerchantBalancesRepository
@@ -67,7 +67,7 @@ async def get_merchant_balance_amount(
     ),
     auth=Depends(merchant_user),
 ) -> Union[NotFound, MerchantBalanceAmount]:
-    return await fn_get_merchant_balance_amount(
+    return await fn_get_merchant_balance_amount_by_email(
         auth.email,
         merchants_repo,
         merchant_balances_repo,

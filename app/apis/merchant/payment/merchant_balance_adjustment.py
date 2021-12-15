@@ -33,7 +33,7 @@ async def charge_new_merchant_offers_data_passes(
                 data_pass.price * app_config.NETWORK_PRICE_FACTOR * pro_rata
             )
 
-    balance = merchant_balances_repo.get_merchant_balance_amount(
+    balance = await merchant_balances_repo.get_merchant_balance_amount(
         merchant_id=merchant_id
     )
 
