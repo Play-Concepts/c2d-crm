@@ -162,3 +162,6 @@ fn_payment_callback = stripe_purchase.fn_payment_callback
 fn_has_credit = merchant_balance.fn_has_credit
 fn_debit_merchant_balance = merchant_balance.fn_debit_merchant_balance
 fn_get_merchant_balance_amount = merchant_balance.fn_get_merchant_balance_amount
+fn_get_merchant_balance_amount_by_email = (
+    merchant_balance.fn_get_merchant_balance_amount_by_email
+)
