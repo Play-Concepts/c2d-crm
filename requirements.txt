@@ -14,9 +14,9 @@ bcrypt==3.2.0
     # via
     #   -r requirements.in
     #   passlib
-boto3==1.20.22
+boto3==1.20.25
     # via -r requirements.in
-botocore==1.23.22
+botocore==1.23.25
     # via
     #   boto3
     #   s3transfer
@@ -32,7 +32,7 @@ charset-normalizer==2.0.4
     # via requests
 click==8.0.1
     # via uvicorn
-cryptography==36.0.0
+cryptography==36.0.1
     # via -r requirements.in
 databases[postgresql]==0.5.3
     # via
@@ -102,14 +102,14 @@ requests==2.26.0
     #   stripe
 s3transfer==0.5.0
     # via boto3
-sentry-sdk==1.5.0
+sentry-sdk==1.5.1
     # via -r requirements.in
 six==1.16.0
     # via
     #   bcrypt
     #   python-dateutil
     #   python-multipart
-sqlalchemy==1.4.27
+sqlalchemy==1.4.28
     # via
     #   -r requirements.in
     #   alembic
