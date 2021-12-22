@@ -101,7 +101,7 @@ async def verify_barcode(
 @router.get(
     "/data-passes/{data_pass_id}/scan-transactions-count",
     name="merchant:scan-transactions-count",
-    tags=["merchants"],
+    tags=["merchants", "merchant-statistics"],
     response_model=ScanTransactionCounts,
 )
 async def get_scan_transactions_count(
