@@ -93,6 +93,9 @@ jobs:
           - cluster: dataswift-products-datapassport-prd
             service: dataswift-products-datapassport-prd-datavista
             container: dataswift-products-datapassport-prd-datavista
+          - cluster: dataswift-products-datapassport-prd
+            service: dataswift-products-datapassport-prd-sejutakg
+            container: dataswift-products-datapassport-prd-sejutakg            
 
     steps:
       - name: AWS - Configure
