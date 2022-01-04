@@ -14,9 +14,9 @@ bcrypt==3.2.0
     # via
     #   -r requirements.in
     #   passlib
-boto3==1.20.25
+boto3==1.20.27
     # via -r requirements.in
-botocore==1.23.25
+botocore==1.23.27
     # via
     #   boto3
     #   s3transfer
@@ -78,7 +78,7 @@ passlib[bcrypt]==1.7.4
     # via
     #   -r requirements.in
     #   fastapi-users
-psycopg2-binary==2.9.2
+psycopg2-binary==2.9.3
     # via -r requirements.in
 pycparser==2.20
     # via cffi
@@ -96,7 +96,7 @@ python-multipart==0.0.5
     # via
     #   -r requirements.in
     #   fastapi-users
-requests==2.26.0
+requests==2.27.0
     # via
     #   -r requirements.in
     #   stripe
@@ -109,7 +109,7 @@ six==1.16.0
     #   bcrypt
     #   python-dateutil
     #   python-multipart
-sqlalchemy==1.4.28
+sqlalchemy==1.4.29
     # via
     #   -r requirements.in
     #   alembic
@@ -117,7 +117,7 @@ sqlalchemy==1.4.28
     #   fastapi-users-db-sqlalchemy
 starlette==0.14.2
     # via fastapi
-stripe==2.63.0
+stripe==2.64.0
     # via -r requirements.in
 typing-extensions==3.10.0.2
     # via pydantic
