@@ -17,6 +17,15 @@ def write_pda_data(
     return [response.status_code, response.json()]
 
 
+def read_pda_data(pda_url: str, token: str, namespace: str, data_path: str) -> Any:
+    headers = {"x-auth-token": token, "content-type": "application/json"}
+    data_read_url = "https://{}/api/v2.6/data/{}/{}".format(
+        pda_url, namespace, data_path
+    )
+    response = requests.get(data_read_url, headers=headers)
+    return [response.status_code, response.json()]
+
+
 # Function to translate .dot notation string to dict
 # for ease of writing to PDA
 def dot_to_dict(a):

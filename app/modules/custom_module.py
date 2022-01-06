@@ -13,6 +13,7 @@ def mount_custom_module(app: FastAPI) -> Callable:
         app.include_router(crm_route.router)
         app.include_router(custom_auth_route.router)
         app.include_router(merchant_route.router)
+        # app.include_router(merchant_statistic_route.router)
         app.include_router(merchant_transaction_route.router)
         app.include_router(payment_route.router)
         app.include_router(supplier_route.router)

@@ -1,14 +1,13 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Body, Depends, Request, Response
+from fastapi import APIRouter, Body, Depends, Request, Response, status
 
 from app.apis.customer.customer_merchant_offer import \
     fn_get_all_customer_offers
 from app.apis.customer.mainmod import (fn_check_first_login, fn_claim_data,
                                        fn_customer_activate_data_pass,
                                        fn_customer_get_scan_transactions_count,
-                                       fn_get_customer_basic,
                                        fn_get_customer_data_passes,
                                        fn_get_customer_favourited_offers,
                                        fn_get_customer_offers,
@@ -29,47 +28,14 @@ from app.db.repositories.scan_transactions import ScanTransactionsRepository
 from app.logger import log_instance
 from app.models.core import (BooleanResponse, IDModelMixin, NewRecordResponse,
                              NotFound)
-from app.models.customer import (CustomerBasicView, CustomerClaim,
-                                 CustomerClaimResponse, CustomerView)
+from app.models.customer import (CustomerClaim, CustomerClaimResponse,
+                                 CustomerView)
 from app.models.data_pass import DataPassCustomerView, InvalidDataPass
 from app.models.merchant_offer import MerchantOfferCustomerView
 from app.models.scan_transaction import ScanTransactionCounts
 
 router = APIRouter()
 router.prefix = "/api/customer"
-
-
-@router.get(
-    "/data/{data_pass_id}/basic",
-    name="customer:basic",
-    tags=["customer"],
-    response_model=CustomerBasicView,
-    responses={404: {"model": NotFound}, 400: {"model": InvalidDataPass}},
-    deprecated=True,
-)
-async def get_customer_basic(
-    response: Response,
-    data_pass_id: uuid.UUID,
-    data_passes_repo: DataPassesRepository = Depends(
-        get_repository(DataPassesRepository)
-    ),
-    data_pass_sources_repo: DataPassSourcesRepository = Depends(
-        get_repository(DataPassSourcesRepository)
-    ),
-    customers_repository: CustomersRepository = Depends(
-        get_repository(CustomersRepository)
-    ),
-    auth_tuple=Depends(get_current_pda_user),
-) -> Union[CustomerBasicView, NotFound, InvalidDataPass]:
-    auth, _ = auth_tuple
-    return await fn_get_customer_basic(
-        data_pass_id,
-        auth["iss"],
-        data_passes_repo,
-        data_pass_sources_repo,
-        customers_repository,
-        response,
-    )
 
 
 @router.post(
@@ -92,7 +58,7 @@ async def search_customers(
     customers_repository: CustomersRepository = Depends(
         get_repository(CustomersRepository)
     ),
-    auth=Depends(get_current_pda_user),
+    auth_tuple=Depends(get_current_pda_user),
 ) -> List[CustomerView]:
     return await fn_search_customers(
         data_pass_id,
@@ -109,8 +75,11 @@ async def search_customers(
     "/data/{data_pass_id}/claim",
     name="customer:claim",
     tags=["customer"],
-    response_model=CustomerClaimResponse,
-    responses={404: {"model": NotFound}, 400: {"model": InvalidDataPass}},
+    responses={
+        200: {"model": CustomerClaimResponse},
+        404: {"model": NotFound},
+        400: {"model": InvalidDataPass},
+    },
 )
 async def claim_data(
     data_pass_id: uuid.UUID,
@@ -143,7 +112,10 @@ async def claim_data(
         response,
     )
     log = log_instance(request)
-    if result is not None:
+    if result is not None and response.status_code not in [
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_400_BAD_REQUEST,
+    ]:
         log.info(
             "customer:claim:{}:{}:{}".format(
                 claim_params.id, result.data_table, auth["iss"]
@@ -205,13 +177,6 @@ async def get_customer_data_passes(
     tags=["customer"],
     response_model=ScanTransactionCounts,
 )
-@router.get(
-    "/{data_pass_id}/scan-transactions-count",
-    name="customer:scan-transactions-count",
-    tags=["customer"],
-    response_model=ScanTransactionCounts,
-    deprecated=True,
-)
 async def get_scan_transactions_count(
     data_pass_id: uuid.UUID,
     interval_days: int,
@@ -239,14 +204,6 @@ async def get_scan_transactions_count(
     tags=["customer"],
     response_model=List[MerchantOfferCustomerView],
     responses={400: {"model": InvalidDataPass}},
-)
-@router.get(
-    "/{data_pass_id}/offers",
-    name="customer:offers",
-    tags=["customer"],
-    response_model=List[MerchantOfferCustomerView],
-    responses={400: {"model": InvalidDataPass}},
-    deprecated=True,
 )
 async def get_customer_offers(
     response: Response,
