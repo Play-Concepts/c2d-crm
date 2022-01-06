@@ -15,6 +15,7 @@ pyjwt
 cryptography
 python-dotenv
 python-multipart
+python-box
 uvicorn
 requests
 sentry_sdk

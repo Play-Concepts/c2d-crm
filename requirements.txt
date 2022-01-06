@@ -88,6 +88,8 @@ pyjwt==2.1.0
     # via
     #   -r requirements.in
     #   fastapi-users
+python-box==5.4.1
+    # via -r requirements.in
 python-dateutil==2.8.2
     # via botocore
 python-dotenv==0.19.2
