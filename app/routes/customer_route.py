@@ -58,7 +58,7 @@ async def search_customers(
     customers_repository: CustomersRepository = Depends(
         get_repository(CustomersRepository)
     ),
-    auth=Depends(get_current_pda_user),
+    auth_tuple=Depends(get_current_pda_user),
 ) -> List[CustomerView]:
     return await fn_search_customers(
         data_pass_id,
