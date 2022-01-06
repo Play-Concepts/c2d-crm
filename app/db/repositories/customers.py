@@ -5,8 +5,8 @@ from typing import Callable, List, Optional
 
 from pydantic.types import Json
 
-from app.models.customer import (CustomerBasicView, CustomerClaimResponse,
-                                 CustomerNew, CustomerView)
+from app.models.customer import (CustomerClaimResponse, CustomerNew,
+                                 CustomerView)
 
 from .base import BaseRepository
 
@@ -61,16 +61,6 @@ class CustomersRepository(BaseRepository):
             values={"id": customer_id},
         )
         return None if customer is None else CustomerView(**customer)
-
-    # Deprecate this soon.
-    async def get_customer_basic(
-        self, *, pda_url: str, data_table: str
-    ) -> Optional[CustomerBasicView]:
-        customer = await self.db.fetch_one(
-            query=VIEW_CUSTOMER_BASIC_SQL.format(data_table=data_table),
-            values={"pda_url": pda_url},
-        )
-        return None if customer is None else CustomerBasicView(**customer)
 
     async def search_customers(
         self,

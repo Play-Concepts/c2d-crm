@@ -28,7 +28,7 @@ coverage[toml]==6.0
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-faker==10.0.0
+faker==11.3.0
     # via -r requirements-dev.in
 flake8==4.0.1
     # via -r requirements-dev.in
@@ -56,7 +56,7 @@ pathspec==0.9.0
     # via black
 pep517==0.11.0
     # via pip-tools
-pillow==8.4.0
+pillow==9.0.0
     # via -r requirements-dev.in
 pip-tools==6.4.0
     # via -r requirements-dev.in

@@ -87,8 +87,8 @@ class TestMerchantRoutes:
                 True,
             ),
             (
-                "merchant:scan_transactions_count",
-                "/api/merchant/{}/scan_transactions_count",
+                "merchant:scan-transactions-count",
+                "/api/merchant/data-passes/{}/scan-transactions-count",
                 True,
             ),
         ],

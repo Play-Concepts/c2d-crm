@@ -104,20 +104,6 @@ async def verify_barcode(
     tags=["merchants"],
     response_model=ScanTransactionCounts,
 )
-@router.get(
-    "/{data_pass_id}/scan-transactions-count",
-    name="merchant:scan-transactions-count",
-    tags=["merchants"],
-    response_model=ScanTransactionCounts,
-    deprecated=True,
-)
-@router.get(
-    "/{data_pass_id}/scan_transactions_count",
-    name="merchant:scan_transactions_count",
-    tags=["merchants"],
-    response_model=ScanTransactionCounts,
-    deprecated=True,
-)
 async def get_scan_transactions_count(
     data_pass_id: uuid.UUID,
     interval_days: int,

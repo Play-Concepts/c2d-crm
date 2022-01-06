@@ -7,7 +7,7 @@ from app.apis.utils.transformer import concat
 orders_file = 'orders.csv'
 df = pd.read_csv(orders_file)
 
-placeholder_image_url = 'https://images.squarespace-cdn.com/content/v1/611386630a0d433d1854d656/1633288429020-RAJHS2AFJD941OZB1AYV/1FAE1105-E04D-4B51-B0BE-4B826DF326A2?format=500whttps://images.squarespace-cdn.com/content/v1/611386630a0d433d1854d656/1633288429020-RAJHS2AFJD941OZB1AYV/1FAE1105-E04D-4B51-B0BE-4B826DF326A2?format=500w'
+placeholder_image_url = 'https://images.squarespace-cdn.com/content/v1/611386630a0d433d1854d656/1633288429020-RAJHS2AFJD941OZB1AYV/1FAE1105-E04D-4B51-B0BE-4B826DF326A2?format=500w'
 
 NEW_USER_SQL = """
     insert into users(email, hashed_password, is_active, is_verified, is_superuser, is_supplier)

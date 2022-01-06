@@ -59,10 +59,6 @@ class CustomerView(IDModelMixin, CustomerBase):
     total_count: Optional[int]
 
 
-class CustomerBasicView(IDModelMixin):
-    claimed_timestamp: Optional[datetime]
-
-
 class CustomerSearch(CoreModel):
     last_name: Optional[str] = ""
     address: Optional[str] = ""
