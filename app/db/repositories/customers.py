@@ -36,6 +36,13 @@ CLAIM_DATA_SQL = """
     RETURNING id, data, status, pda_url, claimed_timestamp;
 """
 
+RECORD_DATA_CLAIM_SQL = """
+    INSERT INTO {data_table}(id, data, data_hash, status, pda_url, claimed_timestamp)
+    VALUES(:id, {data}, '{data_hash}', 'claimed', :pda_url, :claimed_timestamp)
+    ON CONFLICT DO NOTHING
+    RETURNING id, data, status, pda_url, claimed_timestamp;
+"""
+
 
 class CustomersRepository(BaseRepository):
     async def create_customer(
@@ -82,6 +89,26 @@ class CustomersRepository(BaseRepository):
     ) -> Optional[CustomerClaimResponse]:
         customer = await self.db.fetch_one(
             query=CLAIM_DATA_SQL.format(data_table=data_table, data="'{}'"),
+            values={
+                "id": identifier,
+                "pda_url": pda_url,
+                "claimed_timestamp": claimed_timestamp,
+            },
+        )
+        return None if customer is None else CustomerClaimResponse(**customer)
+
+    async def record_data_claim(
+        self,
+        *,
+        data_table: str,
+        identifier: uuid.UUID,
+        pda_url: str,
+        claimed_timestamp: datetime,
+    ) -> Optional[CustomerClaimResponse]:
+        customer = await self.db.fetch_one(
+            query=RECORD_DATA_CLAIM_SQL.format(
+                data_table=data_table, data="'{}'", data_hash=identifier.hex
+            ),
             values={
                 "id": identifier,
                 "pda_url": pda_url,

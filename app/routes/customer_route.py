@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Body, Depends, Request, Response
+from fastapi import APIRouter, Body, Depends, Request, Response, status
 
 from app.apis.customer.customer_merchant_offer import \
     fn_get_all_customer_offers
@@ -75,8 +75,11 @@ async def search_customers(
     "/data/{data_pass_id}/claim",
     name="customer:claim",
     tags=["customer"],
-    response_model=CustomerClaimResponse,
-    responses={404: {"model": NotFound}, 400: {"model": InvalidDataPass}},
+    responses={
+        200: {"model": CustomerClaimResponse},
+        404: {"model": NotFound},
+        400: {"model": InvalidDataPass},
+    },
 )
 async def claim_data(
     data_pass_id: uuid.UUID,
@@ -109,7 +112,10 @@ async def claim_data(
         response,
     )
     log = log_instance(request)
-    if result is not None:
+    if result is not None and response.status_code not in [
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_400_BAD_REQUEST,
+    ]:
         log.info(
             "customer:claim:{}:{}:{}".format(
                 claim_params.id, result.data_table, auth["iss"]

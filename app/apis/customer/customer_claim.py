@@ -17,6 +17,8 @@ from app.models.customer import CustomerClaimResponse, CustomerView
 from app.models.data_pass import InvalidDataPass
 from app.models.data_pass_source import DataPassSourceDescriptor
 
+DIRECT_CLAIM_KEYWORD = "pda"
+
 
 async def fn_search_customers(
     data_pass_id: uuid.UUID,
@@ -82,18 +84,30 @@ async def fn_claim_data(
                 data_pass_id=data_pass_id
             )
         )
-        data_to_claim = await customers_repo.data_to_claim(
-            data_table=data_descriptors.data_table,
-            identifier=identifier,
+
+        direct_pda = (
+            data_descriptors.data_descriptors is not None
+            and ("data_source" in data_descriptors.data_descriptors)
+            and data_descriptors.data_descriptors["data_source"] == DIRECT_CLAIM_KEYWORD
         )
-        if data_to_claim is None:
-            response.status_code = status.HTTP_404_NOT_FOUND
-            return NotFound(message="Could not find the data to claim")
+
+        if direct_pda:
+            claim_payload = {}
+        else:
+            data_to_claim = await customers_repo.data_to_claim(
+                data_table=data_descriptors.data_table,
+                identifier=identifier,
+            )
+            if data_to_claim is None:
+                response.status_code = status.HTTP_404_NOT_FOUND
+                return NotFound(message="Could not find the data to claim")
+            else:
+                claim_payload = data_to_claim.data
 
         claimed_timestamp = datetime.now()
 
         payload = {
-            "data": data_to_claim.data,
+            "data": claim_payload,
             "identifier": str(identifier),
             "claimed_timestamp": claimed_timestamp.replace(
                 tzinfo=timezone.utc
@@ -116,7 +130,13 @@ async def fn_claim_data(
                 "{}/claim-summary".format(str(data_pass_id)),
                 payload,
             )
-            claimed_data = await customers_repo.claim_data(
+
+            claim_repo_function = (
+                customers_repo.record_data_claim
+                if direct_pda
+                else customers_repo.claim_data
+            )
+            claimed_data = await claim_repo_function(
                 data_table=data_descriptors.data_table,
                 identifier=identifier,
                 pda_url=pda_url,
