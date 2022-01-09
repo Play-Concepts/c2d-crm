@@ -103,7 +103,7 @@ async def fn_verify_barcode(
                 "expired-datapass({}):{}".format(str(data_pass_ident), customer_pda_url)
             )
 
-        if is_valid_data_pass and not is_data_pass_expired:
+        if app_config.CHECK_BALANCE and is_valid_data_pass and not is_data_pass_expired:
             merchant = await merchants_repo.get_merchant_by_email(email=merchant_email)
 
             has_credit = await fn_has_credit(

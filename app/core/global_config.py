@@ -61,6 +61,9 @@ class GlobalConfig(BaseSettings):
         os.environ.get("NETWORK_TRANSACTION_COST", "30")
     )
 
+    # Transient
+    CHECK_BALANCE: bool = strtobool(os.environ.get("CHECK_BALANCE", "False"))
+
 
 config = GlobalConfig()
 # print(config.__repr__())
